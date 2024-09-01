@@ -1,4 +1,5 @@
-package com.LinkVerse.profile.dto.response;
+package com.LinkVerse.identity.dto.request;
+
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,8 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserProfileResponse {
-    String id;
+public class ProfileCreationRequest {
     String firstName;
     String lastName;
     LocalDate dob;

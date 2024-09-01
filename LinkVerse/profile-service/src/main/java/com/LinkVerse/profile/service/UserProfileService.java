@@ -11,13 +11,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class UserRepositoryService {
-        UserProfileRepository userProfileRepository;
-        UserProfileMapper userProfileMapper;
+public class UserProfileService {
+         UserProfileRepository userProfileRepository;
+    UserProfileMapper userProfileMapper;
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
@@ -25,12 +28,22 @@ public class UserRepositoryService {
 
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
+
     public UserProfileResponse getProfile(String id) {
-        UserProfile userProfile =userProfileRepository.findById(id)
-                .orElseThrow(()->new RuntimeException("User not found"));
+        UserProfile userProfile =
+                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
+
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
-    public void deleteProfile(String id) {
-        userProfileRepository.deleteById(id);
+
+    public List<UserProfileResponse> getAllProfiles(){
+         return userProfileRepository.findAll().stream()
+                .map(userProfileMapper::toUserProfileResponse)
+                .collect(Collectors.toList());
     }
+
+      public void deleteUser(String userID) {
+        userProfileRepository.deleteById(userID);
+    }
+
 }
