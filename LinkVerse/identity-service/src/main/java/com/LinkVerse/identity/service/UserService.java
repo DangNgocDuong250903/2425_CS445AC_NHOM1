@@ -49,13 +49,12 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-        user = userRepository.save(user);
+        user = userRepository.save(user); //Da map userID vao user
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
+        profileRequest.setUserID(user.getId());
 
-        var profileResponse = profileClient.createProfile(profileRequest);
-
-        log.info("Profile response: {}", profileResponse.toString());
+        profileClient.createProfile(profileRequest);
 
         return userMapper.toUserResponse(user);
     }

@@ -45,5 +45,4 @@ public class UserProfileService {
       public void deleteUser(String userID) {
         userProfileRepository.deleteById(userID);
     }
-
 }

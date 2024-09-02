@@ -27,13 +27,15 @@ public class UserProfileController {
     UserProfileResponse getProfile(@PathVariable String profileId) {
         return userProfileService.getProfile(profileId);
     }
-    @GetMapping("/users")
+
+    @GetMapping("/users/getAll")
     List<UserProfileResponse> getAllProfiles(){
         return userProfileService.getAllProfiles();
     }
+
     @DeleteMapping("/users/{profileId}")
     void deleteUser(@PathVariable String profileId) {
-        userProfileService.deleteUser(profileId);
         log.info("User with ID {} has been deleted", profileId);
+        userProfileService.deleteUser(profileId);
     }
 }
