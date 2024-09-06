@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.dto.request;
+package com.LinkVerse.gateway.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

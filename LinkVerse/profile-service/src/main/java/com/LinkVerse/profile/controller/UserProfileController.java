@@ -1,6 +1,5 @@
 package com.LinkVerse.profile.controller;
 
-import com.LinkVerse.profile.dto.request.ProfileCreationRequest;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.service.UserProfileService;
 import lombok.AccessLevel;

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserProfileService {
          UserProfileRepository userProfileRepository;
-    UserProfileMapper userProfileMapper;
+         UserProfileMapper userProfileMapper;
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
