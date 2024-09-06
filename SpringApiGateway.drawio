@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 Edg/128.0.0.0" version="24.7.12">
   <diagram name="Page-1" id="ddn0x5wgFaViNGrKftgm">
-    <mxGraphModel dx="1002" dy="541" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="1336" dy="721" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -99,6 +99,12 @@
         </mxCell>
         <mxCell id="_W-WZNdu4DOHJXc050we-27" value="" style="ellipse;html=1;shape=startState;fillColor=#000000;strokeColor=#ff0000;" parent="1" vertex="1">
           <mxGeometry x="1220" y="870" width="20" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="0urlkqu67sutVqFuuFJ0-2" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;CLASS identityService Api&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="40" y="610" width="250" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="0urlkqu67sutVqFuuFJ0-3" value="&lt;b&gt;&lt;font style=&quot;font-size: 18px;&quot;&gt;CLASS IdentityClient Api&lt;/font&gt;&lt;/b&gt;" style="text;html=1;align=center;verticalAlign=middle;resizable=0;points=[];autosize=1;strokeColor=none;fillColor=none;" vertex="1" parent="1">
+          <mxGeometry x="975" y="690.36" width="240" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
