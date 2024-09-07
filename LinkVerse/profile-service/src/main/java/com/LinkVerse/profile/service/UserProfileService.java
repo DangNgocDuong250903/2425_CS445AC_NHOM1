@@ -36,13 +36,9 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
-    public List<UserProfileResponse> getAllProfiles(){
-         return userProfileRepository.findAll().stream()
-                .map(userProfileMapper::toUserProfileResponse)
-                .collect(Collectors.toList());
+      public List<UserProfileResponse> getAllProfiles() {
+        var profiles = userProfileRepository.findAll();
+        return profiles.stream().map(userProfileMapper::toUserProfileResponse).toList();
     }
 
-      public void deleteUser(String userID) {
-        userProfileRepository.deleteById(userID);
-    }
 }
