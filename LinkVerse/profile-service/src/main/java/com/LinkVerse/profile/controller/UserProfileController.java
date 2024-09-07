@@ -9,11 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class UserProfileController {
     UserProfileService userProfileService;
 
@@ -23,8 +21,7 @@ public class UserProfileController {
     }
 
     @GetMapping("/users")
-    List<UserProfileResponse> getAllProfiles(){
+    List<UserProfileResponse> getAllProfiles() {
         return userProfileService.getAllProfiles();
     }
-
 }
