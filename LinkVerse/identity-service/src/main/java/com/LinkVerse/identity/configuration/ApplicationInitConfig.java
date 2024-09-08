@@ -1,7 +1,6 @@
 package com.LinkVerse.identity.configuration;
 
 import java.util.HashSet;
-
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
