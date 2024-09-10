@@ -35,7 +35,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     ObjectMapper objectMapper;
 
     @NonFinal
-    private String[] publicEndpoints = {"/identity/auth/token"};
+    private String[] publicEndpoints = {"/identity/auth/.*","/identity/users/registration"}; //public cong khai
 
     @Value("${app.api-prefix}")
     @NonFinal
@@ -46,7 +46,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         log.info("Enter authentication filter....");
 
         if(isPublicEndpoint(exchange.getRequest()))
-            return chain.filter(exchange);
+            return chain.filter(exchange); // Neu la duong dan public thi khong can xac thuc
 
         // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
@@ -71,7 +71,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     //Kiem tra co khop voi duong dan hay k
     private boolean isPublicEndpoint(ServerHttpRequest request){
         return Arrays.stream(publicEndpoints)
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s)); // apiPrefix :/api/v1
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response){

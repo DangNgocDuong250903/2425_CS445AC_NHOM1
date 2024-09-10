@@ -19,7 +19,7 @@ spring:
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 #in second
-  refreshable - duration: 360000 #in seconds
+  refreshable - duration: 720000
 app:
   services:
     profile: "http://localhost:8081/profile"
