@@ -1,5 +1,6 @@
 package com.LinkVerse.identity.repository.httpclient;
 
+import com.LinkVerse.identity.configuration.AuthenticationRequestinterceptor;
 import com.LinkVerse.identity.dto.request.ProfileCreationRequest;
 import com.LinkVerse.identity.dto.response.UserProfileResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 
 //Connetion to profile-service
-@FeignClient(name = "profile-service", url = "${app.services.profile}")
+@FeignClient(name = "profile-service", url = "${app.services.profile}", configuration = {AuthenticationRequestinterceptor.class} )
 public interface ProfileClient {
     @PostMapping(value = "/internal/users", produces = MediaType.APPLICATION_JSON_VALUE)
     UserProfileResponse createProfile(
