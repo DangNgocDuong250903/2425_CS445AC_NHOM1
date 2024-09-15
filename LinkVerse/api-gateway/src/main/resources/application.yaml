@@ -3,8 +3,6 @@ server:
 
 app:
   api-prefix: /api/v1
-
-
 spring:
   application:
     name: api-gateway

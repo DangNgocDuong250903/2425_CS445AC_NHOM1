@@ -31,6 +31,7 @@ public class WebClientConfiguration {
 
         UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
         urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
         return new CorsWebFilter(urlBasedCorsConfigurationSource);
     }
 
@@ -41,4 +42,5 @@ public class WebClientConfiguration {
 
         return httpServiceProxyFactory.createClient(IdentityClient.class);
     }
+
 }

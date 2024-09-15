@@ -1,4 +1,4 @@
-package com.devteria.profile.configuration;
+package com.Linkverse.profile.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;
