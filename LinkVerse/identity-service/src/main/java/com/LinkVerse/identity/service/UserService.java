@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -38,33 +39,30 @@ public class UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
-    PasswordEncoder passwordEncoder;
-    ProfileClient  profileClient;
     ProfileMapper profileMapper;
+    PasswordEncoder passwordEncoder;
+    ProfileClient profileClient;
+    KafkaTemplate<String, String> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-
         HashSet<Role> roles = new HashSet<>();
+
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-        user = userRepository.save(user); //Da map userID vao user
+        user = userRepository.save(user);
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
         profileRequest.setUserID(user.getId());
 
-
-        ServletRequestAttributes servletRequestAttributes  =
-                (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-
-        var authHeader =  servletRequestAttributes.getRequest().getHeader("Authorization");
-        log.info("Header: {} ", authHeader);
-
         profileClient.createProfile(profileRequest);
+
+        // Publish message to kafka
+        kafkaTemplate.send("onboard-successful", "Welcome our new member " + user.getUsername());
 
         return userMapper.toUserResponse(user);
     }
