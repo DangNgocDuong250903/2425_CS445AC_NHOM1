@@ -1,4 +1,4 @@
-package com.Linkverse.profile.exception;
+package com.Linkverse.notification.exception;
 
 public class AppException extends RuntimeException {
 

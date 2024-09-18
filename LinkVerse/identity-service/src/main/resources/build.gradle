@@ -1,0 +1,3 @@
+dependencies {
+    implementation 'org.springframework.kafka:spring-kafka:3.0.0' // Kiểm tra và sử dụng phiên bản tương thích với Spring Boot
+}

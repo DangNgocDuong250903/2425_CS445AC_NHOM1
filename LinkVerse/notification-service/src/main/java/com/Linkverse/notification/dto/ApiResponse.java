@@ -1,4 +1,4 @@
-package com.Linkverse.profile.dto;
+package com.Linkverse.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;

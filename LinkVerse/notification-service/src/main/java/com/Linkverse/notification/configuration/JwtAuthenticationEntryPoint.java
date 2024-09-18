@@ -1,7 +1,7 @@
-package com.Linkverse.profile.configuration;
+package com.Linkverse.notification.configuration;
 
-import com.Linkverse.profile.dto.ApiResponse;
-import com.Linkverse.profile.exception.ErrorCode;
+import com.Linkverse.notification.dto.ApiResponse;
+import com.Linkverse.notification.exception.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

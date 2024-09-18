@@ -1,4 +1,4 @@
-package com.Linkverse.profile.exception;
+package com.Linkverse.notification.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

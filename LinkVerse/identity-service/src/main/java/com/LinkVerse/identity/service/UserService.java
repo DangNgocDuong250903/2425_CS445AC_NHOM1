@@ -3,8 +3,10 @@ package com.LinkVerse.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
+import com.LinkVerse.event.dto.NottificationEvent;
 import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -36,16 +38,16 @@ import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserService {
-    UserRepository userRepository;
+   UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
-    KafkaTemplate<String, String> kafkaTemplate;
+    KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
-        if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
+           if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
 
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -60,9 +62,17 @@ public class UserService {
         profileRequest.setUserID(user.getId());
 
         profileClient.createProfile(profileRequest);
+        NottificationEvent nottificationEvent = NottificationEvent.builder()
+                .channel("email")
+                .recipient(user.getEmail())
+                .templateCode("welcome")
+                .param(null)
+                .subject("Welcome to LinkVerse")
+                .body("Welcome to LinkVerse, " + user.getUsername() + "!")
+                .build();
 
         // Publish message to kafka
-        kafkaTemplate.send("onboard-successful", "Welcome our new member " + user.getUsername());
+        kafkaTemplate.send("Notification-Delivery", nottificationEvent);
 
         return userMapper.toUserResponse(user);
     }

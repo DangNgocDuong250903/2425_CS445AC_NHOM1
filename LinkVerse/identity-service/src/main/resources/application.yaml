@@ -2,6 +2,7 @@ server:
   port: 8080
   servlet:
     context-path: /identity
+
 spring:
   datasource:
     url: ${DBMS_CONNECTION}
@@ -20,12 +21,13 @@ spring:
     bootstrap-servers: localhost:9094
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
-  valid-duration: 3600 #in second
-  refreshable - duration: 720000
+  valid-duration: 3600 # in second
+  refreshable-duration: 720000 # in second
+
 app:
   services:
     profile: "http://localhost:8081/profile"
-

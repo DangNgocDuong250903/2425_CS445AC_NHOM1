@@ -1,6 +1,6 @@
-package com.Linkverse.profile.exception;
+package com.Linkverse.notification.exception;
 
-import com.Linkverse.profile.dto.ApiResponse;
+import com.Linkverse.notification.dto.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

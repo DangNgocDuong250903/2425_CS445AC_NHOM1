@@ -1,4 +1,4 @@
-package com.Linkverse.profile.configuration;
+package com.Linkverse.notification.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;

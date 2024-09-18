@@ -1,7 +1,7 @@
-package com.Linkverse.profile.repository.httpclient;
+package com.Linkverse.notification.repository.httpclient;
 
-import com.Linkverse.profile.dto.request.EmailRequest;
-import com.Linkverse.profile.dto.response.EmailResponse;
+import com.Linkverse.notification.dto.request.EmailRequest;
+import com.Linkverse.notification.dto.response.EmailResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

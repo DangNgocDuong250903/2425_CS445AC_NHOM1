@@ -1,9 +1,9 @@
-package com.Linkverse.profile.controller;
+package com.Linkverse.notification.controller;
 
-import com.Linkverse.profile.Service.EmailService;
-import com.Linkverse.profile.dto.ApiResponse;
-import com.Linkverse.profile.dto.request.SendEmailRequest;
-import com.Linkverse.profile.dto.response.EmailResponse;
+import com.Linkverse.notification.Service.EmailService;
+import com.Linkverse.notification.dto.ApiResponse;
+import com.Linkverse.notification.dto.request.SendEmailRequest;
+import com.Linkverse.notification.dto.response.EmailResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,8 +27,5 @@ public class EmailController {
                 .build();
     }
 
-    @KafkaListener(topics = "onboard-successful")
-    public void listen(String message){
-        log.info("Message received: {}", message);
-    }
+
 }

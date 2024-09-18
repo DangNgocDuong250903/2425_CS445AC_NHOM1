@@ -1,4 +1,4 @@
-package com.Linkverse.profile.dto.response;
+package com.Linkverse.notification.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
