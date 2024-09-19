@@ -7,7 +7,6 @@ import org.springframework.kafka.annotation.KafkaListener;
 
 @SpringBootApplication
 @EnableFeignClients
-@KafkaListener(topics = "Notification-Delivery", groupId = "notification-group")
 public class NotificationServiceApplication {
 
     public static void main(String[] args) {

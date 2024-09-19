@@ -29,16 +29,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import org.springframework.web.servlet.mvc.condition.RequestConditionHolder;
 
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserService {
-   UserRepository userRepository;
+    UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
     ProfileMapper profileMapper;
@@ -47,8 +44,6 @@ public class UserService {
     KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
-           if (userRepository.existsByUsername(request.getUsername())) throw new AppException(ErrorCode.USER_EXISTED);
-
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         HashSet<Role> roles = new HashSet<>();
@@ -56,25 +51,33 @@ public class UserService {
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
-        user = userRepository.save(user);
+        user.setEmailVerified(false);
+
+        try {
+            user = userRepository.save(user);
+        } catch (DataIntegrityViolationException exception){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
         profileRequest.setUserID(user.getId());
 
-        profileClient.createProfile(profileRequest);
-        NottificationEvent nottificationEvent = NottificationEvent.builder()
-                .channel("email")
-                .recipient(user.getEmail())
-                .templateCode("welcome")
-                .param(null)
-                .subject("Welcome to LinkVerse")
-                .body("Welcome to LinkVerse, " + user.getUsername() + "!")
+        var profile = profileClient.createProfile(profileRequest);
+
+        NottificationEvent notificationEvent = NottificationEvent.builder()
+                .channel("EMAIL")
+                .recipient(request.getEmail())
+                .subject("Welcome to bookteria")
+                .body("Hello, " + request.getUsername())
                 .build();
 
         // Publish message to kafka
-        kafkaTemplate.send("Notification-Delivery", nottificationEvent);
+        kafkaTemplate.send("notification-delivery", notificationEvent);
 
-        return userMapper.toUserResponse(user);
+        var userCreationReponse = userMapper.toUserResponse(user);
+        userCreationReponse.setId(profile.getId());
+
+        return userCreationReponse;
     }
 
     public UserResponse getMyInfo() {
