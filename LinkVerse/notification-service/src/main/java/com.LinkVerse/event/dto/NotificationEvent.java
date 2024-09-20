@@ -1,4 +1,4 @@
-package com.devteria.event.dto;
+package com.LinkVerse.event.dto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

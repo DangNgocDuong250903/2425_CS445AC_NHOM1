@@ -1,4 +1,4 @@
-package com.devteria.notification.dto.request;
+package com.LinkVerse.notification.dto.request;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

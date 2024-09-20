@@ -1,4 +1,4 @@
-package com.devteria.notification.dto;
+package com.LinkVerse.notification.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AccessLevel;

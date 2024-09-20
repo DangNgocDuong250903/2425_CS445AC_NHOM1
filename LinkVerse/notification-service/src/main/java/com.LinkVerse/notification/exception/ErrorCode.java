@@ -1,4 +1,4 @@
-package com.devteria.notification.exception;
+package com.LinkVerse.notification.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

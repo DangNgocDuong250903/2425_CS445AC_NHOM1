@@ -1,10 +1,10 @@
-package com.devteria.notification.controller;
+package com.LinkVerse.notification.controller;
 
 
-import com.devteria.event.dto.NotificationEvent;
-import com.devteria.notification.dto.request.Recipient;
-import com.devteria.notification.dto.request.SendEmailRequest;
-import com.devteria.notification.service.EmailService;
+import com.LinkVerse.event.dto.NotificationEvent;
+import com.LinkVerse.notification.dto.request.Recipient;
+import com.LinkVerse.notification.dto.request.SendEmailRequest;
+import com.LinkVerse.notification.service.EmailService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

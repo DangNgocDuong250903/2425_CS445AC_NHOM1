@@ -1,4 +1,4 @@
-package com.devteria.notification.configuration;
+package com.LinkVerse.notification.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
