@@ -48,9 +48,17 @@ public class PostService {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page -1, size,sort);
 
+        var pageData = postRepository.findAllByUserId(userID, pageable);
+
 //        return postRepository.findAllByUserId(userID).stream()
 //                .map(postMapper::toPostResponse)
 //                .toList();
-        return null;
+        return PageResponse.<PostResponse>builder()
+                .currentPage(page)  //page tu fontend truyen vao
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .totalElement(pageData.getTotalElements())
+                .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList())
+                .build();
     }
 }
