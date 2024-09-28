@@ -45,6 +45,7 @@ public class PostService {
         String userID = authentication.getName();
 
 
+        //Tạo một đối tượng Sort để sắp xếp danh sách bài đăng theo createdDate (ngày tạo) giảm dần (desc).
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page -1, size,sort);
 
@@ -55,10 +56,10 @@ public class PostService {
 //                .toList();
         return PageResponse.<PostResponse>builder()
                 .currentPage(page)  //page tu fontend truyen vao
-                .pageSize(pageData.getSize())
-                .totalPage(pageData.getTotalPages())
-                .totalElement(pageData.getTotalElements())
-                .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList())
+                .pageSize(pageData.getSize()) //sl
+                .totalPage(pageData.getTotalPages()) //tong so trang
+                .totalElement(pageData.getTotalElements()) //tong so bai dang
+                .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList()) //ds bai dang hien tai -> chuyen doi sang PostResponse
                 .build();
     }
 }
