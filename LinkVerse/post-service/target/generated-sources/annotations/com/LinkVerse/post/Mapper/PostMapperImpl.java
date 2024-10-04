@@ -25,6 +25,9 @@ public class PostMapperImpl implements PostMapper {
         postResponse.userId( post.getUserId() );
         postResponse.createdDate( post.getCreatedDate() );
         postResponse.modifiedDate( post.getModifiedDate() );
+        postResponse.like( post.getLike() );
+        postResponse.unlike( post.getUnlike() );
+        postResponse.comments( toCommentResponses( post.getComments() ) );
 
         return postResponse.build();
     }

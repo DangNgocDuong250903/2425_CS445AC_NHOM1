@@ -2,6 +2,7 @@ package com.LinkVerse.post.controller;
 
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
+import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.service.PostService;
@@ -9,6 +10,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,6 +29,21 @@ public class PostController {
                 .result(postService.createPost(request))
                 .build();
     }
+
+     @PostMapping("/{id}/like")
+    public ResponseEntity<Void> likePost(@PathVariable String id) {
+        log.info("Like post request: {}", id);
+        postService.likePost(id);
+        return ResponseEntity
+                .ok()
+                .build();
+    }
+      @PostMapping("/{id}/comments")
+    public ResponseEntity<PostResponse> addComment(@PathVariable String id, @RequestBody CommentRequest commentRequest) {
+        PostResponse response = postService.addComment(id, commentRequest);
+        return ResponseEntity.ok(response);
+    }
+
 
     @GetMapping("/my-posts")
     ApiResponse<PageResponse<PostResponse>> myPosts(

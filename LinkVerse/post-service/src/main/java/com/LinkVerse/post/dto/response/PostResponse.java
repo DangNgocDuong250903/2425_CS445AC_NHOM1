@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -20,4 +21,9 @@ public class PostResponse {
     String userId;
     Instant createdDate;
     Instant modifiedDate;
+    int like;
+    int unlike;
+    int commentCount;
+    List<CommentResponse> comments; // Thêm trường này nếu muốn trả về bình luận
+
 }
