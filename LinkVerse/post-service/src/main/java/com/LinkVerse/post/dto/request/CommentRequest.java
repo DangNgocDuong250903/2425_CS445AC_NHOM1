@@ -1,10 +1,11 @@
 package com.LinkVerse.post.dto.request;
 
+import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

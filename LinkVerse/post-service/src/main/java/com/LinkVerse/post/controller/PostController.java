@@ -43,8 +43,36 @@ public class PostController {
         PostResponse response = postService.addComment(id, commentRequest);
         return ResponseEntity.ok(response);
     }
+    @DeleteMapping("/{id}/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable String id, @PathVariable String commentId) {
+        postService.deleteComment(id, commentId);
+        return ResponseEntity.ok().build();
+    }
+    //edit comment
+    @PutMapping("/{id}/comments/{commentId}")
+    public ResponseEntity<PostResponse> editComment(@PathVariable String id, @PathVariable String commentId, @RequestBody CommentRequest commentRequest) {
+        PostResponse response = postService.editComment(id, commentId, commentRequest);
+        return ResponseEntity.ok(response);
+    }
 
-
+    //searchPost
+    @GetMapping("/search")
+    ApiResponse<PageResponse<PostResponse>> searchPost(
+            @RequestParam(value = "content", required = false) String content,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "size", required = false, defaultValue = "10") int size
+    ) {
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .result(postService.searchPost(content, page, size))
+                .build();
+    }
+    //DelePost
+    @DeleteMapping("/{id}")
+    ApiResponse<Void> deletePost(@PathVariable String id) {
+        postService.deletePost(id);
+        return ApiResponse.<Void>builder()
+                .build();
+    }
     @GetMapping("/my-posts")
     ApiResponse<PageResponse<PostResponse>> myPosts(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,

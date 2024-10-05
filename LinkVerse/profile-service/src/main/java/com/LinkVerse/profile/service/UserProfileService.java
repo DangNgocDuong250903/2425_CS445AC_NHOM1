@@ -13,25 +13,24 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserProfileService {
-         UserProfileRepository userProfileRepository;
-         UserProfileMapper userProfileMapper;
+    UserProfileRepository userProfileRepository;
+    UserProfileMapper userProfileMapper;
 
-public UserProfileResponse createProfile(ProfileCreationRequest request) {
+    public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
         userProfile = userProfileRepository.save(userProfile);
 
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
-public UserProfileResponse getProfile(String id) {
-        UserProfile userProfile =
-                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
+
+    public UserProfileResponse getProfile(String id) {
+        UserProfile userProfile = userProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
 
         return userProfileMapper.toUserProfileResponse(userProfile);
     }
@@ -41,5 +40,19 @@ public UserProfileResponse getProfile(String id) {
         var profiles = userProfileRepository.findAll();
 
         return profiles.stream().map(userProfileMapper::toUserProfileResponse).toList();
+    }
+
+    public void deleteProfile(String id) {
+        userProfileRepository.deleteById(id);
+    }
+
+    public UserProfileResponse updateBackgroundImageUrlById(String id, String backgroundImageUrl) {
+        UserProfile userProfile = userProfileRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Profile not found"));
+
+        userProfile.setBackgroundImageUrl(backgroundImageUrl);
+        userProfile = userProfileRepository.save(userProfile);
+
+        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 }
