@@ -20,11 +20,12 @@ public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
 
-  @ExceptionHandler(RuntimeException.class)
+@ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException ex, WebRequest request) {
         ApiResponse response = new ApiResponse(false, ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {
         log.error("Exception: ", exception);
