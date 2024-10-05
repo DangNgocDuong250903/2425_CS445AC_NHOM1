@@ -1,12 +1,9 @@
 package com.LinkVerse.profile.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
 
 @Data
 @Builder
@@ -20,4 +17,18 @@ public class ApiResponse<T> {
 
     private String message;
     private T result;
+    @Getter
+    @Setter
+    private boolean success;
+
+
+    public ApiResponse(boolean b, String message) {
+        this.success = b;
+        this.message = message;
+    }
+    public ApiResponse(HttpStatus httpStatus, String message) {
+        this.code = httpStatus.value();
+        this.message = message;
+    }
+
 }

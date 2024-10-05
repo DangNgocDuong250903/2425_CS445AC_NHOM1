@@ -26,5 +26,6 @@ public class Post {
     Instant modifiedDate;
     int like;
     int unlike;
+
     List<Comment> comments = new ArrayList<Comment>();
 }

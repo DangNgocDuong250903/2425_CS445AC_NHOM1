@@ -16,4 +16,7 @@ public class ProfileCreationRequest {
     String lastName;
     LocalDate dob;
     String city;
+        private String username;
+    private String profilePicUrl;
+    private String backgroundImageUrl;
 }

@@ -4,6 +4,7 @@ import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
+import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
@@ -34,6 +35,7 @@ public class PostService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();  //get token lay userID
         
         Post post = Post.builder()
+                //lay id post de delete    ->>>>>>> chuwa xoa duoc
                 .content(request.getContent())
                 .userId(authentication.getName())
                 .createdDate(Instant.now())
@@ -96,6 +98,21 @@ public class PostService {
         return postMapper.toPostResponse(post);
     }
 
+    //Seach post
+    public PageResponse<PostResponse> searchPost(String content, int page, int size) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var pageData = postRepository.findAllByContent(content, pageable);
+
+        return PageResponse.<PostResponse>builder()
+                .currentPage(page)
+                .pageSize(pageData.getSize())
+                .totalPage(pageData.getTotalPages())
+                .totalElement(pageData.getTotalElements())
+                .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList())
+                .build();
+    }
 
     public PostResponse likePost(String postId) {
         Post post = postRepository.findById(postId)
@@ -107,6 +124,12 @@ public class PostService {
         return postMapper.toPostResponse(post);
     }
 
+    public PostResponse deletePost(String PostId ){
+        Post post = postRepository.findById(PostId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        postRepository.delete(post);
+        return postMapper.toPostResponse(post);
+    }
 
     public PageResponse<PostResponse> getMyPosts(int page, int size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();  //get token lay userID
