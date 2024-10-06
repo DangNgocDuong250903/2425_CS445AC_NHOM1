@@ -1,0 +1,59 @@
+
+app:
+  api-prefix: /api/v1
+spring:
+  config:
+    activate:
+      on-profile: dev
+  devtools:
+    add-properties: true
+  cloud:
+    gateway:
+      routes:
+        - id: identity-service
+          uri: http://localhost:8080
+          predicates:
+            - Path=${app.api-prefix}/identity/**, /api-docs/identity-service
+          filters:
+            - StripPrefix=2
+        - id: profile-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=${app.api-prefix}/profile/users/**, /api-docs/profile-service
+          filters:
+            - StripPrefix=2
+        - id: notification-service
+          uri: http://localhost:8082
+          predicates:
+            - Path=${app.api-prefix}/notification/**, /api-docs/notification-service
+          filters:
+            - StripPrefix=2
+        - id: post-service
+          uri: http://localhost:8083
+          predicates:
+            - Path=${app.api-prefix}/post/**, /api-docs/post-service
+          filters:
+            - StripPrefix=2
+
+springdoc:
+  api-docs:
+    enabled: true
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui.html
+    config-url: /v1/api-docs/swagger-config
+    urls:
+      - url: /api-docs
+        name: API Gateway
+      - url: /api-docs/identity-service
+        name: Identity Service
+      - url: /api-docs/profile-service
+        name: Profile Service
+      - url: /api-docs/notification-service
+        name: Notification Service
+      - url: /api-docs/post-service
+        name: Post Service
+
+redis:
+  host: localhost
+  port: 6379

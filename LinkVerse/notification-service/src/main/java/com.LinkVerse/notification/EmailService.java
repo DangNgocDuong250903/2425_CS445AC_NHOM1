@@ -1,17 +1,18 @@
-package com.Linkverse.profile.Service;
+package com.LinkVerse.notification;
 
-
-import com.Linkverse.profile.dto.request.EmailRequest;
-import com.Linkverse.profile.dto.request.SendEmailRequest;
-import com.Linkverse.profile.dto.request.Sender;
-import com.Linkverse.profile.dto.response.EmailResponse;
-import com.Linkverse.profile.exception.AppException;
-import com.Linkverse.profile.exception.ErrorCode;
-import com.Linkverse.profile.repository.httpclient.EmailClient;
+import com.LinkVerse.notification.dto.request.EmailRequest;
+import com.LinkVerse.notification.dto.request.SendEmailRequest;
+import com.LinkVerse.notification.dto.request.Sender;
+import com.LinkVerse.notification.dto.response.EmailResponse;
+import com.LinkVerse.notification.exception.AppException;
+import com.LinkVerse.notification.exception.ErrorCode;
+import com.LinkVerse.notification.repository.httpclient.EmailClient;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,13 +23,15 @@ import java.util.List;
 public class EmailService {
     EmailClient emailClient;
 
-    String apiKey = "your-brevo-apikey";
+    @Value("${notification.email.brevo-apikey}")
+    @NonFinal
+    String apiKey;
 
     public EmailResponse sendEmail(SendEmailRequest request) {
         EmailRequest emailRequest = EmailRequest.builder()
                 .sender(Sender.builder()
-                        .name("Devteria DotCom")
-                        .email("devteriadotcom@gmail.com")
+                        .name("NgocDuong")
+                        .email("ngocduong2592003@gmail.com")
                         .build())
                 .to(List.of(request.getTo()))
                 .subject(request.getSubject())

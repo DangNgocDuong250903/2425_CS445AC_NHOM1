@@ -1,36 +1,10 @@
 server:
   port: 8888
 
-app:
-  api-prefix: /api/v1
 spring:
   application:
     name: api-gateway
-  cloud:
-    gateway:
-      routes:
-        - id: identity_service
-          uri: http://localhost:8080
-          predicates:
-          - Path=${app.api-prefix}/identity/**
-          filters:
-            - StripPrefix=2
-        - id: profile_service
-          uri: http://localhost:8081
-          predicates:
-            - Path=${app.api-prefix}/profile/users/** #BO QUA INTERNAL CUA PROFILE-SERVICE
-          filters:
-            - StripPrefix=2 #Goi o postman add /api/profile/
-        - id: notification_service
-          uri: http://localhost:8082
-          predicates:
-           - Path=${app.api-prefix}/notification/**
-          filters:
-            - StripPrefix=2
-        - id: post_service
-          uri: http://localhost:8083
-          predicates:
-            - Path=${app.api-prefix}/post/**
-          filters:
-            - StripPrefix=2
+  profiles:
+    active: @spring.profiles.active@
+
 #https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/request-predicates-factories.html

@@ -1,3 +1,4 @@
+
 package com.LinkVerse.gateway.configuration;
 
 import com.LinkVerse.gateway.repository.IdentityClient;
@@ -37,10 +38,13 @@ public class WebClientConfiguration {
 
     @Bean
     IdentityClient identityClient(WebClient webClient){
+        // đăng ký proxy -> khi request method, proxy request tới @PostExchange
+        // proxy xử lý việc tuần tự hóa/giải tuần tự hóa dữ liệu, gửi yêu cầu, nhận phản hồi
+        // và chuyển đổi phản hồi thành các đối tượng Java
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
-                .builderFor(WebClientAdapter.create(webClient)).build();
+                .builderFor(WebClientAdapter.create(webClient)).build(); //tạo một adapter để kết nối WebClient với OpenFeign
 
-        return httpServiceProxyFactory.createClient(IdentityClient.class);
+        return httpServiceProxyFactory.createClient(IdentityClient.class); //tạo proxy cho IdentityClient
     }
 
 }

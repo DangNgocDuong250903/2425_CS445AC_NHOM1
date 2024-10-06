@@ -1,10 +1,11 @@
 package com.LinkVerse.notification.controller;
 
 
+import com.LinkVerse.notification.EmailService;
 import com.LinkVerse.notification.dto.ApiResponse;
 import com.LinkVerse.notification.dto.request.SendEmailRequest;
 import com.LinkVerse.notification.dto.response.EmailResponse;
-import com.LinkVerse.notification.service.EmailService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

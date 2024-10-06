@@ -1,3 +1,4 @@
+
 package com.LinkVerse.gateway.configuration;
 
 import com.LinkVerse.gateway.dto.ApiResponse;
@@ -23,8 +24,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Component
 @Slf4j
@@ -33,6 +33,7 @@ import java.util.List;
 public class AuthenticationFilter implements GlobalFilter, Ordered {
     IdentityService identityService;
     ObjectMapper objectMapper;
+
 
     @NonFinal
     private String[] publicEndpoints = {
@@ -47,22 +48,27 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // exchange là container bọc HTTP request and response objects
+        // request (URL, headers, body...) và response (status code, body...)
+        // chain là interface cho phép filter forward request to the next filter
         log.info("Enter authentication filter....");
 
         if (isPublicEndpoint(exchange.getRequest()))
-            return chain.filter(exchange);
+            return chain.filter(exchange); // (1)
 
         // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (CollectionUtils.isEmpty(authHeader))
             return unauthenticated(exchange.getResponse());
 
-        String token = authHeader.getFirst().replace("Bearer ", "");
+        String token = authHeader.getFirst().replace("Bearer ", ""); // Bearer eyJhbGciOiJIUzI1NiIs...
         log.info("Token: {}", token);
 
+
+        // Verify token
         return identityService.introspect(token).flatMap(introspectResponse -> {
             if (introspectResponse.getResult().isValid())
-                return chain.filter(exchange);
+                return chain.filter(exchange); // (2)
             else
                 return unauthenticated(exchange.getResponse());
         }).onErrorResume(throwable -> unauthenticated(exchange.getResponse()));
@@ -71,11 +77,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -1;
-    }
+    } //order càng nhỏ thì dc chạy trước, vì các filter khác > 0
 
     private boolean isPublicEndpoint(ServerHttpRequest request){
         return Arrays.stream(publicEndpoints)
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s)); //vd: api/v1/identity/auth/*
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response){
@@ -94,7 +100,13 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         response.setStatusCode(HttpStatus.UNAUTHORIZED);
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
-        return response.writeWith(
-                Mono.just(response.bufferFactory().wrap(body.getBytes())));
+        return response.writeWith(//writeWith nhận một đối tượng Publisher(Mono) và ghi dữ liệu vào HTTP response
+                Mono.just(response // -> data muốn ghi vào response body
+                        .bufferFactory().wrap(body.getBytes())));
+        //cần chuyển đổi dữ liệu đó thành DataBuffer(data nhị phân) trước khi sử dụng phương thức response.writeWith()
+        //Mono : đại diện 1 publisher, xử lý luồng dữ liệu asynchronous và non-blocking
+        //just : phát ra 1 phần từ
     }
+
+
 }
