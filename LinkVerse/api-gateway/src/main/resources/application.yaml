@@ -8,3 +8,4 @@ spring:
     active: @spring.profiles.active@
 
 #https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/request-predicates-factories.html
+

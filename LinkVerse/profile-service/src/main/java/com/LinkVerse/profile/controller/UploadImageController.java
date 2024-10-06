@@ -20,6 +20,7 @@ import com.LinkVerse.profile.service.impl.UploadImageFileImpl;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@RequestMapping("/profile/users")
 public class UploadImageController {
 
     final UserProfileService userProfileService;

@@ -28,6 +28,27 @@ public class PostMapperImpl implements PostMapper {
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
         postResponse.comments( toCommentResponses( post.getComments() ) );
+        postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
+
+        return postResponse.build();
+    }
+
+    protected PostResponse postToPostResponse(Post post) {
+        if ( post == null ) {
+            return null;
+        }
+
+        PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
+
+        postResponse.id( post.getId() );
+        postResponse.content( post.getContent() );
+        postResponse.userId( post.getUserId() );
+        postResponse.createdDate( post.getCreatedDate() );
+        postResponse.modifiedDate( post.getModifiedDate() );
+        postResponse.like( post.getLike() );
+        postResponse.unlike( post.getUnlike() );
+        postResponse.comments( toCommentResponses( post.getComments() ) );
+        postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
 
         return postResponse.build();
     }

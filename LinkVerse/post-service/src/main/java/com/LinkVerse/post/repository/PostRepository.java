@@ -10,4 +10,6 @@ public interface PostRepository extends MongoRepository<Post, String> {
             Page<Post> findAllByContent(String content, Pageable pageable);
     //phương thức tùy chỉnh (custom query method).
     // Spring Data MongoDB sẽ tự động tạo ra truy vấn cho bạn dựa trên tên của phương thức.
+    //Share post
+
 }

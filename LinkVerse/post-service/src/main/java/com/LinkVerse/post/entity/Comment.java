@@ -17,6 +17,7 @@ import java.util.UUID;
 @Document(value = "comment")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
+    @MongoId
     String id;
     String userId;
     String content;

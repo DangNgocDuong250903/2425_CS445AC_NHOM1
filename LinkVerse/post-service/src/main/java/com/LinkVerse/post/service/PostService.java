@@ -49,6 +49,31 @@ public class PostService {
         return postMapper.toPostResponse(post);
     }
 
+    public PostResponse sharePost(String postId, String content) {
+    // Lấy bài viết gốc cần chia sẻ
+    Post originalPost = postRepository.findById(postId)
+            .orElseThrow(() -> new RuntimeException("Post not found"));
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+    // Tạo bài viết mới với nội dung người dùng nhập và gán bài viết gốc vào
+    Post sharedPost = Post.builder()
+            .content(content)  // Nội dung mới do người dùng nhập
+            .userId(authentication.getName()) // Người chia sẻ
+            .createdDate(Instant.now())
+            .modifiedDate(Instant.now())
+            .like(0)
+            .unlike(0)
+            .comments(List.of())
+            .sharedPost(originalPost)  // Gán bài viết được chia sẻ
+            .build();
+
+    // Lưu bài viết chia sẻ vào cơ sở dữ liệu
+    sharedPost = postRepository.save(sharedPost);
+
+    // Trả về phản hồi cho người dùng
+    return postMapper.toPostResponse(sharedPost);
+}
 
     public PostResponse addComment(String postId, CommentRequest commentRequest) {
             // Tìm bài đăng theo ID

@@ -30,8 +30,8 @@ public class UserProfile {
     String lastName;
     LocalDate dob;
     String city;
-     private String username;
-    private String profilePicUrl;
-    private String backgroundImageUrl;
+    String username;
+    String profilePicUrl;
+    String backgroundImageUrl;
 
 }
