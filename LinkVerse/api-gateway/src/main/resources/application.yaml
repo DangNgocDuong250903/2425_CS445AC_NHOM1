@@ -1,6 +1,5 @@
 server:
   port: 8888
-
 app:
   api-prefix: /api/v1
 spring:
@@ -33,4 +32,10 @@ spring:
             - Path=${app.api-prefix}/post/**
           filters:
             - StripPrefix=2
+#        - id: Friend-Service
+#          uri: http://localhost:8085
+#          predicates:
+#            - Path=${app.api-prefix}/friend/**
+#          filters:
+#            - StripPrefix=2
 #https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/request-predicates-factories.html

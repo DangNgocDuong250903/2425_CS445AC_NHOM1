@@ -28,4 +28,8 @@ public class Post {
     int unlike;
 
     List<Comment> comments = new ArrayList<Comment>();
+
+    @ManyToOne
+    @JoinColumn(name = "shared_post_id")
+    Post sharedPost;
 }

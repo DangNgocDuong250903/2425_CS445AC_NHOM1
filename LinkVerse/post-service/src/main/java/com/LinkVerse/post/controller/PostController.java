@@ -83,5 +83,9 @@ public class PostController {
                 .build();
     }
 
-
+      @PostMapping("/{postId}/share")
+    public ResponseEntity<PostResponse> sharePost(@PathVariable String postId, @RequestBody PostRequest postRequest) {
+        PostResponse response = postService.sharePost(postId, postRequest.getContent());
+        return ResponseEntity.ok(response);
+    }
 }
