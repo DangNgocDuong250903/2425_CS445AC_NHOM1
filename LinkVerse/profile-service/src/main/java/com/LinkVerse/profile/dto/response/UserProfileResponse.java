@@ -12,15 +12,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
-  private String id;
-    private String username;
-    private String profilePicUrl;
-    private String backgroundImageUrl;
-
-    public UserProfileResponse(UserProfile userProfile) {
-        this.id = userProfile.getId();
-        this.username = userProfile.getUsername();
-        this.profilePicUrl = userProfile.getProfilePicUrl();
-        this.backgroundImageUrl = userProfile.getBackgroundImageUrl();
-    }
+    String id;
+    String userId;
+    String username;
+    String profilePicUrl;
+    String backgroundImageUrl;
 }

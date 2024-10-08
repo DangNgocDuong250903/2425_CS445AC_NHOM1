@@ -23,6 +23,7 @@ public class UserProfileService {
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
+
         userProfile = userProfileRepository.save(userProfile);
 
         return userProfileMapper.toUserProfileResponse(userProfile);

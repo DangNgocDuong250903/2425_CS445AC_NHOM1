@@ -10,5 +10,5 @@ import org.mapstruct.factory.Mappers;
 public interface UserProfileMapper {
         UserProfile toUserProfile(ProfileCreationRequest request);
         UserProfileResponse toUserProfileResponse(UserProfile entity);
-            UserProfileMapper INSTANCE = Mappers.getMapper(UserProfileMapper.class);
+        UserProfileMapper INSTANCE = Mappers.getMapper(UserProfileMapper.class);
 }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class UserProfileServiceImpl implements UserProfileService {
 
     private final UserProfileRepository userProfileRepository;
+    UserProfileMapper userProfileMapper;
 
     @Override
     public UserProfileResponse updateProfilePicUrlById(String id, String profilePicUrl) {
@@ -20,7 +21,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
         userProfile.setProfilePicUrl(profilePicUrl);
         userProfileRepository.save(userProfile);
-        return new UserProfileResponse(userProfile);
+        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
     @Override
@@ -29,13 +30,13 @@ public class UserProfileServiceImpl implements UserProfileService {
                 .orElseThrow(() -> new ProfileNotFoundException("Profile not found"));
         userProfile.setBackgroundImageUrl(backgroundImageUrl);
         userProfileRepository.save(userProfile);
-        return new UserProfileResponse(userProfile);
+        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 
     @Override
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = UserProfileMapper.INSTANCE.toUserProfile(request);
         userProfileRepository.save(userProfile);
-        return new UserProfileResponse(userProfile);
+        return userProfileMapper.toUserProfileResponse(userProfile);
     }
 }

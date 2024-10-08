@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 public class UserResponse {
     String id;
     String username;
+    String userId;
 //    String firstName;
 //    String lastName;
 //    LocalDate dob;
