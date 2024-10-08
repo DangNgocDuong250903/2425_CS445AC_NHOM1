@@ -27,6 +27,7 @@ public class PostMapperImpl implements PostMapper {
         postResponse.modifiedDate( post.getModifiedDate() );
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
+        postResponse.commentCount( post.getCommentCount() );
         postResponse.comments( toCommentResponses( post.getComments() ) );
         postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
 
@@ -47,6 +48,7 @@ public class PostMapperImpl implements PostMapper {
         postResponse.modifiedDate( post.getModifiedDate() );
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
+        postResponse.commentCount( post.getCommentCount() );
         postResponse.comments( toCommentResponses( post.getComments() ) );
         postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
 
