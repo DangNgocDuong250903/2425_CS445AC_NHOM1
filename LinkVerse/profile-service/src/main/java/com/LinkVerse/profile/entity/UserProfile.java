@@ -1,4 +1,4 @@
-package com.LinkVerse.friend.entity;
+package com.LinkVerse.profile.entity;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;

@@ -1,9 +1,8 @@
-package com.LinkVerse.friend.dto;
+package com.LinkVerse.profile.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpStatus;
 
 @Data
 @Builder

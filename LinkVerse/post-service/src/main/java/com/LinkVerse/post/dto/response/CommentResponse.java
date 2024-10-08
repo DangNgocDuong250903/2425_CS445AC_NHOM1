@@ -12,9 +12,10 @@ import java.time.Instant;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentResponse {
-    String id;
     String userId;
     String CommentId;
     String content;
     Instant createdDate;
+    int like;
+    int unlike;
 }

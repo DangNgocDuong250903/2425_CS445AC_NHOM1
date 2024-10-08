@@ -1,6 +1,5 @@
-package com.LinkVerse.friend.dto.response;
+package com.LinkVerse.profile.dto.response;
 
-import com.LinkVerse.friend.entity.UserProfile;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -12,13 +11,9 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
- String id;
+    String id;
     String firstName;
     String lastName;
     LocalDate dob;
     String city;
-//     String profilePicUrl;
-//     String backgroundImageUrl;
-
-
 }

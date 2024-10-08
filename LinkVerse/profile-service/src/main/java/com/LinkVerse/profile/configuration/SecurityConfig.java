@@ -1,4 +1,4 @@
-package com.LinkVerse.friend.configuration;
+package com.LinkVerse.profile.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

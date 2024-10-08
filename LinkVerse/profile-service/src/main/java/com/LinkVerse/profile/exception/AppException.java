@@ -1,4 +1,4 @@
-package com.LinkVerse.friend.exception;
+package com.LinkVerse.profile.exception;
 
 public class AppException extends RuntimeException {
 
@@ -13,7 +13,4 @@ public class AppException extends RuntimeException {
         return errorCode;
     }
 
-    public void setErrorCode(ErrorCode errorCode) {
-        this.errorCode = errorCode;
-    }
 }

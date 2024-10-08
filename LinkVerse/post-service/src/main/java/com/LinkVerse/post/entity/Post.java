@@ -26,9 +26,9 @@ public class Post {
     Instant modifiedDate;
     int like;
     int unlike;
-
+    int commentCount;
     List<Comment> comments = new ArrayList<Comment>();
-
+    List<String> likedEmojis;
     @ManyToOne
     @JoinColumn(name = "shared_post_id")
     Post sharedPost;

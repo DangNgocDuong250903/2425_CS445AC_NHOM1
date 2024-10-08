@@ -19,8 +19,8 @@ public interface PostMapper {
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
         return comments.stream()
             .map(comment -> CommentResponse.builder()
-                    .id(comment.getId())
                     .userId(comment.getUserId())
+                    .CommentId(comment.getCommentID())
                 .content(comment.getContent())
                 .createdDate(comment.getCreatedDate())
                 .build())

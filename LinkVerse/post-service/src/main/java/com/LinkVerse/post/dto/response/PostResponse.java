@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
 import java.util.List;
@@ -23,7 +24,8 @@ public class PostResponse {
     Instant modifiedDate;
     int like;
     int unlike;
-    int commentCount;
-    List<CommentResponse> comments; // Thêm trường này nếu muốn trả về bình luận
-     PostResponse sharedPost;
+    int commentCount; // Add
+    
+    List<CommentResponse> comments; // Danh sách bình luận
+    PostResponse sharedPost;
 }

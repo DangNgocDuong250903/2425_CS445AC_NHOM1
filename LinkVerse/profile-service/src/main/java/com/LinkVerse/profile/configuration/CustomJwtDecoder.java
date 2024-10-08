@@ -1,4 +1,4 @@
-package com.LinkVerse.friend.configuration;
+package com.LinkVerse.profile.configuration;
 
 import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;

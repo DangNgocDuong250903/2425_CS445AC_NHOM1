@@ -1,8 +1,7 @@
-package com.LinkVerse.friend.dto.request;
+package com.LinkVerse.profile.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.Id;
 
 import java.time.LocalDate;
 

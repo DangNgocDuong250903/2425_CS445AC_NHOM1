@@ -1,7 +1,7 @@
-package com.LinkVerse.friend.controller;
+package com.LinkVerse.profile.controller;
 
-import com.LinkVerse.friend.dto.response.UserProfileResponse;
-import com.LinkVerse.friend.service.UserProfileService;
+import com.LinkVerse.profile.dto.response.UserProfileResponse;
+import com.LinkVerse.profile.service.UserProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
