@@ -1,4 +1,4 @@
-package com.LinkVerse.profile.dto.request;
+package com.LinkVerse.friend.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
