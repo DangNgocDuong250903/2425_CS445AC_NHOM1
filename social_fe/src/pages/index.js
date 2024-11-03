@@ -5,4 +5,4 @@ import Profile from "./ProfilePage";
 import Register from "./RegisterPage";
 import ResetPassword from "./ResetPasswordPage";
 
-export {Home, Login, NotFound, Profile, Register, ResetPassword}
+export { Home, Login, NotFound, Profile, Register, ResetPassword };

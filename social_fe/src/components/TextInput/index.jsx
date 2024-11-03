@@ -34,7 +34,7 @@ const TextInput = React.forwardRef(
         )}
       </div>
     );
-  }
+  },
 );
 
 export default TextInput;

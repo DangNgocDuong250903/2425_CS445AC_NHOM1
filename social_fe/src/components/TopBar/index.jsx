@@ -9,7 +9,6 @@ import { SetTheme } from "~/redux/Slices/theme";
 import { Logout } from "~/redux/Slices/userSlice";
 import { FaUser } from "react-icons/fa";
 
-
 const TopBar = () => {
   const { theme } = useSelector((state) => state.theme);
   const { user } = useSelector((state) => state.user);
@@ -21,7 +20,7 @@ const TopBar = () => {
     formState: { errors },
   } = useForm();
 
-  const handleSearch = async (data) => { };
+  const handleSearch = async (data) => {};
   const handleTheme = () => {
     const themeValue = theme === "light" ? "dark" : "light";
     dispatch(SetTheme(themeValue));
@@ -68,7 +67,7 @@ const TopBar = () => {
         <div className="hidden lg:flex">
           <IoMdNotificationsOutline />
         </div>
-        <Link >
+        <Link>
           <FaUser className="text-blue cursor-pointer "></FaUser>
         </Link>
         <div>
