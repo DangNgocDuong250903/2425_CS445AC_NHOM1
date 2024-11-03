@@ -1,13 +1,13 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice} from "@reduxjs/toolkit";
 
 const initialState = {
-  theme: JSON.parse(window?.localStorage.getItem("theme")) ?? "dark",
+  theme : JSON.parse(window?.localStorage.getItem("theme")) ?? "dark",
 };
 
 const themeSlice = createSlice({
-  name: "theme",
+  name : "theme",
   initialState,
-  reducers: {
+  reducers : {
     setTheme(state, action) {
       state.theme = action.payload;
       localStorage.setItem("theme", JSON.stringify(action.payload));
@@ -18,7 +18,5 @@ const themeSlice = createSlice({
 export default themeSlice.reducer;
 
 export function SetTheme(value) {
-  return (dispatch) => {
-    dispatch(themeSlice.actions.setTheme(value));
-  };
+  return (dispatch) => { dispatch(themeSlice.actions.setTheme(value)); };
 }
