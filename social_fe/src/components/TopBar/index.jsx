@@ -7,6 +7,8 @@ import { BsMoon, BsSunFill } from "react-icons/bs";
 import { IoMdNotificationsOutline } from "react-icons/io";
 import { SetTheme } from "~/redux/Slices/theme";
 import { Logout } from "~/redux/Slices/userSlice";
+import { FaUser } from "react-icons/fa";
+
 
 const TopBar = () => {
   const { theme } = useSelector((state) => state.theme);
@@ -19,13 +21,13 @@ const TopBar = () => {
     formState: { errors },
   } = useForm();
 
-  const handleSearch = async (data) => {};
+  const handleSearch = async (data) => { };
   const handleTheme = () => {
     const themeValue = theme === "light" ? "dark" : "light";
     dispatch(SetTheme(themeValue));
   };
   return (
-    <div className="topbar w-full flex items-center justify-between py-3 md:py-6 px-4 bg-primary">
+    <div className="topbar w-full flex items-center justify-between py-3 md:py-6 px-4 bg-primary ">
       <Link to="/" className="flex gap-2 items-center">
         <div className="p-1 md:p-2  rounded text-white">
           <img
@@ -36,7 +38,7 @@ const TopBar = () => {
             className="hover:scale-110 transition-transform"
           />
         </div>
-        <span className="text-xl md:text-2xl text-white font-semibold">
+        <span className="text-xl md:text-2xl text-blue font-semibold ">
           LinkVerse
         </span>
       </Link>
@@ -66,6 +68,9 @@ const TopBar = () => {
         <div className="hidden lg:flex">
           <IoMdNotificationsOutline />
         </div>
+        <Link >
+          <FaUser className="text-blue cursor-pointer "></FaUser>
+        </Link>
         <div>
           <Button
             onClick={() => dispatch(Logout())}
