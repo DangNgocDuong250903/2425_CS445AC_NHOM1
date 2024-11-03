@@ -3,7 +3,7 @@ package com.LinkVerse.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.LinkVerse.event.dto.NottificationEvent;
+import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -64,7 +64,7 @@ public class UserService {
 
         var profile = profileClient.createProfile(profileRequest);
 
-        NottificationEvent notificationEvent = NottificationEvent.builder()
+        NotificationEvent notificationEvent = NotificationEvent.builder()
                 .channel("EMAIL")
                 .recipient(request.getEmail())
                 .subject("Welcome to bookteria")

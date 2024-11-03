@@ -4,7 +4,7 @@ app:
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: test
   devtools:
     add-properties: true
   cloud:
@@ -13,52 +13,43 @@ spring:
         - id: identity-service
           uri: http://localhost:8080
           predicates:
-            - Path=${app.api-prefix}/identity/**
+            - Path=${app.api-prefix}/identity/**, ${app.api-prefix}/api-docs/identity-service
           filters:
             - StripPrefix=2
-
         - id: profile-service
           uri: http://localhost:8081
           predicates:
-            - Path=${app.api-prefix}/profile/**
+            - Path=${app.api-prefix}/profile/users/**, ${app.api-prefix}/api-docs/profile-service
           filters:
             - StripPrefix=2
-
         - id: notification-service
           uri: http://localhost:8082
           predicates:
-            - Path=${app.api-prefix}/notification/**
+            - Path=${app.api-prefix}/notification/**, ${app.api-prefix}/api-docs/notification-service
           filters:
             - StripPrefix=2
-
         - id: post-service
           uri: http://localhost:8083
           predicates:
-            - Path=${app.api-prefix}/post/**
+            - Path=${app.api-prefix}/post/**, ${app.api-prefix}/api-docs/post-service
           filters:
             - StripPrefix=2
 
-
-
 springdoc:
+  api-docs:
+    enabled: true
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-    config-url: /v3/api-docs/swagger-config
+    config-url: /v1/api-docs/swagger-config
     urls:
-      - url: /v3/api-docs
+      - url: /api-docs
         name: API Gateway
-      - url: /v3/api-docs/identity-service
+      - url: /api-docs/identity-service
         name: Identity Service
-      - url: /v3/api-docs/profile-service
+      - url: /api-docs/profile-service
         name: Profile Service
-      - url: /v3/api-docs/notification-service
+      - url: /api-docs/notification-service
         name: Notification Service
-      - url: /v3/api-docs/post-service
+      - url: /api-docs/post-service
         name: Post Service
-
-
-
-redis:
-  host: localhost
-  port: 6379

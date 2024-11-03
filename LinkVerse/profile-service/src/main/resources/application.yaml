@@ -3,7 +3,10 @@ server:
   servlet:
     context-path: /profile
 
+
 spring:
+  elasticsearch:
+    uris: http://localhost:9200
   neo4j:
     uri: bolt://localhost:7687
     authentication:

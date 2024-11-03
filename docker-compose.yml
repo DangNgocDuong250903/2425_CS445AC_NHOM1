@@ -26,3 +26,12 @@ services:
       - REDIS_DISABLE_COMMANDS=FLUSHDB;FLUSHALL
     networks:
       - default
+
+  elastic-search:
+    image: elasticsearch:7.14.1
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
