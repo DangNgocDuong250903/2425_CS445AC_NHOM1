@@ -39,12 +39,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/auth/.*",
             "/identity/users/registration",
             "/notification/email/send",
-            "/v3/api-docs/**"
+            "/v3/.*"
     };
-
-    @Value("${app.api-prefix}")
-    @NonFinal
-    private String apiPrefix;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -75,7 +71,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private boolean isPublicEndpoint(ServerHttpRequest request){
         return Arrays.stream(publicEndpoints)
-                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
+                .anyMatch(s -> request.getURI().getPath().matches(s));
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response){

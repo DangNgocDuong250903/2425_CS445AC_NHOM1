@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.configuration;
+package com.LinkVerse.post.configuration;
 
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -22,8 +22,8 @@ public class OpenAPIConfig {
     @Bean
     public GroupedOpenApi publicApi(@Value("${openapi.service.api-docs}") String apiDocs) {
         return GroupedOpenApi.builder()
-                .group(apiDocs) // /api-docs/identity-service
-                .packagesToScan("com.LinkVerse.identity.controller")
+                .group(apiDocs)
+                .packagesToScan("com.LinkVerse.post.controller")
                 .build();
     }
 

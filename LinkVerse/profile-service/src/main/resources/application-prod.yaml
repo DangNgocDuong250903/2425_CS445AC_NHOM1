@@ -1,0 +1,27 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  elasticsearch:
+    uris: http://localhost:9200
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: 12345678
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+Cloudinary:
+  cloud_name: dkeyerq4g
+  api_key: 459476596648974
+  api_secret: ex_KAk4H4glXgYObhHvORS1ueQ0
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

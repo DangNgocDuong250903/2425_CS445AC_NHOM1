@@ -1,10 +1,8 @@
 
-app:
-  api-prefix: /api/v1
 spring:
   config:
     activate:
-      on-profile: test
+      on-profile: dev
   devtools:
     add-properties: true
   cloud:
@@ -13,27 +11,34 @@ spring:
         - id: identity-service
           uri: http://localhost:8080
           predicates:
-            - Path=${app.api-prefix}/identity/**, ${app.api-prefix}/api-docs/identity-service
+            - Path=/identity/**, /v3/api-docs/identity-service/**
           filters:
-            - StripPrefix=2
+            - RewritePath=/identity/(?<segment>.*), /$\{segment} # thay thế ký tự /identity/ thành /
+            # http://localhost:8888/identity/users/registration
+            # http://localhost:8080/users/registration
+
         - id: profile-service
           uri: http://localhost:8081
           predicates:
-            - Path=${app.api-prefix}/profile/users/**, ${app.api-prefix}/api-docs/profile-service
+            - Path=/profile/**, /v3/api-docs/profile-service
           filters:
-            - StripPrefix=2
+            - RewritePath=/profile/(?<segment>.*), /$\{segment}
+
+
         - id: notification-service
           uri: http://localhost:8082
           predicates:
-            - Path=${app.api-prefix}/notification/**, ${app.api-prefix}/api-docs/notification-service
+            - Path=/notification/**, /v3/api-docs/notification-service
           filters:
-            - StripPrefix=2
+            - RewritePath=/notification/(?<segment>.*), /$\{segment}
+
+
         - id: post-service
           uri: http://localhost:8083
           predicates:
-            - Path=${app.api-prefix}/post/**, ${app.api-prefix}/api-docs/post-service
+            - Path=/post/**, /v3/api-docs/post-service
           filters:
-            - StripPrefix=2
+            - RewritePath=/post/(?<segment>.*), /$\{segment}
 
 springdoc:
   api-docs:
@@ -41,15 +46,15 @@ springdoc:
   swagger-ui:
     enabled: true
     path: /swagger-ui.html
-    config-url: /v1/api-docs/swagger-config
+    config-url: /v3/api-docs/swagger-config
     urls:
-      - url: /api-docs
+      - url: /v3/api-docs
         name: API Gateway
-      - url: /api-docs/identity-service
+      - url: /v3/api-docs/identity-service
         name: Identity Service
-      - url: /api-docs/profile-service
+      - url: /v3/api-docs/profile-service
         name: Profile Service
-      - url: /api-docs/notification-service
+      - url: /v3/api-docs/notification-service
         name: Notification Service
-      - url: /api-docs/post-service
+      - url: /v3/api-docs/post-service
         name: Post Service
