@@ -1,26 +1,20 @@
-// export const routes = [
-//     {
-//         element: ,
-//         path: '/register'
-//     },
-//     {
-//         element: ,
-//         path: '/login'
-//     },
-//     {
-//         element: ,
-//         path: '/reset-password'
-//     },
-//     {
-//         element: ,
-//         path: ''
-//     },
-//     {
-//         element: '',
-//         path: ''
-//     },
-//     {
-//         element: '',
-//         path: ''
-//     },
-// ]
+import { Login, NotFound, Register, ResetPassword } from "~/pages";
+
+export const routes = [
+    {
+        element: Register,
+        path: '/register'
+    },
+    {
+        element: Login,
+        path: '/login'
+    },
+    {
+        element: ResetPassword,
+        path: '/reset-password'
+    },
+    {
+        element: NotFound,
+        path: '*'
+    }
+]
