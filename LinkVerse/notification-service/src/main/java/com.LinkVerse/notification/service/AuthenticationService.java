@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.service;
+package com.LinkVerse.notification.service;
 
 import java.text.ParseException;
 import java.time.Instant;
@@ -7,24 +7,24 @@ import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import com.LinkVerse.notification.entity.PasswordResetToken;
+import com.LinkVerse.notification.repository.PasswordResetTokenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import com.LinkVerse.identity.dto.request.AuthenticationRequest;
-import com.LinkVerse.identity.dto.request.IntrospectRequest;
-import com.LinkVerse.identity.dto.request.LogoutRequest;
-import com.LinkVerse.identity.dto.request.RefreshRequest;
-import com.LinkVerse.identity.dto.response.AuthenticationResponse;
-import com.LinkVerse.identity.dto.response.IntrospectResponse;
-import com.LinkVerse.identity.entity.InvalidatedToken;
-import com.LinkVerse.identity.entity.User;
-import com.LinkVerse.identity.exception.AppException;
-import com.LinkVerse.identity.exception.ErrorCode;
-import com.LinkVerse.identity.repository.InvalidatedTokenRepository;
-import com.LinkVerse.identity.repository.UserRepository;
+import com.LinkVerse.notification.dto.request.*;
+import com.LinkVerse.notification.dto.response.AuthenticationResponse;
+import com.LinkVerse.notification.dto.response.IntrospectResponse;
+import com.LinkVerse.notification.entity.InvalidatedToken;
+import com.LinkVerse.notification.entity.User;
+import com.LinkVerse.notification.exception.AppException;
+import com.LinkVerse.notification.exception.ErrorCode;
+import com.LinkVerse.notification.repository.InvalidatedTokenRepository;
+import com.LinkVerse.notification.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -36,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @RequiredArgsConstructor
@@ -44,9 +45,12 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    PasswordResetTokenRepository passwordResetTokenRepository;
+    EmailService emailService;
 
-//    @Value("${frontend.Url}")
-//    private String frontendurl;
+    @Value("${frontend.url}")
+    @NonFinal
+    String frontendurl;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -60,11 +64,59 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
-    //generatePasswordResetToken send to email
+    @NonFinal
+    private RestTemplate restTemplate;
+
+    @NonFinal
+    @Value("${app.services.profile}")
+    private String identityServiceUrl;
+
+    private String fetchEmailFromIdentityService(String userId) {
+        String url = identityServiceUrl + "/users/" + userId + "/email";
+        return restTemplate.getForObject(url, String.class);
+    }
+public void generatePasswordResetToken(String userId) {
+    var user = userRepository
+            .findById(userId)
+            .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+
+    // Fetch the existing token from the PasswordResetToken repository
+    var passwordResetToken = passwordResetTokenRepository
+            .findByUser(user)
+            .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
+
+    String token = passwordResetToken.getToken();
+    Date expiryDate = passwordResetToken.getExpiryDate();
+
+    // Fetch email from identity service
+    String email = fetchEmailFromIdentityService(userId);
+
+    emailService.sendEmailForgetPass(SendEmailRequest.builder()
+            .to(new Recipient(email))
+            .subject("Reset password")
+            .htmlContent("Click <a href=\"" + frontendurl + "/reset-password?token=" + token + "\">here</a> to reset password")
+            .build());
+}
+    public void resetPassword(String token, String newPassword) {
+        var passwordResetToken = passwordResetTokenRepository
+                .findByToken(token)
+                .orElseThrow(() -> new AppException(ErrorCode.INVALID_TOKEN));
+
+        if (passwordResetToken.getExpiryDate().before(new Date())) {
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
+        }
+
+        var user = passwordResetToken.getUser();
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        user.setPassword(passwordEncoder.encode(newPassword));
+
+        userRepository.save(user);
+        passwordResetTokenRepository.delete(passwordResetToken);
+    }
 
 
 
-    public IntrospectResponse introspect(IntrospectRequest request)  {
+    public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
         boolean isValid = true;
 
@@ -81,7 +133,7 @@ public class AuthenticationService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository
                 .findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.USER_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
@@ -103,12 +155,12 @@ public class AuthenticationService {
                     InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
 
             invalidatedTokenRepository.save(invalidatedToken);
-        } catch (AppException exception){
+        } catch (AppException exception) {
             log.info("Token already expired");
         }
     }
 
-    //generatePasswordResetToken send to email
+    // generatePasswordResetToken send to email
 
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signedJWT = verifyToken(request.getToken(), true);
@@ -131,7 +183,6 @@ public class AuthenticationService {
         return AuthenticationResponse.builder().token(token).build();
     }
 
-
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
@@ -140,8 +191,7 @@ public class AuthenticationService {
                 .issuer("LinkVerse.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
-                ))
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
                 .build();
@@ -165,8 +215,12 @@ public class AuthenticationService {
         SignedJWT signedJWT = SignedJWT.parse(token);
 
         Date expiryTime = (isRefresh)
-                ? new Date(signedJWT.getJWTClaimsSet().getIssueTime()
-                .toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
+                ? new Date(signedJWT
+                        .getJWTClaimsSet()
+                        .getIssueTime()
+                        .toInstant()
+                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                        .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
