@@ -25,10 +25,13 @@ public class UserCreationRequest {
 
     String firstName;
     String lastName;
+
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")
     String email;
+
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
+
     String city;
 }

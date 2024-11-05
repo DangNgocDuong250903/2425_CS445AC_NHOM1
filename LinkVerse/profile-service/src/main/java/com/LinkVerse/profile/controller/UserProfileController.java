@@ -1,13 +1,16 @@
 package com.LinkVerse.profile.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.service.UserProfileService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)

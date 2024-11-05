@@ -3,9 +3,6 @@ package com.LinkVerse.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.LinkVerse.event.dto.NotificationEvent;
-import com.LinkVerse.identity.mapper.ProfileMapper;
-import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +10,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
@@ -21,9 +19,11 @@ import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
+import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.mapper.UserMapper;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
+import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class UserService {
 
         try {
             user = userRepository.save(user);
-        } catch (DataIntegrityViolationException exception){
+        } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 

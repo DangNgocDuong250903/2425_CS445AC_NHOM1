@@ -1,6 +1,7 @@
 package com.LinkVerse.profile.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,5 +17,4 @@ public class ApiResponse<T> {
 
     private String message;
     private T result;
-
 }

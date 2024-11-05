@@ -1,6 +1,5 @@
 package com.LinkVerse.profile.configuration;
 
-import io.micrometer.common.lang.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -15,13 +14,22 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import io.micrometer.common.lang.NonNull;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/internal/users", "/swagger-ui/**", "/v3/.*", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/actuator/**", "/swagger-ui*/**"
+        "/internal/users",
+        "/swagger-ui/**",
+        "/v3/.*",
+        "/profile/.*",
+        "/webjars/**",
+        "/swagger-ui*/*swagger-initializer.js",
+        "/actuator/**",
+        "/swagger-ui*/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -45,12 +53,21 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return webSecurity -> webSecurity
                 .ignoring()
-                .requestMatchers("/actuator/**", "/v3/**", "/swagger-ui*/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**");
+                .requestMatchers(
+                        "/actuator/**",
+                        "/v3/**",
+                        "/profile/**",
+                        "/swagger-ui*/**",
+                        "/webjars/**",
+                        "/swagger-ui*/*swagger-initializer.js",
+                        "/swagger-ui*/**");
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {

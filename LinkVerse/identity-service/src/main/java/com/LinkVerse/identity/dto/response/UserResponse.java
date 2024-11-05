@@ -1,6 +1,5 @@
 package com.LinkVerse.identity.dto.response;
 
-import java.time.LocalDate;
 import java.util.Set;
 
 import lombok.*;
@@ -15,10 +14,10 @@ public class UserResponse {
     String id;
     String username;
     String userId;
-//    String firstName;
-//    String lastName;
-//    LocalDate dob;
-        String email;
+    //    String firstName;
+    //    String lastName;
+    //    LocalDate dob;
+    String email;
     boolean emailVerified;
     Set<RoleResponse> roles;
 }
