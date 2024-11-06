@@ -1,10 +1,11 @@
 package com.LinkVerse.identity.entity;
 
+import java.util.Set;
+
 import jakarta.persistence.*;
+
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.Set;
 
 @Getter
 @Setter
@@ -14,32 +15,25 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.UUID)
+  String id;
 
-    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
-    String username;
-    String password;
+  @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+  String username;
+  String password;
 
-    @Column(name = "email", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
-    String email;
+  @Column(name = "email", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+  String email;
 
-    @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
-    boolean emailVerified;
+  @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
+  boolean emailVerified;
 
-    @ManyToMany
-    Set<Role> roles;
+  @ManyToMany
+  Set<Role> roles;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "user_status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
-    UserStatus userStatus = UserStatus.ONLINE;
-
-    @ManyToMany
-    @JoinTable(
-      name = "user_groups",
-      joinColumns = @JoinColumn(name = "user_id"),
-      inverseJoinColumns = @JoinColumn(name = "group_id")
-    )
-    Set<Group> groups;
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
+    UserStatus status = UserStatus.ONLINE;
 }
+

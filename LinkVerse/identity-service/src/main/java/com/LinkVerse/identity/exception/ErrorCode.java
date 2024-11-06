@@ -18,6 +18,7 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     INVALID_EMAIL(1009, "Invalid email", HttpStatus.BAD_REQUEST),
     PROFILE_CREATION_FAILED(1010, "Profile creation failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    UNAUTHORIZED_ACCESS(1011, "Unauthorized access", HttpStatus.FORBIDDEN),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {
