@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="fastRequestCurrentParamGroup">
+    <option name="bodyParamMap">
+      <map>
+        <entry key="request">
+          <value>
+            <Object />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="className" value="com.LinkVerse.notification.controller.EmailController" />
+    <option name="filePath" value="" />
+    <option name="method" value="sendEmailResertpassword" />
+    <option name="methodType" value="POST" />
+    <option name="module" value="notification-service" />
+    <option name="originUrl" value="/email/forgot-password" />
+    <option name="responseParamMap">
+      <map>
+        <entry key="return">
+          <value>
+            <Object />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="returnDocument" value="{&quot;code&quot;:&quot;No comment,Type =Number&quot;,&quot;message&quot;:&quot;No comment,Type =String&quot;,&quot;result&quot;:{&quot;token&quot;:&quot;No comment,Type =String&quot;,&quot;expiryTime&quot;:&quot;No comment,Type =String&quot;}}" />
+    <option name="url" value="/email/forgot-password" />
+  </component>
+</project>

@@ -1,16 +1,17 @@
 package com.LinkVerse.notification.controller;
 
+import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.stereotype.Component;
 
 import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.notification.dto.request.Recipient;
 import com.LinkVerse.notification.dto.request.SendEmailRequest;
 import com.LinkVerse.notification.service.EmailService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
@@ -21,14 +22,12 @@ public class NotificationController {
     EmailService emailService;
 
     @KafkaListener(topics = "notification-delivery")
-    public void listenNotificationDelivery(NotificationEvent message){
+    public void listenNotificationDelivery(NotificationEvent message) {
         log.info("Message received: {}", message);
         emailService.sendEmail(SendEmailRequest.builder()
-                        .to(Recipient.builder()
-                                .email(message.getRecipient())
-                                .build())
-                        .subject(message.getSubject())
-                        .htmlContent(message.getBody())
+                .to(Recipient.builder().email(message.getRecipient()).build())
+                .subject(message.getSubject())
+                .htmlContent(message.getBody())
                 .build());
     }
 }

@@ -17,7 +17,10 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/email/send"
+            "/email/send",
+            "/email/send-forget-pass",
+            "/email/reset-password",
+            "/api/v1/notification/**",
     };
 
     private final CustomJwtDecoder customJwtDecoder;
