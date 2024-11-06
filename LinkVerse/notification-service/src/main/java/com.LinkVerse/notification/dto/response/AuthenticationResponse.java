@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.dto.response;
+package com.LinkVerse.notification.dto.response;
 
 import java.util.Date;
 

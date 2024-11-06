@@ -1,18 +1,23 @@
 package com.LinkVerse.identity.dto.request;
 
+import java.time.LocalDate;
 
+import com.LinkVerse.identity.entity.UserStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-
 @Data
 @Builder
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileCreationRequest {
-    String userID;
+
+    String userId;
+    String username;
+    UserStatus status = UserStatus.ONLINE;
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

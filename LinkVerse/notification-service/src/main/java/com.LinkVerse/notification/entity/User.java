@@ -1,11 +1,15 @@
-package com.LinkVerse.identity.entity;
+package com.LinkVerse.notification.entity;
 
+import java.time.LocalDate;
 import java.util.Set;
 
 import jakarta.persistence.*;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
+
 @Getter
 @Setter
 @Builder
@@ -14,7 +18,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class User {
-    @Id
+     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 

@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.entity;
+package com.LinkVerse.notification.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

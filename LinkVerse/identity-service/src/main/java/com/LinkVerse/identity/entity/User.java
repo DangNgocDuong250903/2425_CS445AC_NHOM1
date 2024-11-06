@@ -1,11 +1,11 @@
 package com.LinkVerse.identity.entity;
 
-import java.util.Set;
-
 import jakarta.persistence.*;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
+
 @Getter
 @Setter
 @Builder
@@ -30,4 +30,16 @@ public class User {
 
     @ManyToMany
     Set<Role> roles;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
+    UserStatus userStatus = UserStatus.ONLINE;
+
+    @ManyToMany
+    @JoinTable(
+      name = "user_groups",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "group_id")
+    )
+    Set<Group> groups;
 }

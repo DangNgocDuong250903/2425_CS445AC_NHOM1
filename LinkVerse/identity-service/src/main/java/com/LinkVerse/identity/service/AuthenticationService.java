@@ -42,7 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationService {
-    UserRepository userRepository;
+     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal
@@ -127,7 +127,7 @@ public class AuthenticationService {
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getId())
-                .issuer("Linkverse.com")
+                .issuer("devteria.com")
                 .issueTime(new Date())
                 .expirationTime(new Date(
                         Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
@@ -148,6 +148,15 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
+    //ktra token
+        public boolean isTokenValid(String token) {
+        try {
+            verifyToken(token, false);
+            return true;
+        } catch (AppException | JOSEException | ParseException e) {
+            return false;
+        }
+}
 
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());

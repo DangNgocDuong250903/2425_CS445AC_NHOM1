@@ -3,9 +3,7 @@ package com.LinkVerse.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.LinkVerse.event.dto.NottificationEvent;
-import com.LinkVerse.identity.mapper.ProfileMapper;
-import com.LinkVerse.identity.repository.httpclient.ProfileClient;
+import com.LinkVerse.identity.entity.UserStatus;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -13,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
@@ -21,9 +20,11 @@ import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
+import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.mapper.UserMapper;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
+import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -41,6 +42,7 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
+    AuthenticationService authenticationService;
     KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
@@ -53,21 +55,26 @@ public class UserService {
         user.setRoles(roles);
         user.setEmailVerified(false);
 
+        if (request.getStatus() == null) {
+        user.setUserStatus(UserStatus.ONLINE); // Giá trị mặc định
+    } else {
+        user.setUserStatus(request.getStatus());
+    }
         try {
             user = userRepository.save(user);
-        } catch (DataIntegrityViolationException exception){
+        } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
-        profileRequest.setUserID(user.getId());
+        profileRequest.setUserId(user.getId());
 
         var profile = profileClient.createProfile(profileRequest);
 
-        NottificationEvent notificationEvent = NottificationEvent.builder()
+        NotificationEvent notificationEvent = NotificationEvent.builder()
                 .channel("EMAIL")
                 .recipient(request.getEmail())
-                .subject("Welcome to bookteria")
+                .subject("Welcome to LinkVerse")
                 .body("Hello, " + request.getUsername())
                 .build();
 
@@ -75,9 +82,15 @@ public class UserService {
         kafkaTemplate.send("notification-delivery", notificationEvent);
 
         var userCreationReponse = userMapper.toUserResponse(user);
-        userCreationReponse.setId(profile.getId());
+        userCreationReponse.setId(profile.getResult().getId());
 
         return userCreationReponse;
+    }
+
+    public  UserResponse updateStatus(String userId, String status) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setUserStatus(UserStatus.valueOf(status));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public UserResponse getMyInfo() {
@@ -88,6 +101,7 @@ public class UserService {
 
         return userMapper.toUserResponse(user);
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {

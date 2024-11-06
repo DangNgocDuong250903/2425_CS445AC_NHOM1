@@ -2,6 +2,7 @@ package com.LinkVerse.identity.dto.request;
 
 import java.time.LocalDate;
 
+import com.LinkVerse.identity.entity.UserStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -25,10 +26,12 @@ public class UserCreationRequest {
 
     String firstName;
     String lastName;
+
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")
     String email;
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
+    private UserStatus status = UserStatus.ONLINE;
     String city;
 }

@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.entity;
+package com.LinkVerse.notification.entity;
 
 import java.util.Date;
 
@@ -17,7 +17,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 public class InvalidatedToken {
     @Id
-    String id;
+    private String id;
 
-    Date expiryTime;
+    private Date expiryTime;
 }
