@@ -20,6 +20,7 @@ public class CommentMapperImpl implements CommentMapper {
 
         CommentResponse.CommentResponseBuilder commentResponse = CommentResponse.builder();
 
+        commentResponse.id( post.getId() );
         commentResponse.userId( post.getUserId() );
         commentResponse.content( post.getContent() );
         commentResponse.createdDate( post.getCreatedDate() );

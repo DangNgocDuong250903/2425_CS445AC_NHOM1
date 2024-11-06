@@ -1,14 +1,12 @@
 package com.LinkVerse.profile.entity;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
+import java.time.LocalDate;
+
+import org.springframework.data.neo4j.core.schema.*;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import java.time.LocalDate;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
@@ -18,13 +16,17 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Node("user_profile")
 public class UserProfile {
-      @Id
+    @Id
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     String id;
 
-    @Property("userId") //Map ben indentity -Service
-    String userID;
+    @Property("userId")
+    String userId;
 
+    String username;
+    @Property("status")
+    String status;
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

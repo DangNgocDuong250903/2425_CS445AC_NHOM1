@@ -1,4 +1,7 @@
 package com.LinkVerse.post.exception;
 
-public class CommentNotFoundException {
+public class CommentNotFoundException extends RuntimeException {
+    public CommentNotFoundException(String message) {
+        super(message);
+    }
 }

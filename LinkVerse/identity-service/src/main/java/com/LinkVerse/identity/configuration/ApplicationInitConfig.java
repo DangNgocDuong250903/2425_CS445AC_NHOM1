@@ -1,6 +1,8 @@
 package com.LinkVerse.identity.configuration;
 
 import java.util.HashSet;
+
+import com.LinkVerse.identity.entity.UserStatus;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -59,6 +61,7 @@ public class ApplicationInitConfig {
                         .username(ADMIN_USER_NAME)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)
+                        .userStatus(UserStatus.ONLINE)
                         .build();
 
                 userRepository.save(user);

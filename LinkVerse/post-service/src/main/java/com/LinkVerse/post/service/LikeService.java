@@ -7,6 +7,7 @@ import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.exception.CommentNotFoundException;
 import com.LinkVerse.post.repository.CommentRespository;
 import com.LinkVerse.post.repository.PostRepository;
 import lombok.AccessLevel;
@@ -17,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -44,7 +46,7 @@ public class LikeService {
 
     return ApiResponse.<PostResponse>builder()
             .code(HttpStatus.OK.value())
-            .message("Post liked successfully and emoji")
+            .message("Post liked successfully ")
             .result(postMapper.toPostResponse(post))
             .build();
 }
@@ -68,32 +70,53 @@ public class LikeService {
 
     CommentMapper commentMapper;
     CommentRespository commentRespository;
-    public ApiResponse<CommentResponse> likeComment(String commentId) {
-        Comment comment = commentRespository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+    // Like a comment
+    public ApiResponse<CommentResponse> likeComment(String postId, String commentId, String emojiSymbol) {
+        // Fetch  comment ID
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+        Optional<Comment> commentOptional = post.getComments().stream()
+                .filter(comment -> comment.getCommentID().equals(commentId))
+                .findFirst();
+            //kiemtra
+              if (!commentOptional.isPresent()) {
+                    throw new CommentNotFoundException("Comments not tạch ");
+    }
+        Comment comment = commentOptional.get();
+        // Update the like count
+        comment.setLike(comment.getLike() + 1);
 
-        // Cập nhật số lượt thích
-        comment.setLikeCount(comment.getLikeCount() + 1);
+        // ktra
+        if (comment.getLikedEmojis() == null) {
+            comment.setLikedEmojis(new ArrayList<>());
+        }
+        comment.getLikedEmojis().add(emojiSymbol);
+
+        // Save the updated comment
         comment = commentRespository.save(comment);
 
         return ApiResponse.<CommentResponse>builder()
                 .code(HttpStatus.OK.value())
-                .message("Comment liked successfully")
+                .message("Comment liked successfully ")
                 .result(commentMapper.toCommentResponse(comment))
                 .build();
     }
-     public ApiResponse<CommentResponse> unlikeComment(String commentId) {
-        Comment comment = commentRespository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
+    //unlikecmt
+    public ApiResponse<CommentResponse> unlikeComment(String postId, String commentId) {
+    // Fetch the comment by its ID
+    Comment comment = commentRespository.findById(commentId)
+            .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-        // Cập nhật số lượt không thích
-        comment.setUnlike(comment.getUnlike() + 1);
-        comment = commentRespository.save(comment);
+    // Update the unlike count
+    comment.setUnlike(comment.getUnlike() + 1);
 
-        return ApiResponse.<CommentResponse>builder()
-                .code(HttpStatus.OK.value())
-                .message("Comment unliked successfully")
-                .result(commentMapper.toCommentResponse(comment))
-                .build();
-    }
+    // Save the updated comment
+    comment = commentRespository.save(comment);
+
+    return ApiResponse.<CommentResponse>builder()
+            .code(HttpStatus.OK.value())
+            .message("Comment unliked successfully")
+            .result(commentMapper.toCommentResponse(comment))
+            .build();
+}
 }
