@@ -1,4 +1,4 @@
 package com.LinkVerse.identity.entity;
 
-public enum GroupStatus {
+public class Group {
 }
