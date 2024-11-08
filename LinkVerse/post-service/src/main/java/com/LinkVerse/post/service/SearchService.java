@@ -20,9 +20,10 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SearchService {
-        PostRepository postRepository;
+    PostRepository postRepository;
     PostMapper postMapper;
-        //public PageResponse<PostResponse> searchPost(String content, int page, int size) -> tương tự controller sẽ d
+
+    //public PageResponse<PostResponse> searchPost(String content, int page, int size) -> tương tự controller sẽ d
     public ApiResponse<PageResponse<PostResponse>> searchPost(String content, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);

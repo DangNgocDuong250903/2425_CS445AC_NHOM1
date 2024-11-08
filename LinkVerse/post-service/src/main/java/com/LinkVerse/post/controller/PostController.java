@@ -7,6 +7,7 @@ import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.S3Service;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +18,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -27,19 +29,17 @@ public class PostController {
 
     PostService postService;
 
-    // Create a new post with image
-    @PostMapping("/post-image")
-    public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(@RequestBody PostRequest request, @RequestParam("files") List<MultipartFile> files) {
-        log.info("Create post request: {}", request);
-        ApiResponse<PostResponse> response = postService.createPostWithFiles(request,files);
-        return ResponseEntity.ok(response);
-    }
+    // Create a new post with file
+    @PostMapping("/post-file")
+    public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
+            @RequestParam("request") String requestJson,
+            @RequestParam("files") List<MultipartFile> files) throws IOException {
 
-    // Create a new post
-    @PostMapping("/create")
-    public ResponseEntity<ApiResponse<PostResponse>> createPost(@RequestBody PostRequest request) {
-        log.info("Create post request: {}", request);
-        ApiResponse<PostResponse> response = postService.createPost(request);
+        // Chuyển String JSON thành PostRequest
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
+
+        ApiResponse<PostResponse> response = postService.createPostWithFiles(request, files);
         return ResponseEntity.ok(response);
     }
 

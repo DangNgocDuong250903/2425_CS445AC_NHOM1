@@ -50,9 +50,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     };
 
-    @Value("${app.api-prefix}")
-    @NonFinal
-    private String apiPrefix;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {

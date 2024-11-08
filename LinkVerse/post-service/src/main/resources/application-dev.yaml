@@ -30,6 +30,7 @@ cloud:
     stack:
       auto: false
 
+
 application:
   bucket:
     name: image-0

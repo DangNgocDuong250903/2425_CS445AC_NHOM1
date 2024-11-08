@@ -1,5 +1,7 @@
 package com.LinkVerse.post.dto.response;
 
+import com.LinkVerse.post.entity.PostVisibility;
+import jakarta.persistence.ElementCollection;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,8 +21,10 @@ import java.util.List;
 public class PostResponse {
     String id;
     String content;
-    String fileName;
+
+    @ElementCollection
     String fileUrl;
+    PostVisibility visibility;
     String userId;
     Instant createdDate;
     Instant modifiedDate;

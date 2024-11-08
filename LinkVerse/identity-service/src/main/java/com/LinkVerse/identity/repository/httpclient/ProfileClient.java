@@ -1,5 +1,6 @@
 package com.LinkVerse.identity.repository.httpclient;
 
+import com.LinkVerse.identity.configuration.AuthenticationRequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;

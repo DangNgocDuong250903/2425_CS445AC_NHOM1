@@ -22,7 +22,13 @@ public class Post {
     String id;
     String userId;
     String content;
+
+    @ElementCollection
     List<String> fileUrls;
+
+    @Enumerated(EnumType.STRING)
+    private PostVisibility visibility;
+
     Instant createdDate;
     Instant modifiedDate;
     int like;
