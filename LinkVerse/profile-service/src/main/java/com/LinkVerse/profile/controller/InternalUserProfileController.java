@@ -1,5 +1,6 @@
 package com.LinkVerse.profile.controller;
 
+import com.LinkVerse.profile.dto.ApiResponse;
 import org.springframework.web.bind.annotation.*;
 
 import com.LinkVerse.profile.dto.request.ProfileCreationRequest;
@@ -14,12 +15,20 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class InternalUserProfileController {
     UserProfileService userProfileService;
 
-    @PostMapping("/profile/internal/users")
-    UserProfileResponse createProfile(@RequestBody ProfileCreationRequest request) {
-        return userProfileService.createProfile(request);
+    @PostMapping("/internal/users")
+    ApiResponse<UserProfileResponse> createProfile(@RequestBody ProfileCreationRequest request) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.createProfile(request))
+                .build();
+    }
+
+    @GetMapping("/internal/users/{userId}")
+    ApiResponse<UserProfileResponse> getProfile(@PathVariable String userId) {
+        return ApiResponse.<UserProfileResponse>builder()
+                .result(userProfileService.getByUserId(userId))
+                .build();
     }
 }

@@ -12,6 +12,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
     String id;
+    String username;
+    String status;
+    String email;
     String firstName;
     String lastName;
     LocalDate dob;

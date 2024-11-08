@@ -32,4 +32,12 @@ public class User {
 
     @ManyToMany
     Set<Role> roles;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
+    UserStatus status = UserStatus.ONLINE;
+
+    // Groups the user belongs to
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<GroupMember> groupMemberships;
 }

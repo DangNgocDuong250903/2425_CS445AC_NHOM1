@@ -23,6 +23,8 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -40,8 +42,17 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/identity/users/registration",
             "/notification/email/send",
             "/v3/.*",
-            "/profile/.*"
+            "/profile/.*",
+            "/notification/email/forgot-password",
+            "/email/reset-password",
+            "/email/send-forget-pass",
+
+
     };
+
+    @Value("${app.api-prefix}")
+    @NonFinal
+    private String apiPrefix;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -50,6 +61,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         if (isPublicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
 
+        // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (CollectionUtils.isEmpty(authHeader))
             return unauthenticated(exchange.getResponse());

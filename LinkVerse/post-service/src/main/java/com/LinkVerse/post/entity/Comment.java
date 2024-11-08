@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -25,6 +26,7 @@ public class Comment {
     int like;
     int unlike;
     int likeCount;
+    List<String> likedEmojis;
 
 
     public Comment() {

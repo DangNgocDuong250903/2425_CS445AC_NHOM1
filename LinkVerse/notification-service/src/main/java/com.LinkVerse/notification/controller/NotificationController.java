@@ -4,9 +4,9 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.LinkVerse.event.dto.NotificationEvent;
-import com.LinkVerse.notification.EmailService;
 import com.LinkVerse.notification.dto.request.Recipient;
 import com.LinkVerse.notification.dto.request.SendEmailRequest;
+import com.LinkVerse.notification.service.EmailService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

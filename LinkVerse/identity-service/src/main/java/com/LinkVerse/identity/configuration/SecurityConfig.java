@@ -6,17 +6,12 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.servlet.config.annotation.CorsRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-
-import io.micrometer.common.lang.NonNull;
 
 @Configuration
 @EnableWebSecurity
@@ -24,36 +19,13 @@ import io.micrometer.common.lang.NonNull;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-        "/users/registration",
-        "/auth/token",
-        "/auth/introspect",
-        "/auth/logout",
-        "/auth/refresh",
-        "/swagger-ui/**",
-        "/v3/.*",
-        "/webjars/**",
-        "/swagger-ui*/*swagger-initializer.js",
-        "/actuator/**",
-        "/swagger-ui*/**"
+        "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
     };
 
     private final CustomJwtDecoder customJwtDecoder;
 
     public SecurityConfig(CustomJwtDecoder customJwtDecoder) {
         this.customJwtDecoder = customJwtDecoder;
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return webSecurity -> webSecurity
-                .ignoring()
-                .requestMatchers(
-                        "/actuator/**",
-                        "/v3/**",
-                        "/swagger-ui*/**",
-                        "/webjars/**",
-                        "/swagger-ui*/*swagger-initializer.js",
-                        "/swagger-ui*/**");
     }
 
     @Bean
@@ -67,25 +39,9 @@ public class SecurityConfig {
                         .decoder(customJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(@NonNull CorsRegistry registry) {
-                registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8888")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*")
-                        .allowCredentials(false)
-                        .maxAge(3600);
-            }
-        };
     }
 
     @Bean

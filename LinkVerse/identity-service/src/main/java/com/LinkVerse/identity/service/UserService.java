@@ -17,6 +17,7 @@ import com.LinkVerse.identity.dto.request.UserUpdateRequest;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
+import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.mapper.ProfileMapper;
@@ -41,6 +42,7 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
+    AuthenticationService authenticationService;
     KafkaTemplate<String, Object> kafkaTemplate;
 
     public UserResponse createUser(UserCreationRequest request) {
@@ -53,6 +55,11 @@ public class UserService {
         user.setRoles(roles);
         user.setEmailVerified(false);
 
+        if (request.getStatus() == null) {
+            user.setStatus(UserStatus.ONLINE); // Giá trị mặc định
+        } else {
+            user.setStatus(request.getStatus());
+        }
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
@@ -60,14 +67,14 @@ public class UserService {
         }
 
         var profileRequest = profileMapper.toProfileCreationRequest(request);
-        profileRequest.setUserID(user.getId());
+        profileRequest.setUserId(user.getId());
 
         var profile = profileClient.createProfile(profileRequest);
 
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .channel("EMAIL")
                 .recipient(request.getEmail())
-                .subject("Welcome to bookteria")
+                .subject("Welcome to LinkVerse")
                 .body("Hello, " + request.getUsername())
                 .build();
 
@@ -75,9 +82,15 @@ public class UserService {
         kafkaTemplate.send("notification-delivery", notificationEvent);
 
         var userCreationReponse = userMapper.toUserResponse(user);
-        userCreationReponse.setUserId(profile.getId());
+        userCreationReponse.setId(profile.getResult().getId());
 
         return userCreationReponse;
+    }
+
+    public UserResponse updateStatus(String userId, String status) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setStatus(UserStatus.valueOf(status));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     public UserResponse getMyInfo() {

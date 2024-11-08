@@ -9,17 +9,15 @@ import feign.RequestTemplate;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class AuthenticationRequestinterceptor implements RequestInterceptor {
+public class AuthenticationRequestInterceptor implements RequestInterceptor {
     @Override
-    public void apply(RequestTemplate Template) {
+    public void apply(RequestTemplate template) {
         ServletRequestAttributes servletRequestAttributes =
                 (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
 
         var authHeader = servletRequestAttributes.getRequest().getHeader("Authorization");
-        log.info("Header: {} ", authHeader);
 
-        if (StringUtils.hasText(authHeader)) {
-            Template.header("Authorization", authHeader);
-        }
+        log.info("Header: {}", authHeader);
+        if (StringUtils.hasText(authHeader)) template.header("Authorization", authHeader);
     }
 }

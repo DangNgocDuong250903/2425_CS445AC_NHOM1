@@ -3,11 +3,14 @@ package com.LinkVerse.profile.service;
 import java.util.List;
 
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.LinkVerse.profile.dto.request.ProfileCreationRequest;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.UserProfile;
+import com.LinkVerse.profile.exception.AppException;
+import com.LinkVerse.profile.exception.ErrorCode;
 import com.LinkVerse.profile.mapper.UserProfileMapper;
 import com.LinkVerse.profile.repository.UserProfileRepository;
 
@@ -26,37 +29,41 @@ public class UserProfileService {
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
-
         userProfile = userProfileRepository.save(userProfile);
 
-        return userProfileMapper.toUserProfileResponse(userProfile);
+        return userProfileMapper.toUserProfileReponse(userProfile);
+    }
+
+    public UserProfileResponse getByUserId(String userId) {
+        UserProfile userProfile =
+                userProfileRepository.findByUserId(userId)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userProfileMapper.toUserProfileReponse(userProfile);
     }
 
     public UserProfileResponse getProfile(String id) {
         UserProfile userProfile =
-                userProfileRepository.findById(id).orElseThrow(() -> new RuntimeException("Profile not found"));
+                userProfileRepository.findById(id).orElseThrow(
+                        () -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        return userProfileMapper.toUserProfileResponse(userProfile);
+        return userProfileMapper.toUserProfileReponse(userProfile);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserProfileResponse> getAllProfiles() {
         var profiles = userProfileRepository.findAll();
 
-        return profiles.stream().map(userProfileMapper::toUserProfileResponse).toList();
+        return profiles.stream().map(userProfileMapper::toUserProfileReponse).toList();
     }
 
-    //    public void deleteProfile(String id) {
-    //        userProfileRepository.deleteById(id);
-    //    }
-    //
-    //    public UserProfileResponse updateBackgroundImageUrlById(String id, String backgroundImageUrl) {
-    //        UserProfile userProfile = userProfileRepository.findById(id)
-    //                .orElseThrow(() -> new RuntimeException("Profile not found"));
-    //
-    //        userProfile.setBackgroundImageUrl(backgroundImageUrl);
-    //        userProfile = userProfileRepository.save(userProfile);
-    //
-    //        return userProfileMapper.toUserProfileResponse(userProfile);
-    //    }
+    public UserProfileResponse getMyProfile() {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        var profile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        return userProfileMapper.toUserProfileReponse(profile);
+    }
 }

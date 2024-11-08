@@ -11,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
+import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
 
@@ -60,6 +61,7 @@ public class ApplicationInitConfig {
                         .username(ADMIN_USER_NAME)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)
+                        .status(UserStatus.ONLINE)
                         .build();
 
                 userRepository.save(user);

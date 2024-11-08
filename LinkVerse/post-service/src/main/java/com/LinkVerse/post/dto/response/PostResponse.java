@@ -27,7 +27,7 @@ public class PostResponse {
     int like;
     int unlike;
     int commentCount; // Add
-    
+
     List<CommentResponse> comments; // Danh sách bình luận
     PostResponse sharedPost;
 }

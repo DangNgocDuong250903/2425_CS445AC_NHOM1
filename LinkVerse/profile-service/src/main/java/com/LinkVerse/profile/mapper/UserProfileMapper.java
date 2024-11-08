@@ -8,7 +8,7 @@ import com.LinkVerse.profile.entity.UserProfile;
 
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
-    UserProfile toUserProfile(ProfileCreationRequest request);
+      UserProfile toUserProfile(ProfileCreationRequest request);
 
-    UserProfileResponse toUserProfileResponse(UserProfile entity);
+        UserProfileResponse toUserProfileReponse(UserProfile entity);
 }

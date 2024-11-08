@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.Valid;
 
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import com.LinkVerse.identity.dto.request.ApiResponse;
@@ -57,6 +58,15 @@ public class UserController {
     ApiResponse<String> deleteUser(@PathVariable String userId) {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
+    }
+
+    @PatchMapping("/my-profile/status")
+    public ApiResponse<UserResponse> updateMyStatus(@RequestParam String status) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateStatus(userId, status))
+                .build();
     }
 
     @PutMapping("/{userId}")
