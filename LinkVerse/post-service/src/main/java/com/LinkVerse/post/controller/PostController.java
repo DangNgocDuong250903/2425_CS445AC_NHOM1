@@ -6,12 +6,18 @@ import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.service.PostService;
+import com.LinkVerse.post.service.S3Service;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -19,7 +25,15 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostController {
 
-    final PostService postService;
+    PostService postService;
+
+    // Create a new post with image
+    @PostMapping("/post-image")
+    public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(@RequestBody PostRequest request, @RequestParam("files") List<MultipartFile> files) {
+        log.info("Create post request: {}", request);
+        ApiResponse<PostResponse> response = postService.createPostWithFiles(request,files);
+        return ResponseEntity.ok(response);
+    }
 
     // Create a new post
     @PostMapping("/create")

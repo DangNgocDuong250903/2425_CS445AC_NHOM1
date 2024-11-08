@@ -22,6 +22,7 @@ public class Post {
     String id;
     String userId;
     String content;
+    List<String> fileUrls;
     Instant createdDate;
     Instant modifiedDate;
     int like;
