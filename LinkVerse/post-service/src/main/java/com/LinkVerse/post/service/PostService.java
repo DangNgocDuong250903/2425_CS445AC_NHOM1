@@ -74,7 +74,6 @@ public class PostService {
                 .body("Your post was created successfully" )
                 .build();
 
-        // Publish message to kafka
         kafkaTemplate.send("notification-delivery", notificationEvent);
 
         return ApiResponse.<PostResponse>builder()
