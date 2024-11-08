@@ -59,7 +59,8 @@ public class UserController {
         userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
     }
- @PatchMapping("/my-profile/status")
+
+    @PatchMapping("/my-profile/status")
     public ApiResponse<UserResponse> updateMyStatus(@RequestParam String status) {
         var authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();

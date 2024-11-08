@@ -2,7 +2,6 @@ package com.LinkVerse.identity.dto.response;
 
 import java.time.LocalDate;
 
-import jakarta.persistence.Column;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

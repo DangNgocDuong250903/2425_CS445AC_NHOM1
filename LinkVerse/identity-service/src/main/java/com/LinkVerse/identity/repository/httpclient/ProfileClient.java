@@ -11,8 +11,10 @@ import com.LinkVerse.identity.dto.request.ProfileCreationRequest;
 import com.LinkVerse.identity.dto.response.UserProfileResponse;
 
 // Connection to profile-service
-@FeignClient(name = "profile-service", url = "${app.services.profile}",
-        configuration = { AuthenticationRequestInterceptor.class })
+@FeignClient(
+        name = "profile-service",
+        url = "${app.services.profile}",
+        configuration = {AuthenticationRequestInterceptor.class})
 public interface ProfileClient {
     @PostMapping(value = "/internal/users", produces = MediaType.APPLICATION_JSON_VALUE)
     ApiResponse<UserProfileResponse> createProfile(@RequestBody ProfileCreationRequest request);

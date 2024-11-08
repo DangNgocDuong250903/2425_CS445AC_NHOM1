@@ -2,11 +2,11 @@ package com.LinkVerse.identity.dto.request;
 
 import java.time.LocalDate;
 
-import com.LinkVerse.identity.entity.UserStatus;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.validator.DobConstraint;
 
 import lombok.*;
@@ -30,8 +30,8 @@ public class UserCreationRequest {
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")
     String email;
+    UserStatus status = UserStatus.ONLINE;
     @DobConstraint(min = 10, message = "INVALID_DOB")
     LocalDate dob;
-    private UserStatus status = UserStatus.ONLINE;
     String city;
 }
