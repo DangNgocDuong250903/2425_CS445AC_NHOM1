@@ -15,6 +15,17 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
+  mysql:
+    image: mysql:8.0.36-debian
+    container_name: mysql
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+
   redis:
     image: redis:6.2-alpine
     container_name: redis
@@ -35,3 +46,86 @@ services:
       - "9200:9200"
     environment:
       - discovery.type=single-node
+
+  mongo:
+    image: mongo:6-jammy
+    container_name: mongodb
+    ports:
+      - '27017:27017'
+    volumes:
+      - data:/data/db
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    container_name: zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - '22181:2181'
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./LinkVerse/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8888:8888'
+    networks:
+      - default
+
+  identity-service:
+    container_name: identity-service
+    build:
+      context: ./LinkVerse/identity-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8080:8080'
+    networks:
+      - default
+
+  profile-service:
+    container_name: profile-service
+    build:
+      context: ./LinkVerse/profile-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8081:8081'
+    networks:
+      - default
+
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./LinkVerse/notification-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8082:8082'
+    networks:
+      - default
+
+  post-service:
+    container_name: post-service
+    build:
+      context: ./LinkVerse/post-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8083:8083'
+    networks:
+      - default
+
+networks:
+  default:
+    name: api-network
+
+volumes:
+  mysql_data:
+  data:

@@ -53,7 +53,7 @@ You can stop the containers with:
       - mysql_data:/var/lib/mysql
 ```
 **Note:** install MySQL Workbench to manage the database
-https://dev.mysql.com/downloads/workbench/
+https://dev.mysql.com/downloads/workbench/ <br>
 2. **Config MySql in Spring Boot**
 
 **a. Add dependency**
