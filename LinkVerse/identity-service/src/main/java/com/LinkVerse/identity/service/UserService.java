@@ -3,7 +3,6 @@ package com.LinkVerse.identity.service;
 import java.util.HashSet;
 import java.util.List;
 
-import com.LinkVerse.identity.entity.UserStatus;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,6 +17,7 @@ import com.LinkVerse.identity.dto.request.UserUpdateRequest;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
+import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.mapper.ProfileMapper;
@@ -56,10 +56,10 @@ public class UserService {
         user.setEmailVerified(false);
 
         if (request.getStatus() == null) {
-        user.setUserStatus(UserStatus.ONLINE); // Giá trị mặc định
-    } else {
-        user.setUserStatus(request.getStatus());
-    }
+            user.setStatus(UserStatus.ONLINE); // Giá trị mặc định
+        } else {
+            user.setStatus(request.getStatus());
+        }
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
@@ -87,9 +87,9 @@ public class UserService {
         return userCreationReponse;
     }
 
-    public  UserResponse updateStatus(String userId, String status) {
+    public UserResponse updateStatus(String userId, String status) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        user.setUserStatus(UserStatus.valueOf(status));
+        user.setStatus(UserStatus.valueOf(status));
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
@@ -101,7 +101,6 @@ public class UserService {
 
         return userMapper.toUserResponse(user);
     }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
