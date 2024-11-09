@@ -24,6 +24,7 @@ public class UserProfile {
     String userId;
 
     String username;
+    String avatarUrl;
     @Property("status")
     String status;
     String email;

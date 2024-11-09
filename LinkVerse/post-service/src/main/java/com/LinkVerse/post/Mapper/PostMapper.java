@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Mapper
 public interface PostMapper {
-        @Named("toPostResponse")
+    @Named("toPostResponse")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {

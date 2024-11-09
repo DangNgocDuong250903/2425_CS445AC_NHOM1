@@ -15,10 +15,20 @@ spring:
       file-size-threshold: 2KB
       max-file-size: 200MB
       max-request-size: 215MB
-Cloudinary:
-  cloud_name: dkeyerq4g
-  api_key: 459476596648974
-  api_secret: ex_KAk4H4glXgYObhHvORS1ueQ0
+cloud:
+  aws:
+    credentials:
+      access-key: AKIATCKANL35JUXP2NFF
+      secret-key: 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
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+
+
+application:
+  bucket:
+    name: image-0
 
 springdoc:
   api-docs:

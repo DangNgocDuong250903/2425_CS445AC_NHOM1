@@ -1,20 +1,16 @@
 package com.LinkVerse.post.service;
 
-import com.LinkVerse.event.dto.NotificationEvent;
-import com.LinkVerse.post.Mapper.CommentMapper;
+import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
-import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.LinkVerse.post.repository.client.ProfileServiceClient;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,20 +24,12 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -51,9 +39,57 @@ public class PostService {
     PostRepository postRepository;
     PostMapper postMapper;
     KafkaTemplate<String, Object> kafkaTemplate;
+    ProfileServiceClient profileServiceClient;
 
     @Autowired
     S3Service s3Service;
+
+    public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        // Kiểm tra nếu file là hình ảnh
+        if (!FileUtil.isImageFile(avatarFile)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Only image files are allowed.")
+                    .build();
+        }
+
+        // Upload file lên S3 và lấy avatar URL
+        String avatarUrl = s3Service.uploadFile(avatarFile);
+
+        // Tạo đối tượng Post mới
+        Post post = Post.builder()
+                .content(request.getContent())
+                .userId(authentication.getName())
+                .fileUrl(avatarUrl)
+                .visibility(request.getVisibility())
+                .createdDate(Instant.now())
+                .modifiedDate(Instant.now())
+                .like(0)
+                .unlike(0)
+                .comments(List.of())
+                .build();
+
+        post = postRepository.save(post);
+
+        // Cập nhật avatar của người dùng
+        try {
+            profileServiceClient.updateImage(authentication.getName(), avatarUrl);
+        } catch (FeignException e) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Failed to update avatar in profile-service: " + e.getMessage())
+                    .build();
+        }
+
+        // Trả về thông tin post mới cùng với response
+        return ApiResponse.<PostResponse>builder()
+                .code(200)
+                .message("Avatar post created successfully and profile updated")
+                .result(postMapper.toPostResponse(post))
+                .build();
+    }
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,6 +109,8 @@ public class PostService {
                 .build();
 
         post = postRepository.save(post);
+
+        // TODO thông báo khi post thành công
 
         return ApiResponse.<PostResponse>builder()
                 .code(200)
@@ -125,7 +163,7 @@ public class PostService {
                 String fileName = extractFileNameFromUrl(decodedUrl);
 
                 if (fileName != null) {
-                    String result = s3Service.deleteFile(fileName);
+                    String result = s3Service.deleteFiles(fileName);
                     log.info(result);
                 }
             }
@@ -153,6 +191,7 @@ public class PostService {
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
                 .toList();
+        // TODO thông báo khi có người share, like, cmt bài viết của mình
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)

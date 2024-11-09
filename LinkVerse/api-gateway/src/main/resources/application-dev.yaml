@@ -22,7 +22,7 @@ spring:
         - id: profile-service
           uri: http://localhost:8081
           predicates:
-            - Path=/profile/**, /v3/api-docs/profile-service
+            - Path=/profile/**, /profile/v3/api-docs/profile-service
           filters:
             - RewritePath=/profile/(?<segment>.*), /$\{segment}
 
@@ -55,7 +55,7 @@ springdoc:
         name: API Gateway
       - url: /v3/api-docs/identity-service
         name: Identity Service
-      - url: /v3/api-docs/profile-service
+      - url: /profile/v3/api-docs/profile-service
         name: Profile Service
       - url: /v3/api-docs/notification-service
         name: Notification Service

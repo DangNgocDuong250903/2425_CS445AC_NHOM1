@@ -1,12 +1,15 @@
 package com.LinkVerse.post.controller;
 
+import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
+import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.S3Service;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,23 @@ import java.util.List;
 public class PostController {
 
     PostService postService;
+    S3Service s3Service;
+    ProfileServiceClient profileServiceClient;
+
+    @PostMapping("/set-avatar")
+    public ResponseEntity<String> updateImage(@RequestParam("userId") String userId,
+                                            @RequestParam("request") String requestJson,
+                                            @RequestParam("avatar") MultipartFile avatar) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
+
+        if (!FileUtil.isImageFile(avatar)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only image files are allowed.");
+        }
+
+        postService.postImageAvatar(request, avatar);
+        return ResponseEntity.ok("Avatar updated successfully.");
+    }
 
     // Create a new post with file
     @PostMapping("/post-file")
