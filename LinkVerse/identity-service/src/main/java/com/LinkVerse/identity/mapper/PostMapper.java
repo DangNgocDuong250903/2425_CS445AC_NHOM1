@@ -1,9 +1,10 @@
-package com.LinkVerse.post.Mapper;
+package com.LinkVerse.identity.mapper;
 
-import com.LinkVerse.post.dto.response.CommentResponse;
-import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Comment;
-import com.LinkVerse.post.entity.Post;
+
+import com.LinkVerse.identity.dto.response.CommentResponse;
+import com.LinkVerse.identity.dto.response.PostResponse;
+import com.LinkVerse.identity.entity.Comment;
+import com.LinkVerse.identity.entity.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -14,7 +15,7 @@ import java.util.stream.Collectors;
 @Mapper
 public interface PostMapper {
         @Named("toPostResponse")
-    PostResponse toPostResponse(Post post);
+        PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
         return comments.stream()

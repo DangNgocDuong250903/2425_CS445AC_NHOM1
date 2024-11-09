@@ -29,6 +29,7 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
+
     // Delete a post
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable String id) {

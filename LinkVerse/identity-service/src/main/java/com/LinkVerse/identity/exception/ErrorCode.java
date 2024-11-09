@@ -27,6 +27,8 @@ public enum ErrorCode {
     GROUP_NOT_EXIST(1017, "Group not exist", HttpStatus.NOT_FOUND),
     PERMISSION_DENIED(1018, "Permission denied", HttpStatus.FORBIDDEN),
     ALREADY_MEMBER(1019, "Already a member", HttpStatus.BAD_REQUEST),
+    GROUP_NOT_FOUND(1020, "Group not found", HttpStatus.NOT_FOUND),
+    USER_NOT_IN_GROUP(1021, "User not in group", HttpStatus.FORBIDDEN),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

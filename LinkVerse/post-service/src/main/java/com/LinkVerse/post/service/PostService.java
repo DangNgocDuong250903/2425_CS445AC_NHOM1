@@ -1,5 +1,8 @@
 package com.LinkVerse.post.service;
 
+
+
+import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
@@ -7,7 +10,6 @@ import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.repository.PostRepository;
 import lombok.AccessLevel;
@@ -24,7 +26,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
+
 
 @Service
 @RequiredArgsConstructor
@@ -48,12 +50,14 @@ public class PostService {
                 .build();
 
         post = postRepository.save(post);
+        // Gửi sự kiện Kafka khi tạo bài đăng mới
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post created successfully")
                 .result(postMapper.toPostResponse(post))
                 .build();
     }
+
 
     public ApiResponse<PostResponse> sharePost(String postId, String content) {
         Post originalPost = postRepository.findById(postId)
