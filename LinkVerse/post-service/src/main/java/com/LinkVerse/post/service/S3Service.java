@@ -42,7 +42,7 @@ public class S3Service {
         return fileUrls;
     }
 
-    public String deleteFile(String fileName) {
+    public String deleteFiles(String fileName) {
         try {
             boolean exists = s3Client.doesObjectExist(bucketName, fileName);
             if (exists) {
@@ -58,6 +58,37 @@ public class S3Service {
         }
     }
 
+    public String uploadFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+        File fileObj = convertMultiPartFileToFile(file);
+        String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+        try {
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+            return s3Client.getUrl(bucketName, fileName).toString();
+        } finally {
+            fileObj.delete();
+        }
+    }
+
+    public String deleteFile(String fileName) {
+        try {
+            boolean exists = s3Client.doesObjectExist(bucketName, fileName);
+            if (exists) {
+                s3Client.deleteObject(bucketName, fileName);
+                return fileName + " removed from S3 successfully.";
+            } else {
+                log.error("File does not exist: {}", fileName);
+                return "File does not exist on S3.";
+            }
+        } catch (SdkClientException e) {
+            log.error("Error occurred while deleting file from S3: {}", e.getMessage());
+            return "Error occurred while deleting file from S3.";
+        }
+    }
 //    public byte[] downloadFile(String fileName) {
 //        S3Object s3Object = s3Client.getObject(bucketName, fileName);
 //        S3ObjectInputStream inputStream = s3Object.getObjectContent();

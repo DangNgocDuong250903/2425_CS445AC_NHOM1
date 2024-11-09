@@ -28,12 +28,9 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
@@ -74,12 +71,15 @@ public class PostService {
 
         post = postRepository.save(post);
 
+        // TODO thông báo khi post thành công
+
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post created successfully")
                 .result(postMapper.toPostResponse(post))
                 .build();
     }
+
 
 
     public ApiResponse<PostResponse> sharePost(String postId, String content) {
@@ -181,4 +181,5 @@ public class PostService {
     private String decodeUrl(String encodedUrl) {
         return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
     }
+
 }
