@@ -1,0 +1,83 @@
+package com.LinkVerse.post.service;
+
+
+import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class S3Service {
+
+    String bucketName = "image-0";
+
+    @Autowired
+    AmazonS3 s3Client;
+
+    public List<String> uploadFiles(List<MultipartFile> files) {
+        List<String> fileUrls = new ArrayList<>();
+        for (MultipartFile file : files) {
+            File fileObj = convertMultiPartFileToFile(file);
+            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+            fileObj.delete();
+            fileUrls.add(s3Client.getUrl(bucketName, fileName).toString());
+        }
+        return fileUrls;
+    }
+
+    public String deleteFile(String fileName) {
+        try {
+            boolean exists = s3Client.doesObjectExist(bucketName, fileName);
+            if (exists) {
+                s3Client.deleteObject(bucketName, fileName);
+                return fileName + " removed from S3 successfully.";
+            } else {
+                log.error("File does not exist: {}", fileName);
+                return "File does not exist on S3.";
+            }
+        } catch (SdkClientException e) {
+            log.error("Error occurred while deleting file from S3: {}", e.getMessage());
+            return "Error occurred while deleting file from S3.";
+        }
+    }
+
+//    public byte[] downloadFile(String fileName) {
+//        S3Object s3Object = s3Client.getObject(bucketName, fileName);
+//        S3ObjectInputStream inputStream = s3Object.getObjectContent();
+//        try {
+//            byte[] content = IOUtils.toByteArray(inputStream);
+//            return content;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        return null;
+//    }
+
+    private File convertMultiPartFileToFile(MultipartFile file) {
+        File convertedFile = new File(file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+        }
+        return convertedFile;
+    }
+
+}
