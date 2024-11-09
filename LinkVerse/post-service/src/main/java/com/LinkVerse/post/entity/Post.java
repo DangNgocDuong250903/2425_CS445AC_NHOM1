@@ -39,4 +39,5 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "shared_post_id")
     Post sharedPost;
+    boolean deleted = false;
 }

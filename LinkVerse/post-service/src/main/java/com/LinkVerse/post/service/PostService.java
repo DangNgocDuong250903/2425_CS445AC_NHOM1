@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class PostService {
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        List<String> fileUrls = s3Service.uploadFiles(files);
+            List<String> fileUrls = (files != null && !files.isEmpty()) ? s3Service.uploadFiles(files) : List.of();
 
         Post post = Post.builder()
                 .content(request.getContent())
@@ -87,7 +88,9 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<String> fileUrls = originalPost.getFileUrls();
+        List<String> fileUrls = (originalPost.getFileUrls() != null && !originalPost.getFileUrls().isEmpty())
+        ? originalPost.getFileUrls()
+        : List.of();
 
         Post sharedPost = Post.builder()
                 .content(content)
@@ -113,12 +116,20 @@ public class PostService {
     }
 
 
-    public ApiResponse<Void> deletePost(String postId) {
+       public ApiResponse<Void> deletePost(String postId) {
+        // Lấy bài viết từ cơ sở dữ liệu
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        List<String> fileUrls = post.getFileUrls();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
 
+        // kt quyền xóa bài viết
+        if (!post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("Not authorized to delete this post");
+        }
+
+        List<String> fileUrls = post.getFileUrls();
         if (fileUrls != null && !fileUrls.isEmpty()) {
             for (String fileUrl : fileUrls) {
                 String decodedUrl = decodeUrl(fileUrl);
@@ -126,20 +137,54 @@ public class PostService {
 
                 if (fileName != null) {
                     String result = s3Service.deleteFile(fileName);
-                    log.info(result);
+                    log.info(result); // Ghi log việc xóa file từ S3
                 }
             }
         }
-        postRepository.delete(post);
+        //Đánh dấu đã xóa
+        post.setDeleted(true);
+        post.setModifiedDate(Instant.now()); // Cập nhật thời gian sửa
+        postRepository.save(post);
 
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
-                .message("Post deleted successfully")
+                .message("Post marked as deleted successfully")
                 .build();
     }
 
-    //public PageResponse<PostResponse> getMyPosts(int page, int size) -> Controller sẽ đơn giản hơn
-    public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size) {
+
+        public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userID = authentication.getName();
+
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var pageData = postRepository.findAllByUserId(userID, pageable);
+
+        // Lọc bài viết, bao gồm hoặc loại trừ bài viết đã xóa
+        List<Post> filteredPosts = pageData.getContent().stream()
+                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
+                        (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
+                        post.getVisibility() == PostVisibility.PRIVATE)
+                .filter(post -> includeDeleted || !post.isDeleted()) // Lọc bài viết đã xóa
+                .collect(Collectors.toList());
+
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .code(200)
+                .message("My posts retrieved successfully")
+                .result(PageResponse.<PostResponse>builder()
+                        .currentPage(page)
+                        .pageSize(pageData.getSize())
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(filteredPosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(int page, int size) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userID = authentication.getName();
 
@@ -152,17 +197,17 @@ public class PostService {
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
-                .toList();
+                .collect(Collectors.toList());
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)
-                .message("My posts retrieved successfully")
+                .message("My posts history retrieved successfully")
                 .result(PageResponse.<PostResponse>builder()
                         .currentPage(page)
                         .pageSize(pageData.getSize())
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(filteredPosts.stream().map(postMapper::toPostResponse).toList())
+                        .data(filteredPosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
                         .build())
                 .build();
     }
