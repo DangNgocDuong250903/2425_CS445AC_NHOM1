@@ -3,6 +3,7 @@ package com.LinkVerse.post.service;
 import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
+import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
@@ -11,7 +12,9 @@ import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostVisibility;
+import com.LinkVerse.post.entity.SharedPost;
 import com.LinkVerse.post.repository.PostRepository;
+import com.LinkVerse.post.repository.SharedPostRepository;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -36,10 +39,8 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
 
 @Service
 @RequiredArgsConstructor
@@ -48,6 +49,9 @@ import static java.util.stream.Collectors.toList;
 public class PostService {
     PostRepository postRepository;
     PostMapper postMapper;
+    SharedPostRepository sharedPostRepository;
+    ShareMapper shareMapper;
+
     KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired
     S3Service s3Service;
@@ -56,12 +60,15 @@ public class PostService {
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            List<String> fileUrls = (files != null && !files.isEmpty()) ? s3Service.uploadFiles(files) : List.of();
+        // Kiểm tra kỹ nếu files không null và chỉ chứa file không rỗng
+        List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
+                ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
+                : List.of();
 
         Post post = Post.builder()
                 .content(request.getContent())
                 .userId(authentication.getName())
-                .fileUrls(fileUrls) // lấy cái này để hiện thị trên FE
+                .fileUrls(fileUrls) // lấy cái này để hiển thị trên FE
                 .visibility(request.getVisibility())
                 .createdDate(Instant.now())
                 .modifiedDate(Instant.now())
@@ -72,8 +79,6 @@ public class PostService {
 
         post = postRepository.save(post);
 
-        // TODO thông báo khi post thành công
-
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post created successfully")
@@ -82,41 +87,7 @@ public class PostService {
     }
 
 
-
-    public ApiResponse<PostResponse> sharePost(String postId, String content) {
-        Post originalPost = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        List<String> fileUrls = (originalPost.getFileUrls() != null && !originalPost.getFileUrls().isEmpty())
-        ? originalPost.getFileUrls()
-        : List.of();
-
-        Post sharedPost = Post.builder()
-                .content(content)
-                .userId(authentication.getName())
-                .fileUrls(fileUrls) // đang test, xoá nếu bị trùng
-                .createdDate(Instant.now())
-                .modifiedDate(Instant.now())
-                .like(0)
-                .unlike(0)
-                .comments(List.of())
-                .sharedPost(originalPost)
-                .build();
-
-        // TODO thêm xử lý ngoại lệ nếu bài đã share bị xoá
-
-        sharedPost = postRepository.save(sharedPost);
-
-        return ApiResponse.<PostResponse>builder()
-                .code(200)
-                .message("Post shared successfully")
-                .result(postMapper.toPostResponse(sharedPost))
-                .build();
-    }
-
-
-       public ApiResponse<Void> deletePost(String postId) {
+    public ApiResponse<Void> deletePost(String postId) {
         // Lấy bài viết từ cơ sở dữ liệu
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -153,7 +124,7 @@ public class PostService {
     }
 
 
-        public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
+    public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userID = authentication.getName();
 
@@ -211,6 +182,55 @@ public class PostService {
                         .build())
                 .build();
     }
+
+    public ApiResponse<PostResponse> sharePost(String postId, String content, PostVisibility visibility) {
+        // Tìm bài gốc theo postId
+        Post originalPost = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Kiểm tra xem bài gốc đã bị đánh dấu xóa hay chưa
+        if (originalPost.isDeleted()) {
+            throw new RuntimeException("Cannot share a deleted post.");
+        }
+
+        // Kiểm tra quyền chia sẻ dựa trên visibility của bài viết
+        if (originalPost.getVisibility() == PostVisibility.PRIVATE &&
+                !originalPost.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            throw new RuntimeException("You are not authorized to share this post.");
+        }
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        // Lấy URL của các file từ bài viết gốc, nếu có
+        List<String> fileUrls = originalPost.getFileUrls() != null ?
+                List.copyOf(originalPost.getFileUrls()) : List.of();
+
+        // Tạo một bản ghi SharedPost thay vì Post
+        SharedPost sharedPost = SharedPost.builder()
+                .content(content)
+                .userId(currentUserId)
+                .fileUrls(fileUrls)
+                .visibility(visibility)
+                .createdDate(Instant.now())
+                .modifiedDate(Instant.now())
+                .like(0)
+                .unlike(0)
+                .commentCount(0)
+                .originalPost(originalPost)
+                .build();
+
+        // Lưu bài viết chia sẻ mới vào SharedPostRepository
+        sharedPost = sharedPostRepository.save(sharedPost);
+
+        // Sử dụng ShareMapper để ánh xạ SharedPost sang PostResponse
+        return ApiResponse.<PostResponse>builder()
+                .code(200)
+                .message("Post shared successfully")
+                .result(shareMapper.toPostResponse(sharedPost))
+                .build();
+    }
+
 
     boolean isFriend(String currentUserId, String postUserId) {
         // TODO nối qua friend-service để check relationship
