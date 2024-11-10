@@ -42,20 +42,20 @@ spring:
       auto-create: true  # Tự động tạo topic nếu cần thiết
 
 jwt:
-  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  signerKey: ${KEY_JWT}
   valid-duration: 3600  # in seconds
   refreshable-duration: 720000  # in seconds
 
 notification:
   email:
     brevo-url: https://api.brevo.com
-    brevo-apikey: "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"
+    brevo-apikey: ${BREVO_APIKEY}
 
 mail:
   host: smtp.gmail.com
   port: 587
-  username: dangngocduong2509@gmail.com
-  password: qenz zvxi qzdy lupo
+  username: ${MAIL_USERNAME}
+  password: ${MAIL_PASSWORD}
   properties:
     mail:
       smtp:

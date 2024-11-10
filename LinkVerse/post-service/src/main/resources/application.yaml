@@ -5,16 +5,18 @@ server:
 
 spring:
   application:
+    bucket:
+      name: image-0
     name: post-service  # Tên ứng dụng cho post-service
   data:
     mongodb:
-      uri: mongodb://root:root@localhost:27017/post-service?authSource=admin  # Kết nối MongoDB cho post-service
+      uri: ${URL_MGDB}  # Kết nối MongoDB cho post-service
 
   datasource:
-    url: "jdbc:mysql://localhost:3306/Data_Firstt"  # Cấu hình kết nối MySQL
+    url: ${URL_SQL} # Cấu hình kết nối MySQL
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: root
+    username: ${USERNAME_SQL}
+    password: ${PASS_SQL}
   jpa:
     hibernate:
       ddl-auto: update  # Cập nhật schema JPA tự động
@@ -27,14 +29,12 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: AKIATCKANL35JUXP2NFF
-      secret-key: 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
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
     region:
       static: ap-southeast-2
     stack:
       auto: false
-
-
 application:
   bucket:
     name: image-0
