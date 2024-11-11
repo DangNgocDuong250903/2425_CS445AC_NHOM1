@@ -91,16 +91,7 @@ const theme = createTheme({
                     "&.MuiAvatar-root": {
                         border: "none",
                         fontSize: "15px"
-                        // borderColor: "",
-                        // shadows
                     }
-                }
-            }
-        },
-        MuiBadge: {
-            styleOverrides: {
-                root: {
-
                 }
             }
         }

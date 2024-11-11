@@ -1,35 +1,53 @@
 import {
   FriendCard,
   ProfileCard,
-  TextInput,
   Button,
   PostCard,
   TopBar,
   GroupCard,
   FriendRequest,
   FriendSuggest,
+  DialogCustom,
 } from "~/components";
 import { user, posts } from "~/assets/mockData/data";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NoProfile } from "~/assets/index";
 import { BsImages } from "react-icons/bs";
-import { useForm } from "react-hook-form";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
+import { MenuItem, Select, TextField } from "@mui/material";
+import { FormControl } from "@mui/material";
+import { getBase64 } from "~/utils";
+import { IoCloseCircle } from "react-icons/io5";
 
 const HomePage = () => {
-  // const [friendRequest, setFriendRequest] = useState(requests);
-  // const [suggestedFriends, setSuggestedFriends] = useState(suggest);
-  // const [errMsg, setErrMsg] = useState("");
   const [file, setFile] = useState(null);
-  // const [posting, setPosting] = useState(false);
-  // const [loading, setLoading] = useState(false);
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
-  const handlePostSubmit = async (data) => {};
+  const [image, setImage] = useState("");
+  const [status, setStatus] = useState("");
+  const [postState, setPostState] = useState("public");
+  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
+
+  useEffect(() => {
+    if (file) {
+      getBase64(file)
+        .then((result) => setImage(result))
+        .catch((error) => console.error(error));
+    }
+  }, [file]);
+
+  const handleSubmitPost = () => {};
+
+  const handleDeleteImage = () => {
+    setFile(null);
+    setImage("");
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
 
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
@@ -44,112 +62,34 @@ const HomePage = () => {
 
         {/* giua */}
         <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
-          <form
-            onSubmit={handleSubmit(handlePostSubmit)}
-            className="bg-primary px-4 rounded-lg"
-          >
+          <div className="bg-primary px-4 rounded-lg">
             {/* Header */}
-            <div className="w-full flex items-center gap-3 py-4 border-b border-[#66666645]">
-              <img
-                src={user?.profileUrl ?? NoProfile}
-                alt="User Image"
-                className="w-14 h-14 rounded-full object-cover"
-              />
-              <TextInput
-                styles="w-full rounded-full py-4"
-                placeholder="What's on your mind...."
-                name="description"
-                register={register("description", {
-                  required: "Write something about post",
-                })}
-                error={errors.description ? errors.description.message : ""}
-              />
-            </div>
-            {/* {errMsg?.message && (
-              <span
-                role="alert"
-                className={`text-sm ${
-                  errMsg?.status === "failed"
-                    ? "text-[#f64949fe]"
-                    : "text-[#2ba150fe]"
-                } mt-0.5`}
-              >
-                {errMsg?.message}
-              </span>
-            )} */}
-
-            <div className="flex items-center justify-between py-4">
-              <label
-                htmlFor="imgUpload"
-                className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-              >
-                <input
-                  type="file"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="hidden"
-                  id="imgUpload"
-                  data-max-size="5120"
-                  accept=".jpg, .png, .jpeg"
+            <div className="w-full flex items-center justify-between gap-3 py-4 border-b border-[#66666645]">
+              <div className="flex items-center gap-4">
+                <img
+                  src={user?.profileUrl ?? NoProfile}
+                  alt="User Image"
+                  className="w-14 h-14 rounded-full object-cover"
                 />
-                <BsImages />
-                <span>Image</span>
-              </label>
-
-              <label
-                className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                htmlFor="videoUpload"
-              >
-                <input
-                  type="file"
-                  data-max-size="5120"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="hidden"
-                  id="videoUpload"
-                  accept=".mp4, .wav"
-                />
-                <FaPhotoVideo />
-                <span>Video</span>
-              </label>
-
-              <label
-                className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                htmlFor="vgifUpload"
-              >
-                <input
-                  type="file"
-                  data-max-size="5120"
-                  onChange={(e) => setFile(e.target.files[0])}
-                  className="hidden"
-                  id="vgifUpload"
-                  accept=".gif"
-                />
-                <PiGifThin />
-                <span>Gif</span>
-              </label>
-
+                <span
+                  onClick={() => setIsOpenDialogAdd(true)}
+                  className="text-ascent-2 text-sm cursor-pointer hover:text-white"
+                >
+                  Có gì mới khum?
+                </span>
+              </div>
               <Button
-                type="submit"
                 title="Post"
+                onClick={() => setIsOpenDialogAdd(true)}
                 containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm"
               />
-
-              {/* <div>
-                {posting ? (
-                  <Loading />
-                ) : (
-                  <Button
-                    type="submit"
-                    title="Post"
-                    containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm"
-                  />
-                )}
-              </div> */}
             </div>
-          </form>
+          </div>
 
-          {posts.map((post) => (
+          {/* post */}
+          {posts.map((post, i) => (
             <PostCard
-              key={post?._id}
+              key={i}
               post={post}
               user={user}
               deletePost={() => {}}
@@ -182,6 +122,223 @@ const HomePage = () => {
           <FriendSuggest />
         </div>
       </div>
+      {/* post */}
+      <DialogCustom isOpen={isOpenDialogAdd}>
+        <div className="w-full bg-bgColor shadow-newFeed border-1 border-borderNewFeed">
+          {/* header */}
+          <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
+            <button
+              onClick={() => setIsOpenDialogAdd(false)}
+              className="text-base font-medium"
+            >
+              Hủy
+            </button>
+            <span className="text-lg font-semibold">Bài viết mới</span>
+            <div />
+          </div>
+          <div className="w-full border-1 border-borderNewFeed" />
+
+          {/* body */}
+          <div className="w-full flex flex-col px-5 py-4 justify-center gap-y-2">
+            {/* 1 */}
+            <div className="flex gap-x-3">
+              {/* 1 */}
+              <img
+                src={user?.profileUrl ?? NoProfile}
+                alt="User Image"
+                className="w-14 h-14 rounded-full object-cover"
+              />
+              {/* 2 */}
+              <TextField
+                label="Có gì mới ?"
+                multiline
+                onChange={(e) => setStatus(e.target.value)}
+                maxRows={5}
+                variant="standard"
+                fullWidth
+                sx={{
+                  "& .MuiInput-root": {
+                    // Bottom border
+                    "&:before": {
+                      display: "none",
+                    },
+                    // Border on focus
+                    "&:after": {
+                      display: "none",
+                    },
+                    ":hover:not(.Mui-focused)": {
+                      "&:before": {
+                        display: "none",
+                      },
+                    },
+                  },
+                  // Label
+                  "& .MuiInputLabel-standard": {
+                    "&.Mui-focused": {
+                      display: "none",
+                    },
+                  },
+                }}
+              />
+              {/* {image && (
+                  <img
+                    src={image}
+                    alt="product_image"
+                    style={{
+                      height: "60px",
+                      width: "60px",
+                      borderRadius: "50%",
+                      objectFit: "cover",
+                    }}
+                  />
+                )} */}
+              {/* {image && (
+                  <video width="400" controls>
+                    <source src={image} id="video_here" />
+                    Your browser does not support HTML5 video.
+                  </video>
+                )} */}
+            </div>
+            {/* 2 */}
+            <div className="flex gap-x-10 items-center px-6">
+              <div className="h-9 border-solid border-slate-300 border-[0.1px]" />
+              {/* upload */}
+              <div className="flex items-center justify-between py-4 gap-x-3">
+                <label
+                  htmlFor="imgUpload"
+                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                >
+                  <input
+                    type="file"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="imgUpload"
+                    data-max-size="5120"
+                    accept=".jpg, .png, .jpeg"
+                  />
+                  <BsImages style={{ width: "20px", height: "20px" }} />
+                </label>
+                <label
+                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                  htmlFor="videoUpload"
+                >
+                  <input
+                    type="file"
+                    data-max-size="5120"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="videoUpload"
+                    accept=".mp4, .wav"
+                  />
+                  <FaPhotoVideo style={{ width: "20px", height: "20px" }} />
+                </label>
+                <label
+                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                  htmlFor="vgifUpload"
+                >
+                  <input
+                    type="file"
+                    data-max-size="5120"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="vgifUpload"
+                    accept=".gif"
+                  />
+                  <PiGifThin style={{ width: "25px", height: "25px" }} />
+                </label>
+                {file && file?.size > 5120 * 1024 && (
+                  <span className="text-xs text-red-600">
+                    vui lòng tải &lt; file 5mb
+                  </span>
+                )}
+              </div>
+            </div>
+            {/* 3 */}
+            <div>
+              {image && file?.type?.includes("mp4") && (
+                <div className="relative">
+                  <video
+                    width="100%"
+                    controls
+                    className="rounded-xl border-1 border-borderNewFeed"
+                  >
+                    <source src={image} />
+                    Your browser does not support HTML5 video.
+                  </video>
+                  <IoCloseCircle
+                    onClick={handleDeleteImage}
+                    className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
+                  />
+                </div>
+              )}
+
+              {image &&
+                (file?.type.includes("jpeg") ||
+                  file?.type.includes("png") ||
+                  file?.type.includes("gif")) && (
+                  <div className="w-full h-[300px] relative">
+                    <img
+                      src={image}
+                      className="rounded-xl border-1 shadow-newFeed border-borderNewFeed"
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <IoCloseCircle
+                      onClick={handleDeleteImage}
+                      className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
+                    />
+                  </div>
+                )}
+            </div>
+            {/* 4 */}
+            <div className="w-full flex justify-between">
+              <FormControl
+                sx={{ m: 1, minWidth: 120 }}
+                size="small"
+                variant="standard"
+              >
+                <Select
+                  disableUnderline="true"
+                  labelId="demo-select-small-label"
+                  id="demo-select-small"
+                  value={postState}
+                  onChange={(e) => setPostState(e.target.value)}
+                  sx={{
+                    boxShadow: "none",
+                    "& .MuiSelect-icon": {
+                      display: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value={"public"}>Công khai</MenuItem>
+                  <MenuItem value={"private"}>Riêng tư</MenuItem>
+                </Select>
+              </FormControl>
+              <Button
+                type="submit"
+                title="Đăng"
+                disable={status === null || !status.trim() ? true : false}
+                onClick={handleSubmitPost}
+                containerStyles="bg-bgColor px-5 py-2 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+              />
+              {/* <div>
+                {posting ? (
+                  <Loading />
+                ) : (
+                  <Button
+                    type="submit"
+                    title="Post"
+                    containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm"
+                  />
+                )}
+              </div> */}
+            </div>
+          </div>
+        </div>
+      </DialogCustom>
     </div>
   );
 };

@@ -25,6 +25,9 @@ export default {
       flexGrow: {
         3: '3',
         1: '1'
+      },
+      borderWidth: {
+        '1': "0.8px"
       }
     },
     screens: {

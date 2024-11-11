@@ -9,11 +9,13 @@ import Box from "@mui/material/Box";
 import {
   Avatar,
   AvatarGroup,
-  DialogActions,
   DialogContent,
   DialogTitle,
   Divider,
   Fab,
+  FormControl,
+  MenuItem,
+  Select,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useState } from "react";
@@ -27,9 +29,9 @@ const ProfilePage = () => {
   const theming = useTheme();
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
-  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
   const [isOpenDialogEdit, setIsOpenDialogEdit] = useState(false);
 
+  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
   const handleOpenModalAdd = () => {
     setIsOpenDialogAdd(true);
   };
@@ -53,16 +55,7 @@ const ProfilePage = () => {
         aria-labelledby={`simple-tab-${index}`}
         {...other}
       >
-        {value === index && (
-          <Box
-            sx={{
-              height: index === 0 ? "1200px" : "auto",
-              overflowY: index === 0 ? "auto" : "visible",
-            }}
-          >
-            {children}
-          </Box>
-        )}
+        {value === index && <Box sx={{ height: "screen" }}>{children}</Box>}
       </div>
     );
   }
@@ -74,6 +67,12 @@ const ProfilePage = () => {
     };
   }
 
+  const [age, setAge] = useState("");
+
+  const handleChangeStatus = (event) => {
+    setAge(event.target.value);
+  };
+
   return (
     <>
       <Wrapper>
@@ -81,41 +80,35 @@ const ProfilePage = () => {
           <TopBar title={"Trang cá nhân"} />
 
           <div className="w-full h-full justify-center flex">
-            <div className="w-[800px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+            <div className="max-w-[800px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
               {/* 1 */}
               <div className="w-full h-auto flex flex-col p-10 gap-y-5">
                 <div className="flex justify-between">
-                  <div>
-                    <span className="text-2xl font-semibold text-ascent-1">
-                      dhtuan
-                    </span>
-                  </div>
-                  <div>
-                    <img
-                      src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
-                      alt="avatar"
-                      className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat"
-                    />
-                  </div>
+                  <span className="text-2xl font-semibold text-ascent-1">
+                    dhtuan
+                  </span>
+                  <img
+                    src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
+                    alt="avatar"
+                    className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat"
+                  />
                 </div>
                 {/* 2 */}
                 <div className="flex justify-between items-center">
-                  <div>
-                    <AvatarGroup total={27}>
-                      <Avatar
-                        alt="avatar"
-                        src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
-                      />
-                      <Avatar
-                        alt="avatar"
-                        src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvZ5tlwcyX69noUottK0EDi6CZJS76ds-vqw&s"
-                      />
-                      <Avatar
-                        alt="avatar"
-                        src="https://kenh14cdn.com/2017/images685542-a-1489655177057.jpg"
-                      />
-                    </AvatarGroup>
-                  </div>
+                  <AvatarGroup total={27}>
+                    <Avatar
+                      alt="avatar"
+                      src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
+                    />
+                    <Avatar
+                      alt="avatar"
+                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvZ5tlwcyX69noUottK0EDi6CZJS76ds-vqw&s"
+                    />
+                    <Avatar
+                      alt="avatar"
+                      src="https://kenh14cdn.com/2017/images685542-a-1489655177057.jpg"
+                    />
+                  </AvatarGroup>
                   <div className="flex gap-2">
                     <FaInstagram
                       color={theme === "dark" ? "#fff" : "#000"}
@@ -171,6 +164,7 @@ const ProfilePage = () => {
                         <Tab label="Bài đăng lại" {...a11yProps(2)} />
                       </Tabs>
                     </Box>
+                    {/* 1 */}
                     <CustomTabPanel value={value} index={0}>
                       <div className="w-full h-full">
                         <div className=" w-full flex items-center justify-between px-6 py-4">
@@ -193,9 +187,13 @@ const ProfilePage = () => {
                         <div className="border-x-[0.5px] border-y-[0.5px] border-solid border-borderNewFeed" />
                       </div>
                     </CustomTabPanel>
+                    {/* 2 */}
                     <CustomTabPanel value={value} index={1}>
-                      Item Two
+                      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
+                        <h1>Chưa có bài đăng nào</h1>
+                      </div>
                     </CustomTabPanel>
+                    {/* 3 */}
                     <CustomTabPanel value={value} index={2}>
                       Item Three
                     </CustomTabPanel>
@@ -204,7 +202,7 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
-          {/* Add */}
+          {/* Add post */}
           <DialogCustom
             isOpen={isOpenDialogAdd}
             title={"Test"}
@@ -250,7 +248,29 @@ const ProfilePage = () => {
                     <MdOutlineVideoLibrary />
                   </div>
                 </div>
-                <div className="w-full flex justify-end">
+                <div className="w-full flex justify-between">
+                  <FormControl
+                    sx={{ m: 1, minWidth: 120 }}
+                    size="small"
+                    variant="standard"
+                  >
+                    <Select
+                      disableUnderline="true"
+                      labelId="demo-select-small-label"
+                      id="demo-select-small"
+                      value={"public"}
+                      onChange={handleChangeStatus}
+                      sx={{
+                        boxShadow: "none",
+                        "& .MuiSelect-icon": {
+                          display: "none",
+                        },
+                      }}
+                    >
+                      <MenuItem value={"public"}>Công khai</MenuItem>
+                      <MenuItem value={"private"}>Riêng tư</MenuItem>
+                    </Select>
+                  </FormControl>
                   <Button
                     title={"Đăng"}
                     containerStyles="border-x-[0.8px] border-y-[0.8px] rounded-xl border-borderNewFeed shadow-newFeed text-ascent-1 px-4 py-2"

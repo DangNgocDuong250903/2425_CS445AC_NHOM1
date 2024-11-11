@@ -25,11 +25,14 @@ const FriendRequest = () => {
                 alt={from?.firstName}
                 className="w-10 h-10 object-cover rounded-full"
               />
-              <div className="flex-1">
-                <p className="text-base font-medium text-ascent-1">
-                  {from?.firstName} {from?.lastName}
+              <div className="flex-1 w-full">
+                <p
+                  id="text-ellipsis"
+                  className="text-base font-medium text-ascent-1"
+                >
+                  {from?.firstName + " " + from?.lastName}
                 </p>
-                <span className="text-sm text-ascent-2">
+                <span id="text-ellipsis" className="text-sm text-ascent-2">
                   {from?.profession ?? "No profession"}
                 </span>
               </div>
