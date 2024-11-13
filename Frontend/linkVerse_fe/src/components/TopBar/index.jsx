@@ -16,7 +16,6 @@ const TopBar = ({ title }) => {
   const { t } = useTranslation();
   const { theme } = useSelector((state) => state.theme);
   const { language } = useSelector((state) => state.language);
-  const user = useSelector((state) => state.user);
 
   //language
   const handleChangeLanguage = (e) => {
@@ -52,8 +51,8 @@ const TopBar = ({ title }) => {
               <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
               <g
                 id="SVGRepo_tracerCarrier"
-                strokeLineCap="round"
-                strokeLineJoin="round"
+                strokeLinecap="round"
+                strokeLinejoin="round"
               ></g>
               <g id="SVGRepo_iconCarrier">
                 <path
@@ -85,17 +84,9 @@ const TopBar = ({ title }) => {
               ".MuiOutlinedInput-notchedOutline": {
                 border: 0,
               },
-              "&.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
-                {
-                  border: 0,
-                },
               "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
                 {
                   border: 0,
-                },
-              "& .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
-                {
-                  paddingRight: 0,
                 },
               "& .MuiSelect-select": {
                 padding: 0,
@@ -112,7 +103,6 @@ const TopBar = ({ title }) => {
               <img src={VieIcon} alt="icon" />
             </MenuItem>
             <MenuItem value={"en"}>
-              {" "}
               <img src={EnIcon} alt="icon" />
             </MenuItem>
           </Select>

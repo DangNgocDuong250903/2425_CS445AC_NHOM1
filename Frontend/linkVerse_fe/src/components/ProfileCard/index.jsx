@@ -18,8 +18,6 @@ const ProfileCard = () => {
   //Update profile
   const handleUpdateProfile = () => {};
 
-  console.log(t(moment(1 / 1 / 2003).fromNow()));
-
   return (
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       {/* tren */}

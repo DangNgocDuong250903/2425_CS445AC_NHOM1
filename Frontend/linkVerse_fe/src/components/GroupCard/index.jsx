@@ -11,9 +11,9 @@ const GroupCard = () => {
         </div>
 
         <div className="flex w-full flex-col gap-4 pt-4">
-          {groups?.map((group) => (
+          {groups?.map((group, i) => (
             <Link
-              key={group._id}
+              key={i}
               to={"/group"}
               className="flex gap-4 items-center cursor-pointer"
             >

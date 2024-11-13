@@ -1,23 +1,33 @@
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
-import { Box, Grow } from "@mui/material";
+import { Fade } from "@mui/material";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Grow direction="up" ref={ref} {...props} />;
+  return <Fade direction="up" ref={ref} {...props} />;
 });
 
-const DialogCustom = ({ isOpen, children, styles, stylesContainer }) => {
-  const handleClose = () => {
-    isOpen = false;
-  };
+const DialogCustom = ({
+  isOpen,
+  children,
+  className,
+  theme,
+  handleCloseDiaLogAdd,
+}) => {
   return (
     <Dialog
       TransitionComponent={Transition}
-      onClose={handleClose}
+      onClose={handleCloseDiaLogAdd}
       open={isOpen}
-      sx={stylesContainer}
+      fullWidth
+      sx={{
+        "& .MuiDialog-paper": {
+          borderRadius: "13px",
+          borderWidth: "0.1px",
+          borderColor: theme === "dark" ? "rgb(45,45,45)" : "rgb(213,213,213)",
+        },
+      }}
     >
-      <Box sx={styles}>{children}</Box>
+      <div className={className}>{children}</div>
     </Dialog>
   );
 };

@@ -77,7 +77,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
         )}
       </div>
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
-        <p className="flex gap-2 items-center text-base cursor-pointer">
+        <div className="flex gap-2 items-center text-base cursor-pointer">
           {/* {post?.like?.includes(user?._id) ? (
             <BiSolidLike size={20} color="blue" />
           ) : (
@@ -91,7 +91,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
             )}
           </div>
           {post?.likes?.length} Likes
-        </p>
+        </div>
 
         <p
           className="flex gap-2 items-center text-base cursor-pointer"
