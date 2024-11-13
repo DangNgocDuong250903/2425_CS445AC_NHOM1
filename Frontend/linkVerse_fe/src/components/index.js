@@ -23,5 +23,5 @@ export {
     Wrapper,
     GroupCard,
     FriendRequest,
-    FriendSuggest
+    FriendSuggest,
 }

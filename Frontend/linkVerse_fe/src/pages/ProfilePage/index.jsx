@@ -1,4 +1,16 @@
-import { Button, DialogCustom, TextInput, TopBar, Wrapper } from "~/components";
+import {
+  DialogCustom,
+  TextInput,
+  TopBar,
+  Wrapper,
+  FriendCard,
+  ProfileCard,
+  Button,
+  PostCard,
+  GroupCard,
+  FriendRequest,
+  FriendSuggest,
+} from "~/components";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { FaArrowLeft, FaInstagram } from "react-icons/fa";
@@ -16,35 +28,32 @@ import {
   FormControl,
   MenuItem,
   Select,
+  TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { IoImagesOutline } from "react-icons/io5";
-import { HiOutlineGif } from "react-icons/hi2";
-import { MdOutlineVideoLibrary } from "react-icons/md";
+import { user, posts } from "~/assets/mockData/data";
+import { NoProfile } from "~/assets/index";
+
+import { BsImages } from "react-icons/bs";
+import { FaPhotoVideo } from "react-icons/fa";
+import { PiGifThin } from "react-icons/pi";
+import { getBase64 } from "~/utils";
+import { IoCloseCircle } from "react-icons/io5";
 
 const ProfilePage = () => {
   const { t } = useTranslation();
   const theming = useTheme();
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
-  const [isOpenDialogEdit, setIsOpenDialogEdit] = useState(false);
-
-  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
-  const handleOpenModalAdd = () => {
-    setIsOpenDialogAdd(true);
-  };
-
-  const handleOpenModalEdit = () => {
-    setIsOpenDialogEdit(true);
-  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
 
-  function CustomTabPanel(props) {
+  //tab
+  const CustomTabPanel = (props) => {
     const { children, value, index, ...other } = props;
 
     return (
@@ -58,19 +67,48 @@ const ProfilePage = () => {
         {value === index && <Box sx={{ height: "screen" }}>{children}</Box>}
       </div>
     );
-  }
-
-  function a11yProps(index) {
+  };
+  const a11yProps = (index) => {
     return {
       id: `simple-tab-${index}`,
       "aria-controls": `simple-tabpanel-${index}`,
     };
-  }
+  };
 
-  const [age, setAge] = useState("");
+  const [file, setFile] = useState(null);
+  const [image, setImage] = useState("");
+  const [status, setStatus] = useState("");
+  const [postState, setPostState] = useState("public");
+  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
 
-  const handleChangeStatus = (event) => {
-    setAge(event.target.value);
+  useEffect(() => {
+    if (file) {
+      getBase64(file)
+        .then((result) => setImage(result))
+        .catch((error) => console.error(error));
+    }
+  }, [file]);
+
+  //delete
+  const handleDeleteImage = () => {
+    setFile(null);
+    setImage("");
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFile(selectedFile);
+    }
+  };
+
+  //submit
+  const handleSubmitPost = () => {
+    console.log({ status, image, postState });
+  };
+
+  const handleCloseDiaLogAdd = () => {
+    setIsOpenDialogAdd(false);
   };
 
   return (
@@ -123,7 +161,7 @@ const ProfilePage = () => {
                 {/* 3 */}
                 <div className="w-full text-center items-center justify-center flex ">
                   <Button
-                    onClick={handleOpenModalEdit}
+                    // onClick={handleOpenModalEdit}
                     title={t("Chỉnh sửa trang cá nhân")}
                     containerStyles={
                       "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
@@ -179,7 +217,7 @@ const ProfilePage = () => {
                             </span>
                           </div>
                           <Button
-                            onClick={handleOpenModalAdd}
+                            onClick={() => setIsOpenDialogAdd(true)}
                             title="Đăng"
                             containerStyles="px-5 py-2 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
                           />
@@ -205,49 +243,175 @@ const ProfilePage = () => {
           {/* Add post */}
           <DialogCustom
             isOpen={isOpenDialogAdd}
-            title={"Test"}
-            stylesContainer={{ borderRadius: "20px" }}
-            styles={{ width: "600px", borderRadius: "20px" }}
+            theme={theme}
+            handleCloseDiaLogAdd={handleCloseDiaLogAdd}
           >
-            {/* header */}
-            <DialogTitle>
-              <div className="w-full flex items-center justify-between gap-5">
+            <div
+              className={`w-full ${
+                theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
+              } shadow-newFeed`}
+            >
+              {/* header */}
+              <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
                 <button
                   onClick={() => setIsOpenDialogAdd(false)}
-                  className="text-base font-medium"
+                  className={`text-base font-medium hover:text-neutral-500 text-primary ${
+                    theme === "dark" ? "text-white" : "text-black"
+                  }`}
                 >
                   Hủy
                 </button>
-                <span className="text-lg font-semibold">Bài viết mới</span>
+                <span
+                  className={`text-lg font-semibold ${
+                    theme === "dark" ? "text-white" : "text-black"
+                  }`}
+                >
+                  Bài viết mới
+                </span>
                 <div />
               </div>
-            </DialogTitle>
-            {/* body */}
-            <DialogContent dividers>
-              <div className="w-full flex flex-col p-x-3 justify-center gap-y-3">
+              <div className="w-full border-t-[0.1px] border-borderNewFeed" />
+
+              {/* body */}
+              <div className=" w-full flex flex-col px-5 py-4 justify-center gap-y-2">
                 {/* 1 */}
-                <div className="flex gap-x-5">
+                <div className="flex gap-x-3">
                   {/* 1 */}
                   <img
-                    src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
-                    alt="avatar"
-                    className="rounded-full object-cover w-[40px] h-[40px] bg-no-repeat"
+                    src={user?.profileUrl ?? NoProfile}
+                    alt="User Image"
+                    className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
                   />
                   {/* 2 */}
-                  <div className="flex flex-col gap-1">
-                    <span>tuan2.8</span>
-                    <span>Có gì mới</span>
-                  </div>
+                  <TextField
+                    label="Có gì mới ?"
+                    multiline
+                    onChange={(e) => setStatus(e.target.value)}
+                    maxRows={5}
+                    variant="standard"
+                    fullWidth
+                    sx={{
+                      "& .MuiInput-root": {
+                        color: theme === "dark" ? "#fff" : "#000",
+                        // Bottom border
+                        "&:before": {
+                          display: "none",
+                        },
+                        // Border on focus
+                        "&:after": {
+                          display: "none",
+                        },
+                        ":hover:not(.Mui-focused)": {
+                          color: "",
+                          "&:before": {
+                            display: "none",
+                          },
+                        },
+                      },
+                      // Label
+                      "& .MuiInputLabel-standard": {
+                        color: "rgb(89, 91, 100)",
+                        "&.Mui-focused": {
+                          display: "none",
+                        },
+                      },
+                    }}
+                  />
                 </div>
                 {/* 2 */}
-                <div className="flex gap-x-5">
-                  <div className="h-5 border-solid border-slate-300 border-[0.1px]" />
-                  <div className="flex gap-2">
-                    <IoImagesOutline />
-                    <HiOutlineGif />
-                    <MdOutlineVideoLibrary />
+                <div className="flex gap-x-10 items-center px-6">
+                  <div className="h-9 border-solid border-borderNewFeed border-[0.1px]" />
+                  {/* upload */}
+                  <div className="flex items-center justify-between py-4 gap-x-3">
+                    <label
+                      htmlFor="imgUpload"
+                      className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                    >
+                      <input
+                        type="file"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="imgUpload"
+                        data-max-size="5120"
+                        accept=".jpg, .png, .jpeg"
+                      />
+                      <BsImages style={{ width: "20px", height: "20px" }} />
+                    </label>
+                    <label
+                      className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                      htmlFor="videoUpload"
+                    >
+                      <input
+                        type="file"
+                        data-max-size="5120"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="videoUpload"
+                        accept=".mp4, .wav"
+                      />
+                      <FaPhotoVideo style={{ width: "20px", height: "20px" }} />
+                    </label>
+                    <label
+                      className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                      htmlFor="vgifUpload"
+                    >
+                      <input
+                        type="file"
+                        data-max-size="5120"
+                        onChange={handleFileChange}
+                        className="hidden"
+                        id="vgifUpload"
+                        accept=".gif"
+                      />
+                      <PiGifThin style={{ width: "25px", height: "25px" }} />
+                    </label>
+                    {file && file?.size > 5120 * 1024 && (
+                      <span className="text-xs text-red-600">
+                        vui lòng tải &lt; file 5mb
+                      </span>
+                    )}
                   </div>
                 </div>
+                {/* 3 */}
+                <div>
+                  {image && file?.type?.includes("mp4") && (
+                    <div className="relative">
+                      <video
+                        width="100%"
+                        controls
+                        className="rounded-xl border-1 border-borderNewFeed"
+                      >
+                        <source src={image} />
+                      </video>
+                      <IoCloseCircle
+                        onClick={handleDeleteImage}
+                        className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
+                      />
+                    </div>
+                  )}
+
+                  {image &&
+                    (file?.type.includes("jpeg") ||
+                      file?.type.includes("png") ||
+                      file?.type.includes("gif")) && (
+                      <div className="w-full h-[300px] relative">
+                        <img
+                          src={image}
+                          className="rounded-xl border-1 shadow-newFeed border-borderNewFeed"
+                          style={{
+                            height: "100%",
+                            width: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                        <IoCloseCircle
+                          onClick={handleDeleteImage}
+                          className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
+                        />
+                      </div>
+                    )}
+                </div>
+                {/* 4 */}
                 <div className="w-full flex justify-between">
                   <FormControl
                     sx={{ m: 1, minWidth: 120 }}
@@ -258,8 +422,8 @@ const ProfilePage = () => {
                       disableUnderline="true"
                       labelId="demo-select-small-label"
                       id="demo-select-small"
-                      value={"public"}
-                      onChange={handleChangeStatus}
+                      value={postState}
+                      onChange={(e) => setPostState(e.target.value)}
                       sx={{
                         boxShadow: "none",
                         "& .MuiSelect-icon": {
@@ -267,21 +431,27 @@ const ProfilePage = () => {
                         },
                       }}
                     >
-                      <MenuItem value={"public"}>Công khai</MenuItem>
-                      <MenuItem value={"private"}>Riêng tư</MenuItem>
+                      <MenuItem value={"public"}>
+                        <span className="text-ascent-2">Công khai</span>
+                      </MenuItem>
+                      <MenuItem value={"private"}>
+                        <span className="text-ascent-2">Riêng tư</span>
+                      </MenuItem>
                     </Select>
                   </FormControl>
                   <Button
-                    title={"Đăng"}
-                    containerStyles="border-x-[0.8px] border-y-[0.8px] rounded-xl border-borderNewFeed shadow-newFeed text-ascent-1 px-4 py-2"
+                    type="submit"
+                    title="Đăng"
+                    disable={status === null || !status.trim() ? true : false}
+                    onClick={handleSubmitPost}
+                    containerStyles="bg-bgColor px-5 py-1 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
                   />
                 </div>
               </div>
-            </DialogContent>
+            </div>
           </DialogCustom>
-
           {/* Edit */}
-          <DialogCustom
+          {/* <DialogCustom
             isOpen={isOpenDialogEdit}
             title={"Test"}
             styles={{
@@ -327,7 +497,7 @@ const ProfilePage = () => {
                 />
               </div>
             </DialogContent>
-          </DialogCustom>
+          </DialogCustom> */}
         </div>
         <div className="absolute bottom-5 right-5">
           <Fab

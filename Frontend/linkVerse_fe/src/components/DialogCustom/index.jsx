@@ -6,17 +6,26 @@ const Transition = React.forwardRef(function Transition(props, ref) {
   return <Fade direction="up" ref={ref} {...props} />;
 });
 
-const DialogCustom = ({ isOpen, children, className }) => {
-  const handleClose = () => {
-    isOpen = false;
-  };
-
+const DialogCustom = ({
+  isOpen,
+  children,
+  className,
+  theme,
+  handleCloseDiaLogAdd,
+}) => {
   return (
     <Dialog
       TransitionComponent={Transition}
-      onClose={handleClose}
+      onClose={handleCloseDiaLogAdd}
       open={isOpen}
       fullWidth
+      sx={{
+        "& .MuiDialog-paper": {
+          borderRadius: "13px",
+          borderWidth: "0.1px",
+          borderColor: theme === "dark" ? "rgb(45,45,45)" : "rgb(213,213,213)",
+        },
+      }}
     >
       <div className={className}>{children}</div>
     </Dialog>

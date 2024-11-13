@@ -5,7 +5,7 @@ const Admin = () => {
   return (
     <Wrapper>
       <TopBar />
-      <div className="bg-yellow-500">Admin</div>
+      <div className="">Admin</div>
     </Wrapper>
   );
 };
