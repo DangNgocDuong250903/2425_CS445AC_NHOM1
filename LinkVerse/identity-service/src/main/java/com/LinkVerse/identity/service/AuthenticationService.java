@@ -1,26 +1,5 @@
 package com.LinkVerse.identity.service;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
-import java.util.stream.Collectors;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
 import com.LinkVerse.identity.dto.request.AuthenticationRequest;
 import com.LinkVerse.identity.dto.request.IntrospectRequest;
 import com.LinkVerse.identity.dto.request.LogoutRequest;
@@ -38,12 +17,31 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.List;
+import java.util.StringJoiner;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -97,7 +95,7 @@ public class AuthenticationService {
         return IntrospectResponse.builder().valid(isValid).build();
     }
 
-       public void authenticateToken(String token) throws JOSEException, ParseException {
+    public void authenticateToken(String token) throws JOSEException, ParseException {
         SignedJWT signedJWT = verifyToken(token, false);
 
         String userId = signedJWT.getJWTClaimsSet().getSubject();
@@ -126,7 +124,24 @@ public class AuthenticationService {
 
         var token = generateToken(user);
 
-        return AuthenticationResponse.builder().token(token).build();
+
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWTClaimsSet claimsSet = signedJWT.getJWTClaimsSet();
+            Date expiryTime = claimsSet.getExpirationTime();
+
+            //-> Dinh dang ngay gio
+            String formattedExpiryTime = expiryTime.toInstant()
+                    .atZone(ZoneId.of("Asia/Ho_Chi_Minh"))
+                    .format(DateTimeFormatter.ISO_OFFSET_DATE_TIME);
+
+            return AuthenticationResponse.builder()
+                    .token(token)
+                    .expiryTime(expiryTime)
+                    .build();
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
     }
 
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
@@ -191,6 +206,7 @@ public class AuthenticationService {
             throw new RuntimeException(e);
         }
     }
+
     // ktra token
     public boolean isTokenValid(String token) {
         try {
@@ -208,11 +224,11 @@ public class AuthenticationService {
 
         Date expiryTime = (isRefresh)
                 ? new Date(signedJWT
-                        .getJWTClaimsSet()
-                        .getIssueTime()
-                        .toInstant()
-                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                        .toEpochMilli())
+                .getJWTClaimsSet()
+                .getIssueTime()
+                .toInstant()
+                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
@@ -238,5 +254,6 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
-    private record TokenInfo(String token, Date expiryDate) {}
+    private record TokenInfo(String token, Date expiryDate) {
+    }
 }
