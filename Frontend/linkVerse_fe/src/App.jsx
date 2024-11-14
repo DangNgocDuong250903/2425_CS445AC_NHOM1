@@ -1,6 +1,10 @@
 import { useSelector } from "react-redux";
 import { Routes, Route, useLocation, Outlet, Navigate } from "react-router-dom";
-import { route2, route1 } from "./routes";
+import { route2, route1, route3 } from "./routes";
+import NotFound from "./pages/NotFoundPage";
+import Sidebar from "./components/Admin/Sidebar";
+import { TopBar } from "./components";
+import { Admin } from "./pages";
 
 const Layout = () => {
   const user = useSelector((state) => state.user.user);
@@ -33,6 +37,13 @@ function App() {
             const Page = route.element;
             return <Route key={i} element={<Page />} path={route.path} />;
           })}
+
+          <Route element={<Admin />}>
+            {route3.map((route, i) => {
+              const Page = route.element;
+              return <Route key={i} element={<Page />} path={route.path} />;
+            })}
+          </Route>
         </Routes>
       </div>
     </div>
