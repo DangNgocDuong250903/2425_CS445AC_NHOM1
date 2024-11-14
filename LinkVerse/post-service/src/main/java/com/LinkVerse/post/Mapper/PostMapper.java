@@ -44,4 +44,5 @@ public interface PostMapper {
             .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
             .build();
     }
+
 }

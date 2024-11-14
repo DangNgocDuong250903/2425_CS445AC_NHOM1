@@ -35,7 +35,7 @@ public class GroupService {
     private final GroupMemberRepository groupMemberRepository;
     private final UserRepository userRepository;
     private final AuthenticationService authenticationService;
-
+    GroupEventProducer groupEventProducer;
         @Transactional
         public ApiResponse<GroupResponse> createGroup(GroupRequest request) {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -73,7 +73,7 @@ public class GroupService {
                     .role(creatorRole)
                     .build();
             groupMemberRepository.save(groupMember);
-
+    groupEventProducer.publishGroupCreatedEvent(group, creatorRole.name());
             return ApiResponse.<GroupResponse>builder()
                     .code(200)
                     .message("Group created successfully")
@@ -134,6 +134,8 @@ public class GroupService {
             group.setMemberCount(group.getMemberCount() + 1);
             groupRepository.save(group);
 
+    groupEventProducer.publishMemberAddedEvent(groupId, newMemberRole.name());
+
             // Trả về thông tin chi tiết của nhóm
             GroupResponse groupResponse = GroupResponse.builder()
                     .id(group.getId())
@@ -148,5 +150,30 @@ public class GroupService {
                     .result(groupResponse)
                     .build();
         }
+        @Transactional
+        public ApiResponse<GroupResponse> getGroupById(String groupId) {
+            // Lấy thông tin nhóm từ database
+            Group group = groupRepository.findById(groupId)
+                    .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+            // Tạo phản hồi từ thông tin nhóm
+            GroupResponse groupResponse = GroupResponse.builder()
+                    .id(group.getId())
+                    .name(group.getName())
+                    .description(group.getDescription())
+                    .memberCount(group.getMemberCount())
+                    .visibility(group.getVisibility().name())
+                    .build();
+
+            // Trả về API Response
+            return ApiResponse.<GroupResponse>builder()
+                    .code(200)
+                    .message("Group found successfully")
+                    .result(groupResponse)
+                    .build();
+        }
+
+
+
 
 }

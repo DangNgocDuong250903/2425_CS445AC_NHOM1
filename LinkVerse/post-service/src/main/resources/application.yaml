@@ -6,3 +6,12 @@ spring:
     name: post-service
   profiles:
     active: @spring.profiles.active@
+  datasource:
+    url: ${URL_SQL} # Cấu hình kết nối MySQL
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: ${USERNAME_SQL}
+    password: ${PASS_SQL}
+  jpa:
+    hibernate:
+      ddl-auto: update  # Cập nhật schema JPA tự động
+    show-sql: true  # Hiển thị SQL khi thực hiện các query

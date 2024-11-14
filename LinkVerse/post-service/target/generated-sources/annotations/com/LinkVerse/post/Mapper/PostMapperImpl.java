@@ -22,7 +22,10 @@ public class PostMapperImpl implements PostMapper {
 
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
+<<<<<<< HEAD
         postResponse.fileUrl( post.getFileUrl() );
+=======
+>>>>>>> origin/main
         postResponse.visibility( post.getVisibility() );
         postResponse.userId( post.getUserId() );
         postResponse.createdDate( post.getCreatedDate() );
@@ -45,7 +48,10 @@ public class PostMapperImpl implements PostMapper {
 
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
+<<<<<<< HEAD
         postResponse.fileUrl( post.getFileUrl() );
+=======
+>>>>>>> origin/main
         postResponse.visibility( post.getVisibility() );
         postResponse.userId( post.getUserId() );
         postResponse.createdDate( post.getCreatedDate() );

@@ -25,7 +25,10 @@ public class Post {
 
     @ElementCollection
     List<String> fileUrls;
+<<<<<<< HEAD
     String fileUrl;
+=======
+>>>>>>> origin/main
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;
@@ -40,4 +43,5 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "shared_post_id")
     Post sharedPost;
+    boolean deleted = false;
 }

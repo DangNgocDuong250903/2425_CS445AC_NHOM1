@@ -42,4 +42,6 @@ public class Group {
 
     @Column(name = "member_count", nullable = false)
     int memberCount; // Thêm field memberCount
+
+
 }

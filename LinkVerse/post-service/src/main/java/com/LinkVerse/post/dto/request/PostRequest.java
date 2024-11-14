@@ -8,7 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.mongodb.core.mapping.MongoId;
+
+import java.util.List;
 
 import java.util.List;
 
@@ -23,4 +24,8 @@ public class PostRequest {
 
     @ElementCollection
     List<String> fileUrls;
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/main

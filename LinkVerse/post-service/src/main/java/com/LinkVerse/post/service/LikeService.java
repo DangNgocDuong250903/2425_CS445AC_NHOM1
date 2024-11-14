@@ -27,29 +27,31 @@ import java.util.Optional;
 public class LikeService {
     PostRepository postRepository;
     PostMapper postMapper;
+
     //like
- public ApiResponse<PostResponse> likePost(String postId, String emojiSymbol) {
-    Post post = postRepository.findById(postId)
-            .orElseThrow(() -> new RuntimeException("Post not found"));
+    public ApiResponse<PostResponse> likePost(String postId, String emojiSymbol) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-    // Cập nhật số lượt thích
-    post.setLike(post.getLike() + 1);
+        // Cập nhật số lượt thích
+        post.setLike(post.getLike() + 1);
 
-    // Thêm emoji vào danh sách
-    if (post.getLikedEmojis() == null) {
-        post.setLikedEmojis(new ArrayList<>());
+        // Thêm emoji vào danh sách
+        if (post.getLikedEmojis() == null) {
+            post.setLikedEmojis(new ArrayList<>());
+        }
+        post.getLikedEmojis().add(emojiSymbol);
+
+        // Lưu bài viết với thông tin đã cập nhật
+        post = postRepository.save(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post liked successfully ")
+                .result(postMapper.toPostResponse(post))
+                .build();
     }
-    post.getLikedEmojis().add(emojiSymbol);
 
-    // Lưu bài viết với thông tin đã cập nhật
-    post = postRepository.save(post);
-
-    return ApiResponse.<PostResponse>builder()
-            .code(HttpStatus.OK.value())
-            .message("Post liked successfully ")
-            .result(postMapper.toPostResponse(post))
-            .build();
-}
     //unlike
     public ApiResponse<PostResponse> unlikePost(String postId) {
         Post post = postRepository.findById(postId)
@@ -70,6 +72,7 @@ public class LikeService {
 
     CommentMapper commentMapper;
     CommentRespository commentRespository;
+
     // Like a comment
     public ApiResponse<CommentResponse> likeComment(String postId, String commentId, String emojiSymbol) {
         // Fetch  comment ID
@@ -78,10 +81,10 @@ public class LikeService {
         Optional<Comment> commentOptional = post.getComments().stream()
                 .filter(comment -> comment.getCommentID().equals(commentId))
                 .findFirst();
-            //kiemtra
-              if (!commentOptional.isPresent()) {
-                    throw new CommentNotFoundException("Comments not tạch ");
-    }
+        //kiemtra
+        if (!commentOptional.isPresent()) {
+            throw new CommentNotFoundException("Comments not tạch ");
+        }
         Comment comment = commentOptional.get();
         // Update the like count
         comment.setLike(comment.getLike() + 1);
@@ -101,22 +104,23 @@ public class LikeService {
                 .result(commentMapper.toCommentResponse(comment))
                 .build();
     }
+
     //unlikecmt
     public ApiResponse<CommentResponse> unlikeComment(String postId, String commentId) {
-    // Fetch the comment by its ID
-    Comment comment = commentRespository.findById(commentId)
-            .orElseThrow(() -> new RuntimeException("Comment not found"));
+        // Fetch the comment by its ID
+        Comment comment = commentRespository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
 
-    // Update the unlike count
-    comment.setUnlike(comment.getUnlike() + 1);
+        // Update the unlike count
+        comment.setUnlike(comment.getUnlike() + 1);
 
-    // Save the updated comment
-    comment = commentRespository.save(comment);
+        // Save the updated comment
+        comment = commentRespository.save(comment);
 
-    return ApiResponse.<CommentResponse>builder()
-            .code(HttpStatus.OK.value())
-            .message("Comment unliked successfully")
-            .result(commentMapper.toCommentResponse(comment))
-            .build();
-}
+        return ApiResponse.<CommentResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Comment unliked successfully")
+                .result(commentMapper.toCommentResponse(comment))
+                .build();
+    }
 }
