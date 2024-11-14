@@ -25,10 +25,7 @@ public class Post {
 
     @ElementCollection
     List<String> fileUrls;
-<<<<<<< HEAD
     String fileUrl;
-=======
->>>>>>> origin/main
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;

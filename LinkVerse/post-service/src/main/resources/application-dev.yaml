@@ -8,6 +8,15 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
+  datasource:
+    url: jdbc:mysql://localhost:3306/post
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update  # Cập nhật schema JPA tự động
+    show-sql: true  # Hiển thị SQL khi thực hiện các query
   servlet:
     multipart:
       enabled: true

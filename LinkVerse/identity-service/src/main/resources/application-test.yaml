@@ -9,6 +9,9 @@ spring:
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
     password: root
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/identity-service?authSource=admin
   jpa:
     hibernate:
       ddl-auto: update

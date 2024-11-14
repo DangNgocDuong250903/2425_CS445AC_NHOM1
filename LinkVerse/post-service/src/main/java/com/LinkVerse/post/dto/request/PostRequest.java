@@ -24,8 +24,4 @@ public class PostRequest {
 
     @ElementCollection
     List<String> fileUrls;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

@@ -4,8 +4,4 @@ public enum PostVisibility {
     PUBLIC,
     FRIENDS,
     PRIVATE;
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main

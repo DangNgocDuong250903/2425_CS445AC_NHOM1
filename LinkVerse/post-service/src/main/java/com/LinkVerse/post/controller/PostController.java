@@ -8,11 +8,8 @@ import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.LinkVerse.post.service.PostService;
-<<<<<<< HEAD
 import com.LinkVerse.post.service.S3Service;
 import com.fasterxml.jackson.core.JsonProcessingException;
-=======
->>>>>>> origin/main
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,11 +17,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-<<<<<<< HEAD
 import org.springframework.ui.Model;
-=======
 import org.springframework.security.access.prepost.PreAuthorize;
->>>>>>> origin/main
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,7 +35,6 @@ public class PostController {
     S3Service s3Service;
     ProfileServiceClient profileServiceClient;
 
-<<<<<<< HEAD
     @PostMapping("/set-avatar")
     public ResponseEntity<String> updateImage(@RequestParam("userId") String userId,
                                             @RequestParam("request") String requestJson,
@@ -57,12 +50,8 @@ public class PostController {
         return ResponseEntity.ok("Avatar updated successfully.");
     }
 
-    // Create a new post with file
-    @PostMapping("/post-file")
-=======
-    // Create a new post
+
      @PostMapping("/post-file")
->>>>>>> origin/main
     public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
             @RequestParam("request") String requestJson,
             @RequestParam("files") List<MultipartFile> files) throws IOException {

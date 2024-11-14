@@ -9,6 +9,4 @@ spring:
     name: identity-service
   profiles:
     active: @spring.profiles.active@
-  data:
-    mongodb:
-      uri: ${URL_MGDB}
+

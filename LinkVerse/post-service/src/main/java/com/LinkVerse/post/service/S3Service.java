@@ -1,3 +1,4 @@
+
 package com.LinkVerse.post.service;
 
 
@@ -31,15 +32,6 @@ public class S3Service {
     AmazonS3 s3Client;
 
     public List<String> uploadFiles(List<MultipartFile> files) {
-<<<<<<< HEAD
-        List<String> fileUrls = new ArrayList<>();
-        for (MultipartFile file : files) {
-            File fileObj = convertMultiPartFileToFile(file);
-            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-            fileObj.delete();
-            fileUrls.add(s3Client.getUrl(bucketName, fileName).toString());
-=======
         if (files == null || files.isEmpty()) {
             return List.of(); // Trả về danh sách rỗng nếu không có file nào
         }
@@ -63,15 +55,11 @@ public class S3Service {
                 // Xóa file tạm sau khi upload
                 fileObj.delete();
             }
->>>>>>> origin/main
         }
         return fileUrls;
     }
 
-<<<<<<< HEAD
-=======
 
->>>>>>> origin/main
     public String deleteFiles(String fileName) {
         try {
             boolean exists = s3Client.doesObjectExist(bucketName, fileName);
@@ -132,29 +120,19 @@ public class S3Service {
 //    }
 
     private File convertMultiPartFileToFile(MultipartFile file) {
-<<<<<<< HEAD
-=======
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Cannot convert an empty or null file");
         }
 
->>>>>>> origin/main
         File convertedFile = new File(file.getOriginalFilename());
         try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
             fos.write(file.getBytes());
         } catch (IOException e) {
             log.error("Error converting multipartFile to file", e);
-<<<<<<< HEAD
-=======
             throw new RuntimeException("Failed to convert file", e);
->>>>>>> origin/main
         }
         return convertedFile;
     }
 
-<<<<<<< HEAD
-}
-=======
 
 }
->>>>>>> origin/main
