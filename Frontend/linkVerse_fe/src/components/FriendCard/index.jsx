@@ -15,7 +15,7 @@ const FriendCard = () => {
           {friends?.map((friend) => (
             <Link
               key={friend._id}
-              to={"/profile"}
+              to={"/friend/" + friend?._id}
               className="flex gap-4 items-center cursor-pointer"
             >
               <img

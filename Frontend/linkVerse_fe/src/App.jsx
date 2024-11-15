@@ -3,10 +3,10 @@ import { Routes, Route, useLocation, Outlet, Navigate } from "react-router-dom";
 import { route2, route1 } from "./routes";
 
 const Layout = () => {
-  const user = useSelector((state) => state.user.user);
+  const user = useSelector((state) => state.user);
   const location = useLocation();
 
-  return user?.token ? (
+  return user ? (
     <div>
       <Outlet />
     </div>

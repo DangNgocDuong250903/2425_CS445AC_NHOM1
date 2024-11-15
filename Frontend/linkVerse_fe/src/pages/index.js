@@ -6,7 +6,8 @@ import ResetPasswordPage from "./ResetPasswordPage";
 import ProfilePage from "./ProfilePage";
 import Admin from "./AdminPage";
 import GroupPage from "./GroupPage";
+import FriendPage from "./FriendPage";
 
 export {
-    Admin, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage
+    Admin, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage, FriendPage
 }

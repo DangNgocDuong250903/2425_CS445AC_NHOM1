@@ -1,4 +1,4 @@
-import { Admin, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
+import { Admin, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
 
 const route1 = [
     {
@@ -6,7 +6,7 @@ const route1 = [
         element: HomePage,
     },
     {
-        path: '/profile',
+        path: '/profile/:id',
         element: ProfilePage,
     },
     {
@@ -14,8 +14,12 @@ const route1 = [
         element: Admin,
     },
     {
-        path: '/group',
+        path: '/group/:id',
         element: GroupPage,
+    },
+    {
+        path: '/friend/:id',
+        element: FriendPage,
     }
 ]
 

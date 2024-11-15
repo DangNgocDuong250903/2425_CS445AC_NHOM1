@@ -41,11 +41,11 @@ const FriendRequest = () => {
             <div className="flex gap-1 w-full h-full items-center justify-end">
               <Button
                 title={t("Chấp nhận")}
-                containerStyles="bg-[#0444A4] text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-full"
+                containerStyles="bg-[#0444A4] text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-2xl"
               />
               <Button
                 title={t("Từ chối")}
-                containerStyles="bg-bgColor border border-borderNewFeed text-xs text-ascent-1 px-1.5 py-1 rounded-full"
+                containerStyles="bg-bgColor border border-borderNewFeed text-xs text-ascent-1 px-1.5 py-1 rounded-2xl"
               />
             </div>
           </div>

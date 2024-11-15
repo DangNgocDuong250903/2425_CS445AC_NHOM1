@@ -57,7 +57,7 @@ const LoginPage = () => {
                     height="34.56"
                     rx="17.28"
                     fill="#000"
-                    strokewidth={0}
+                    strokeWidth={0}
                   />
                 </g>
                 <g

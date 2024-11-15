@@ -14,7 +14,7 @@ const GroupCard = () => {
           {groups?.map((group, i) => (
             <Link
               key={i}
-              to={"/group"}
+              to={"/group/" + group?._id}
               className="flex gap-4 items-center cursor-pointer"
             >
               <img

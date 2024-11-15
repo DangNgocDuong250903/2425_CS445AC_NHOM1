@@ -23,7 +23,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
   return (
     <div className="mb-2 bg-primary p-4 rounded-xl">
       <div className="flex gap-3 items-center mb-2">
-        <Link to={"/profile/" + post?.userId?._id}>
+        <Link to={"/friend"}>
           <img
             src={post?.userId?.profileUrl ?? NoProfile}
             alt={post?.userId?.firstName}
@@ -33,7 +33,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
 
         <div className="w-full flex justify-between">
           <div>
-            <Link to={"/profile"}>
+            <Link to={"/friend"}>
               <p className="font-medium text-lg text-ascent-1">
                 {post?.userId?.firstName} {post?.userId?.lastName}
               </p>

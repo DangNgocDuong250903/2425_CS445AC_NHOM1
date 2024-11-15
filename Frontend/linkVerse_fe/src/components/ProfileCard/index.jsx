@@ -22,7 +22,7 @@ const ProfileCard = () => {
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       {/* tren */}
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
-        <Link to={"/profile"} className="flex gap-2">
+        <Link to={"/profile/" + user?._id} className="flex gap-2">
           <img
             src={user?.profileUrl ?? NoProfile}
             alt={user?.email}

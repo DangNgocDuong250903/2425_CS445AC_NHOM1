@@ -10,10 +10,11 @@ import {
   GroupCard,
   FriendRequest,
   FriendSuggest,
+  DragToScroll,
 } from "~/components";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
-import { FaArrowLeft, FaInstagram } from "react-icons/fa";
+import { FaInstagram } from "react-icons/fa";
 import { CiFacebook } from "react-icons/ci";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
@@ -21,8 +22,6 @@ import Box from "@mui/material/Box";
 import {
   Avatar,
   AvatarGroup,
-  DialogContent,
-  DialogTitle,
   Divider,
   Fab,
   FormControl,
@@ -32,21 +31,25 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { user, posts } from "~/assets/mockData/data";
+import { posts, user } from "~/assets/mockData/data";
 import { NoProfile } from "~/assets/index";
-
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
+import { FiPlus } from "react-icons/fi";
 
 const ProfilePage = () => {
   const { t } = useTranslation();
-  const theming = useTheme();
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
+  const [file, setFile] = useState(null);
+  const [image, setImage] = useState("");
+  const [status, setStatus] = useState("");
+  const [postState, setPostState] = useState("public");
+  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
+  const [isOpenDialogEdit, setIsOpenDialogEdit] = useState(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -74,12 +77,6 @@ const ProfilePage = () => {
       "aria-controls": `simple-tabpanel-${index}`,
     };
   };
-
-  const [file, setFile] = useState(null);
-  const [image, setImage] = useState("");
-  const [status, setStatus] = useState("");
-  const [postState, setPostState] = useState("public");
-  const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
 
   useEffect(() => {
     if (file) {
@@ -111,27 +108,67 @@ const ProfilePage = () => {
     setIsOpenDialogAdd(false);
   };
 
+  const handleCloseDiaLogEdit = () => {
+    setIsOpenDialogEdit(false);
+  };
+
+  // edit profile
+  const [name, setName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const [avatarFile, setAvatarFile] = useState("");
+  const [storie, setStorie] = useState("");
+
+  const handleChangeName = (e) => {
+    setName(e.target.value);
+  };
+  const handleChangeAvatar = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setAvatarFile(selectedFile);
+    }
+  };
+  const handleChangeStorie = (e) => {
+    setStorie(e.target.value);
+  };
+
+  useEffect(() => {
+    if (avatarFile) {
+      getBase64(avatarFile)
+        .then((result) => setAvatar(result))
+        .catch((error) => console.error(error));
+    }
+  }, [avatarFile]);
+
+  const handleSubmitChange = () => {};
+
   return (
     <>
       <Wrapper>
         <div className="w-full bg-bgColor h-screen overflow-hidden">
           <TopBar title={"Trang cá nhân"} />
 
-          <div className="w-full h-full justify-center flex">
-            <div className="max-w-[800px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+          <div className="w-full h-full justify-center flex ">
+            <div className="max-w-[800px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
               {/* 1 */}
               <div className="w-full h-auto flex flex-col p-10 gap-y-5">
+                {/* 1 */}
                 <div className="flex justify-between">
                   <span className="text-2xl font-semibold text-ascent-1">
-                    dhtuan
+                    {name ? name : "No name"}
                   </span>
                   <img
-                    src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
+                    src={avatar ? avatar : NoProfile}
                     alt="avatar"
-                    className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat"
+                    className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat shadow-newFeed"
                   />
                 </div>
                 {/* 2 */}
+                {storie && (
+                  <div className="flex items-center">
+                    <p>{storie}</p>
+                  </div>
+                )}
+                {/* 3 */}
                 <div className="flex justify-between items-center">
                   <AvatarGroup total={27}>
                     <Avatar
@@ -158,10 +195,10 @@ const ProfilePage = () => {
                     />
                   </div>
                 </div>
-                {/* 3 */}
+                {/* 4 */}
                 <div className="w-full text-center items-center justify-center flex ">
                   <Button
-                    // onClick={handleOpenModalEdit}
+                    onClick={() => setIsOpenDialogEdit(true)}
                     title={t("Chỉnh sửa trang cá nhân")}
                     containerStyles={
                       "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
@@ -205,6 +242,7 @@ const ProfilePage = () => {
                     {/* 1 */}
                     <CustomTabPanel value={value} index={0}>
                       <div className="w-full h-full">
+                        {/* header */}
                         <div className=" w-full flex items-center justify-between px-6 py-4">
                           <div className="flex items-center justify-center gap-4">
                             <img
@@ -222,7 +260,19 @@ const ProfilePage = () => {
                             containerStyles="px-5 py-2 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
                           />
                         </div>
-                        <div className="border-x-[0.5px] border-y-[0.5px] border-solid border-borderNewFeed" />
+                        {/* posts */}
+                        <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+                          {/* post */}
+                          {posts.map((post, i) => (
+                            <PostCard
+                              key={i}
+                              post={post}
+                              user={user}
+                              deletePost={() => {}}
+                              likePost={() => {}}
+                            />
+                          ))}
+                        </div>
                       </div>
                     </CustomTabPanel>
                     {/* 2 */}
@@ -240,6 +290,7 @@ const ProfilePage = () => {
               </div>
             </div>
           </div>
+
           {/* Add post */}
           <DialogCustom
             isOpen={isOpenDialogAdd}
@@ -451,53 +502,100 @@ const ProfilePage = () => {
             </div>
           </DialogCustom>
           {/* Edit */}
-          {/* <DialogCustom
+          <DialogCustom
             isOpen={isOpenDialogEdit}
-            title={"Test"}
-            styles={{
-              width: "500px",
-              border: `1px solid ${
-                theme === "dark"
-                  ? theming.palette.borderDark
-                  : theming.palette.borderLight
-              }`,
-              backgroundColor: `${
-                theme === "dark" ? theming.palette.dark : theming.palette.light
-              }`,
-            }}
+            theme={theme}
+            handleCloseDiaLogAdd={handleCloseDiaLogEdit}
           >
-            <DialogContent dividers>
-              <div className="flex w-full flex-col p-3">
-                <div
-                  className="w-6 h-6 bg-primary flex items-center justify-center rounded-md hover:scale-110 cursor-pointer transition-transform"
-                  onClick={() => setIsOpenDialogEdit(false)}
-                >
-                  <FaArrowLeft className="fill-black" />
-                </div>
+            <div
+              className={`w-full ${
+                theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
+              } shadow-newFeed`}
+            >
+              <div className="flex w-full flex-col px-8 py-3">
                 <div className="flex items-center justify-between py-3">
-                  <h1 className="text-white">dhtun</h1>
-                  <img
-                    src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
-                    alt="avatar"
-                    className="rounded-full object-cover bg-no-repeat w-16 h-16"
-                  />
+                  <div className="flex flex-col">
+                    <h1 className="text-ascent-2 font-medium">Tên</h1>
+                    <TextInput
+                      onChange={handleChangeName}
+                      value={name}
+                      styles="border-0 bg-transparent px-0 pl-0"
+                      labelStyles="font-medium"
+                    />
+                  </div>
+
+                  <div className="relative group w-14 h-14">
+                    <img
+                      src={avatar ? avatar : NoProfile}
+                      alt="avatar"
+                      className="rounded-full object-cover bg-no-repeat w-full h-full"
+                    />
+                    <div>
+                      <label
+                        htmlFor="imgUpload"
+                        className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                      >
+                        <input
+                          type="file"
+                          onChange={handleChangeAvatar}
+                          className="hidden"
+                          id="imgUpload"
+                          data-max-size="5120"
+                          accept=".jpg, .png, .jpeg"
+                        />
+                        <FiPlus className="cursor-pointer icon-overlay hidden group-hover:flex absolute inset-0 m-auto text-white w-10 h-10" />
+                      </label>
+                    </div>
+                  </div>
                 </div>
-                <Divider />
-                <div className="flex flex-col py-3">
-                  <TextInput
-                    label="Nghề nghiệp"
-                    labelStyles="text-ascent-1"
-                    styles="w-full rounded-xl bg-primary"
-                  />
+                <Divider sx={{ borderColor: "#ccc" }} />
+
+                <div className="flex items-center justify-between py-3">
+                  <div className="flex flex-col">
+                    <h1 className="text-ascent-2 font-medium">Tiểu sử</h1>
+                    <TextField
+                      value={storie}
+                      placeholder="Viết tiểu sử"
+                      onChange={handleChangeStorie}
+                      multiline
+                      maxRows={5}
+                      variant="standard"
+                      fullWidth
+                      sx={{
+                        "& .MuiInput-root": {
+                          color: theme === "dark" ? "#fff" : "#000",
+                          "&:before": {
+                            display: "none",
+                          },
+                          "&:after": {
+                            display: "none",
+                          },
+                          ":hover:not(.Mui-focused)": {
+                            color: "",
+                            "&:before": {
+                              display: "none",
+                            },
+                          },
+                        },
+                        "& .MuiInputLabel-standard": {
+                          color: "rgb(89, 91, 100)",
+                          "&.Mui-focused": {
+                            display: "none",
+                          },
+                        },
+                      }}
+                    />
+                  </div>
                 </div>
-                <Divider />
+
                 <Button
                   title={"Xong"}
+                  onClick={handleSubmitChange}
                   containerStyles="w-full text-ascent-1 bg-bgColor flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-ascent-1"
                 />
               </div>
-            </DialogContent>
-          </DialogCustom> */}
+            </div>
+          </DialogCustom>
         </div>
         <div className="absolute bottom-5 right-5">
           <Fab
@@ -505,6 +603,7 @@ const ProfilePage = () => {
             aria-label="add"
             variant="extended"
             sx={{
+              zIndex: 10,
               "&.MuiFab-root": {
                 backgroundColor: `${theme === "dark" ? "#fff" : "#000"}`,
               },

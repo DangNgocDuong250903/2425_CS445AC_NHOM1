@@ -10,6 +10,9 @@ import Wrapper from "./Wrapper"
 import GroupCard from "./GroupCard"
 import FriendRequest from "./FriendRequest"
 import FriendSuggest from "./FriendSuggest"
+import PopperCustom from "./PopperCustom"
+import Story from "./Story"
+import DragToScroll from "./DragToScroll"
 
 export {
     TopBar,
@@ -24,4 +27,7 @@ export {
     GroupCard,
     FriendRequest,
     FriendSuggest,
+    PopperCustom,
+    DragToScroll,
+    Story
 }
