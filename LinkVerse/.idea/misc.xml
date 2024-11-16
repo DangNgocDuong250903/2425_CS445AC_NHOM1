@@ -15,6 +15,7 @@
         <option value="$PROJECT_DIR$/post-service/pom.xml" />
         <option value="$PROJECT_DIR$/identity-service/pom.xml" />
         <option value="$PROJECT_DIR$/Friend-Service/pom.xml" />
+        <option value="$PROJECT_DIR$/MessageRealtime/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
