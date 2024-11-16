@@ -2,7 +2,6 @@ package com.LinkVerse.identity.controller;
 
 import com.LinkVerse.identity.dto.request.StoryCreationRequest;
 import com.LinkVerse.identity.dto.response.StoryResponse;
-import com.LinkVerse.identity.repository.StoryRepository;
 import com.LinkVerse.identity.service.StoryCleanupService;
 import com.LinkVerse.identity.service.StoryService;
 import lombok.AccessLevel;
@@ -22,7 +21,6 @@ import java.util.List;
 @Slf4j
 public class StoryController {
     StoryService storyService;
-    StoryRepository storyRepository;
     StoryCleanupService storyCleanupService;
 
     @PostMapping
