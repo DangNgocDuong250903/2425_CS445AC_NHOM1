@@ -19,3 +19,4 @@ public interface StoryRepository extends JpaRepository<Story, String> {
     List<Story> findAllByExpiryTimeAfterAndVisibilityOrUserIdAndExpiryTimeAfter(
             LocalDateTime expiryTime, StoryVisibility visibility, String userId, LocalDateTime expiryTimeAgain);
 }
+

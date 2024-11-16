@@ -12,3 +12,5 @@ public interface StoryMapper {
 
     StoryResponse toStoryResponse(Story story);
 }
+
+

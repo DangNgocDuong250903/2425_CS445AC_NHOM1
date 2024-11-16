@@ -5,3 +5,4 @@ public enum StoryVisibility {
     PUBLIC,
     PRIVATE
 }
+
