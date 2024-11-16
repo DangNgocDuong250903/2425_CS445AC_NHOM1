@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.controller;
+package com.LinkVerse.identity.service;
 
 import com.LinkVerse.identity.repository.StoryRepository;
 import jakarta.transaction.Transactional;
