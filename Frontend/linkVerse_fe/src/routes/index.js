@@ -2,6 +2,7 @@ import React from "react";
 import { Admin, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
 import Customer from "~/pages/AdminPage/Customer";
 import Dashboard from "~/pages/AdminPage/Dashboard";
+import Post from "~/pages/AdminPage/Post";
 
 const route1 = [
     {
@@ -46,6 +47,11 @@ const route3 = [
         path: '/customers',
         element: Customer
     },
+    {
+        path: '/post',
+        element: Post
+    },
+
 ]
 
 export {

@@ -2,7 +2,7 @@ import React from 'react';
 import { FaHouseUser } from "react-icons/fa";
 import { CiSearch } from "react-icons/ci";
 import { Button } from 'antd';
-import { Link } from 'react-router-dom';
+import { IoIosAddCircleOutline } from "react-icons/io";
 
 const Customer = () => {
     return (
@@ -11,7 +11,11 @@ const Customer = () => {
                 <FaHouseUser className='w-6 h-6' />
                 <h1 className='text-2xl font-bold'>QUẢN LÝ NGƯỜI DÙNG</h1>
             </div>
-            <div className="flex justify-center gap-5 mb-4 items-cent">
+            <div className="flex items-center justify-center gap-5 mb-4">
+                <div className=' w-[200px] bg-gray-300 rounded-md p-2 flex justify-center items-center gap-2 cursor-pointer '>
+                    <IoIosAddCircleOutline className='w-6 h-6' />
+                    <p className='text-lg font-medium'>Thêm Người Dùng</p>
+                </div>
                 <input
                     type="text"
                     placeholder="Tìm kiếm người dùng..."
@@ -22,6 +26,7 @@ const Customer = () => {
                     className="px-2 py-2 text-white rounded-lg ">
                     Tìm kiếm
                 </button>
+
             </div>
 
             <table className="w-full mt-5 bg-white ">
@@ -41,9 +46,9 @@ const Customer = () => {
                             <img src="https://mighty.tools/mockmind-api/content/human/49.jpg" alt="Ảnh của Lê Thị Mỹ Linh"
                                 className="w-10 h-10 rounded-full" />
                         </td>
-                        <td className="px-4 py-2">Lê Thị Mỹ Linh</td>
-                        <td className="px-4 py-2">mylinh.le@gmail.com</td>
-                        <td className="px-4 py-2">2</td>
+                        <td className="px-4 py-2 font-medium">Lê Thị Mỹ Linh</td>
+                        <td className="px-4 py-2 font-medium">mylinh.le@gmail.com</td>
+                        <td className="px-4 py-2 font-medium">2</td>
                         <td className="px-4 py-2">
                             <Button className="px-4 py-2 font-semibold text-center bg-blue-500 rounded-lg cursor-pointer ">
                                 Đặt lại mật khẩu
@@ -54,9 +59,9 @@ const Customer = () => {
                         <td className="px-4 py-2 border-b">
                             <img src="https://mighty.tools/mockmind-api/content/human/60.jpg" alt="Ảnh của Phạm Minh Tuấn" className="w-10 h-10 rounded-full" />
                         </td>
-                        <td className="px-4 py-2 ">Phạm Minh Tuấn</td>
-                        <td className="px-4 py-2 ">tuan.pham@gmail.com</td>
-                        <td className="px-4 py-2 ">2</td>
+                        <td className="px-4 py-2 font-medium ">Phạm Minh Tuấn</td>
+                        <td className="px-4 py-2 font-medium ">tuan.pham@gmail.com</td>
+                        <td className="px-4 py-2 font-medium">2</td>
                         <td className="px-4 py-2">
                             <Button className="px-4 py-2 font-semibold text-center bg-blue-500 rounded-lg cursor-pointer ">
                                 Đặt lại mật khẩu

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Menu } from 'antd';
 import { CiAt } from "react-icons/ci";
+import { PiFileText } from "react-icons/pi";
+
 import {
     DashboardOutlined,
     ShoppingCartOutlined,
@@ -28,16 +30,16 @@ const Sidebar = () => {
                     <span className='text-xl'>LinkVerse</span>
                 </div>
                 <Menu.Item key="dashboard" icon={<DashboardOutlined />} style={{ color: 'white' }}>
-                    <Link to="/admin">Dashboard</Link>
+                    <Link to="/admin">Trang Chủ</Link>
                 </Menu.Item>
-                <Menu.Item key="products" icon={<ShoppingCartOutlined />} style={{ color: 'white' }}>
-                    <Link to="/products">Products</Link>
+                <Menu.Item key="products" icon={<PiFileText />} style={{ color: 'white' }}>
+                    <Link to="/post">Bài Viết</Link>
                 </Menu.Item>
                 <Menu.Item key="orders" icon={<ShoppingCartOutlined />} style={{ color: 'white' }}>
                     <Link to="/orders">Orders</Link>
                 </Menu.Item>
                 <Menu.Item key="customers" icon={<UserOutlined />} style={{ color: 'white' }}>
-                    <Link to="/customers">Customers</Link>
+                    <Link to="/customers">Người Dùng</Link>
                 </Menu.Item>
                 <Menu.Item key="transactions" icon={<TransactionOutlined />} style={{ color: 'white' }}>
                     <Link to="/transactions">Transactions</Link>
