@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 @Document(value = "comment")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class omment {
+public class Comment {
     String id;
     String userId;
     String content;
