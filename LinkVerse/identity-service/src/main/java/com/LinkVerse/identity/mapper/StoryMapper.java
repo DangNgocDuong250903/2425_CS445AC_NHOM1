@@ -11,8 +11,6 @@ public interface StoryMapper {
     Story toStory(StoryCreationRequest request);
 
     StoryResponse toStoryResponse(Story story);
-<<<<<<< HEAD
 }
-=======
-}
->>>>>>> origin/main
+
+
