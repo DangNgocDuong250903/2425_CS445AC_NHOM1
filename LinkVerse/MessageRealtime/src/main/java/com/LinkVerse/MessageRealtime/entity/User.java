@@ -14,19 +14,26 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    @Column(unique = true, nullable = false)
     String username;
 
-    @Column(name = "email", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    @Column(nullable = false)
+    String password;
+
+    @Column(unique = true, nullable = false)
     String email;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    Set<Role> roles;
+
     @OneToMany(mappedBy = "sender")
-    Set<Message> sentMessages; // Tin nhắn đã gửi
+    Set<Message> sentMessages;
 
     @OneToMany(mappedBy = "recipient")
-    Set<Message> receivedMessages; // Tin nhắn đã nhận
+    Set<Message> receivedMessages;
 }

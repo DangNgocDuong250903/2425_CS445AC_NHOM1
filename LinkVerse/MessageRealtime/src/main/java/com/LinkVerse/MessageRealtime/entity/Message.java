@@ -11,33 +11,34 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "users_message")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Message {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
-    User sender; // Người gửi
+    User sender;
 
     @ManyToOne
-    @JoinColumn(name = "recipient_id", nullable = false)
-    User recipient; // Người nhận
+    @JoinColumn(name = "recipient_id", nullable = true) // Null nếu là group message
+    User recipient;
+    @Column(name = "group_id", nullable = true)
+    String groupId; // Lưu ID nhóm nếu là tin nhắn nhóm
 
-    @Column(name = "content", nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, columnDefinition = "TEXT")
     String content;
-
-    @Column(name = "timestamp", nullable = false, columnDefinition = "TIMESTAMP")
-    LocalDateTime timestamp;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10)")
     MessageStatus status;
+    @Column(nullable = false)
+    LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "message_type", nullable = false, columnDefinition = "VARCHAR(10)")
     MessageType messageType; // Thêm loại tin nhắn
+
 }

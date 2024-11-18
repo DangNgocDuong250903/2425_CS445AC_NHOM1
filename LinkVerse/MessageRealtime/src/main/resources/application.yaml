@@ -24,3 +24,7 @@ spring:
       multipart:
         max-file-size: 10MB  # Giới hạn kích thước file tối đa là 10MB
         max-request-size: 100MB  # Giới hạn kích thước request tối đa là 100MB
+jwt:
+  signerKey: ${KEY_JWT}
+  valid-duration: 3600  # in seconds
+  refreshable-duration: 720000  # in seconds

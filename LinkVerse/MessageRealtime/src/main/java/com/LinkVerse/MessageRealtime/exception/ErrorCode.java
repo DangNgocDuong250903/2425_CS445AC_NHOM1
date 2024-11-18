@@ -15,6 +15,8 @@ public enum ErrorCode {
     GROUP_NOT_FOUND(1009, "Group not found", HttpStatus.NOT_FOUND),
     FORBIDDEN(1010, "Forbidden", HttpStatus.FORBIDDEN),
     PERMISSION_DENIED(1011, "Permission denied", HttpStatus.FORBIDDEN),
+    USER_EXISTED(1012, "User existed", HttpStatus.BAD_REQUEST),
+    INTERNAL_SERVER_ERROR(1013, "Internal server error", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
 

@@ -1,23 +1,16 @@
 package com.LinkVerse.post.service;
 
-import com.LinkVerse.event.dto.NotificationEvent;
-import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
-import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.entity.SharedPost;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +26,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -168,7 +160,7 @@ public class PostService {
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
-                .collect(Collectors.toList());
+                .toList();
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)
@@ -178,7 +170,7 @@ public class PostService {
                         .pageSize(pageData.getSize())
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(filteredPosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .data(filteredPosts.stream().map(postMapper::toPostResponse).toList())
                         .build())
                 .build();
     }
