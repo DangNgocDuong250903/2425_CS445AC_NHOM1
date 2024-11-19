@@ -52,4 +52,15 @@ public class SecurityConfig {
 
         return jwtAuthenticationConverter;
     }
+
+    @Bean
+    public JwtAuthenticationConverter securityConfigJwtAuthenticationConverter() {
+        JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");  // Don't add a prefix to the authorities
+
+        JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
+        jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
+
+        return jwtAuthenticationConverter;
+    }
 }

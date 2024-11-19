@@ -33,7 +33,7 @@ spring:
           filters:
             - StripPrefix=2
         - id: MessageRealtime
-          uri: ws://localhost:8084
+          uri: http://localhost:8084
           predicates:
             - Path=${app.api-prefix}/message/**
           filters:

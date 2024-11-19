@@ -1,4 +1,4 @@
 package com.LinkVerse.MessageRealtime.service;
 
-public class MessageService {
+public class KafkaProducer {
 }

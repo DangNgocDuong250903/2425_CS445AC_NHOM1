@@ -2,20 +2,18 @@ package com.LinkVerse.MessageRealtime.dto.response;
 
 import com.LinkVerse.MessageRealtime.entity.MessageStatus;
 import com.LinkVerse.MessageRealtime.entity.MessageType;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
-@NoArgsConstructor
 public class ChatMessage {
     private String sender;
-    private String recipient; // Null nếu là nhóm
-    private String groupId;   // Null nếu là cá nhân
+    private String recipientId;
+    private String groupId;
     private String content;
-    MessageStatus status;
+    private MessageStatus status;
     private MessageType type;
 }
