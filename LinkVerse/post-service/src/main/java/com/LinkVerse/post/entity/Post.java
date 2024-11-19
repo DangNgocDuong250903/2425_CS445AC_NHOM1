@@ -15,8 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(value = "post")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PUBLIC)
 public class Post {
     @MongoId
     String id;
@@ -28,7 +27,7 @@ public class Post {
     String fileUrl;
 
     @Enumerated(EnumType.STRING)
-    private PostVisibility visibility;
+    PostVisibility visibility;
 
     Instant createdDate;
     Instant modifiedDate;

@@ -39,7 +39,7 @@ services:
       - default
 
   elastic-search:
-    image: elasticsearch:7.14.1
+    image: elasticsearch:8.16.0
     container_name: elasticsearch
     restart: always
     ports:

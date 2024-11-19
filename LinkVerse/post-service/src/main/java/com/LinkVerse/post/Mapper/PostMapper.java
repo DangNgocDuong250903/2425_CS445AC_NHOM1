@@ -4,6 +4,7 @@ import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostDocument;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;

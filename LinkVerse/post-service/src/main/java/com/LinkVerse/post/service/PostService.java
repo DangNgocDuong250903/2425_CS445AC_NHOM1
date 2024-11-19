@@ -1,54 +1,57 @@
 
 package com.LinkVerse.post.service;
 
-import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.post.FileUtil;
-import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
-import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Comment;
-import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostVisibility;
-import com.LinkVerse.post.entity.SharedPost;
+import com.LinkVerse.post.entity.*;
 import com.LinkVerse.post.repository.PostRepository;
+import com.LinkVerse.post.repository.PostSearchRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
 import com.LinkVerse.post.repository.client.ProfileServiceClient;
-import com.amazonaws.SdkClientException;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.model.PutObjectRequest;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 
+import java.beans.Visibility;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@Slf4j(topic = "PRODUCT-SERVICE")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostService {
     PostRepository postRepository;
@@ -56,6 +59,8 @@ public class PostService {
     SharedPostRepository sharedPostRepository;
     ShareMapper shareMapper;
     ProfileServiceClient profileServiceClient;
+    PostSearchRepository postSearchRepository;
+
 
 
     KafkaTemplate<String, Object> kafkaTemplate;
@@ -75,6 +80,19 @@ public class PostService {
         // Upload file lên S3 và lấy avatar URL
         String avatarUrl = s3Service.uploadFile(avatarFile);
 
+        PostVisibility visibility = request.getVisibility();
+        if (visibility == null) {
+            visibility = PostVisibility.PUBLIC; // Gán giá trị mặc định
+        }
+
+        // Nếu visibility không hợp lệ, trả về lỗi
+        if (!EnumUtils.isValidEnum(PostVisibility.class, visibility.name())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(400)
+                    .message("Invalid visibility value")
+                    .build();
+        }
+
         // Tạo đối tượng Post mới
         Post post = Post.builder()
                 .content(request.getContent())
@@ -89,6 +107,22 @@ public class PostService {
                 .build();
 
         post = postRepository.save(post);
+
+        // Lưu vào Elasticsearch
+        if (post.getId() != null) {
+            PostDocument postDocument = PostDocument.builder()
+                    .id(post.getId())
+                    .content(post.getContent())
+                    .userId(post.getUserId())
+                    .fileUrls(post.getFileUrls())
+                    .visibility(post.getVisibility())
+                    .createdAt(post.getCreatedDate())
+                    .updatedAt(post.getModifiedDate())
+                    .comments(new ArrayList<>())
+                    .build();
+            postSearchRepository.save(postDocument);
+            log.info("Save postDocument", postDocument);
+        }
 
         // Cập nhật avatar của người dùng
         try {
@@ -108,19 +142,32 @@ public class PostService {
                 .build();
     }
 
+
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Kiểm tra kỹ nếu files không null và chỉ chứa file không rỗng
+
         List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                 ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
                 : List.of();
 
+        PostVisibility visibility = request.getVisibility();
+        if (visibility == null) {
+            visibility = PostVisibility.PUBLIC; // Set default value
+        }
+
+        if (!EnumUtils.isValidEnum(PostVisibility.class, visibility.name())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(400)
+                    .message("Invalid visibility value")
+                    .build();
+        }
+
         Post post = Post.builder()
                 .content(request.getContent())
                 .userId(authentication.getName())
-                .fileUrls(fileUrls) // lấy cái này để hiển thị trên FE
-                .visibility(request.getVisibility())
+                .fileUrls(fileUrls) // Use this to display on FE
+                .visibility(visibility)
                 .createdDate(Instant.now())
                 .modifiedDate(Instant.now())
                 .like(0)
@@ -130,6 +177,21 @@ public class PostService {
 
         post = postRepository.save(post);
 
+        // lưu vào Elasticsearch
+
+        if (post.getId() != null) {
+            PostDocument postDocument = PostDocument.builder()
+                    .id(post.getId())
+                    .content(post.getContent())
+                    .userId(post.getUserId())
+                    .fileUrls(post.getFileUrls())
+                    .visibility(post.getVisibility())
+                    .createdAt(post.getCreatedDate())
+                    .updatedAt(post.getModifiedDate())
+                    .comments(new ArrayList<>())
+                    .build();
+            postSearchRepository.save(postDocument);
+        }
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post created successfully")
@@ -159,7 +221,7 @@ public class PostService {
 
                 if (fileName != null) {
                     String result = s3Service.deleteFile(fileName);
-                    log.info(result); // Ghi log việc xóa file từ S3
+                    log.info(result);
                 }
             }
         }
@@ -167,6 +229,9 @@ public class PostService {
         post.setDeleted(true);
         post.setModifiedDate(Instant.now()); // Cập nhật thời gian sửa
         postRepository.save(post);
+
+        // Xóa bài viết khỏi Elasticsearch
+        postSearchRepository.deleteById(postId);
 
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
@@ -190,7 +255,7 @@ public class PostService {
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
                 .filter(post -> includeDeleted || !post.isDeleted()) // Lọc bài viết đã xóa
-                .collect(Collectors.toList());
+                .toList();
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)
@@ -204,6 +269,42 @@ public class PostService {
                         .build())
                 .build();
     }
+
+
+    public ApiResponse<List<PostDocument>> searchPosts(String searchString, Integer year, PostVisibility visibility) {
+
+        List<PostDocument> postDocuments = new ArrayList<>();
+
+        // Tìm kiếm theo nội dung bài viết
+        if (StringUtils.hasLength(searchString)) {
+            postDocuments.addAll(postSearchRepository.findByContentContaining(searchString));
+            postDocuments.addAll(postSearchRepository.findByComments_ContentContaining(searchString));
+        }
+
+//        // Tìm kiếm theo năm nếu có
+//        if (year != null) {
+//            postDocuments.addAll(postSearchRepository.findByCreatedAtInYear(year));
+//        } else {
+//            // Nếu không có năm, tìm tất cả các bài viết
+//            postDocuments.addAll((List<PostDocument>) postSearchRepository.findAll());
+//        }
+
+        // Tìm kiếm theo visibility nếu có
+        if (visibility != null) {
+            postDocuments.addAll(postSearchRepository.findByVisibility(visibility));
+        } else {
+            // Nếu không có visibility, mặc định lấy các bài viết công khai
+            postDocuments.addAll(postSearchRepository.findByVisibility(PostVisibility.PUBLIC));
+        }
+
+        // Trả về kết quả
+        return ApiResponse.<List<PostDocument>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Search results retrieved successfully")
+                .result(postDocuments)
+                .build();
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(int page, int size) {
@@ -219,7 +320,7 @@ public class PostService {
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
-                .collect(Collectors.toList());
+                .toList();
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)

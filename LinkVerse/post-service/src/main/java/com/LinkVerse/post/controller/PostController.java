@@ -6,6 +6,8 @@ import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
+import com.LinkVerse.post.entity.PostDocument;
+import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.S3Service;
@@ -17,7 +19,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -51,7 +52,7 @@ public class PostController {
     }
 
 
-     @PostMapping("/post-file")
+    @PostMapping("/post-file")
     public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
             @RequestParam("request") String requestJson,
             @RequestParam("files") List<MultipartFile> files) throws IOException {
@@ -63,6 +64,16 @@ public class PostController {
         ApiResponse<PostResponse> response = postService.createPostWithFiles(request, files);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping(value = "/search-posts", produces = "application/json")
+    public ApiResponse<List<PostDocument>> searchPosts(
+            @RequestParam(value = "searchString", required = false) String searchString,
+            @RequestParam(value = "year", required = false) Integer year,
+            @RequestParam(value = "visibility", required = false) PostVisibility visibility) {
+
+        return postService.searchPosts(searchString, year, visibility);
+    }
+
     @PostMapping("/{postId}/share")
     public ApiResponse<PostResponse> sharePost(
             @PathVariable String postId,
@@ -72,10 +83,10 @@ public class PostController {
 
         // Trả về ApiResponse bao bọc PostResponse
         return ApiResponse.<PostResponse>builder()
-                .code(response.getCode()) // Mã trạng thái HTTP
-                .message(response.getMessage()) // Thông báo cho người dùng
-                .result(response.getResult()) // Kết quả bài viết chia sẻ
-                .build(); // Xây dựng ApiResponse
+                .code(response.getCode())
+                .message(response.getMessage())
+                .result(response.getResult())
+                .build();
     }
 
 
@@ -95,6 +106,7 @@ public class PostController {
             @RequestParam(defaultValue = "false") boolean includeDeleted) {
         return postService.getMyPosts(page, size, includeDeleted);
     }
+
      @GetMapping("/history")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(
