@@ -20,13 +20,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -34,7 +30,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -42,6 +37,9 @@ import java.beans.Visibility;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
@@ -239,7 +237,6 @@ public class PostService {
                 .build();
     }
 
-
     public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userID = authentication.getName();
@@ -269,42 +266,6 @@ public class PostService {
                         .build())
                 .build();
     }
-
-
-    public ApiResponse<List<PostDocument>> searchPosts(String searchString, Integer year, PostVisibility visibility) {
-
-        List<PostDocument> postDocuments = new ArrayList<>();
-
-        // Tìm kiếm theo nội dung bài viết
-        if (StringUtils.hasLength(searchString)) {
-            postDocuments.addAll(postSearchRepository.findByContentContaining(searchString));
-            postDocuments.addAll(postSearchRepository.findByComments_ContentContaining(searchString));
-        }
-
-//        // Tìm kiếm theo năm nếu có
-//        if (year != null) {
-//            postDocuments.addAll(postSearchRepository.findByCreatedAtInYear(year));
-//        } else {
-//            // Nếu không có năm, tìm tất cả các bài viết
-//            postDocuments.addAll((List<PostDocument>) postSearchRepository.findAll());
-//        }
-
-        // Tìm kiếm theo visibility nếu có
-        if (visibility != null) {
-            postDocuments.addAll(postSearchRepository.findByVisibility(visibility));
-        } else {
-            // Nếu không có visibility, mặc định lấy các bài viết công khai
-            postDocuments.addAll(postSearchRepository.findByVisibility(PostVisibility.PUBLIC));
-        }
-
-        // Trả về kết quả
-        return ApiResponse.<List<PostDocument>>builder()
-                .code(HttpStatus.OK.value())
-                .message("Search results retrieved successfully")
-                .result(postDocuments)
-                .build();
-    }
-
 
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(int page, int size) {
@@ -382,6 +343,7 @@ public class PostService {
                 .result(shareMapper.toPostResponse(sharedPost))
                 .build();
     }
+
 
 
     boolean isFriend(String currentUserId, String postUserId) {

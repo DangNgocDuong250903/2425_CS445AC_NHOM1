@@ -1,12 +1,15 @@
 package com.LinkVerse.profile.entity;
 
 import java.time.LocalDate;
+import java.util.List;
 
+import com.LinkVerse.profile.enums.Gender;
+import com.LinkVerse.profile.validator.GenderValidator.GenderConstraint;
 import org.springframework.data.neo4j.core.schema.*;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import static com.LinkVerse.profile.enums.Gender.*;
 
 @Getter
 @Setter
@@ -17,7 +20,7 @@ import lombok.experimental.FieldDefaults;
 @Node("user_profile")
 public class UserProfile {
     @Id
-    @GeneratedValue(generatorClass = UUIDStringGenerator.class)
+    @GeneratedValue
     String id;
 
     @Property("userId")
@@ -31,5 +34,9 @@ public class UserProfile {
     String firstName;
     String lastName;
     LocalDate dob;
+    @GenderConstraint(anyOf = {MALE, FEMALE, OTHER})
+    Gender gender;
     String city;
+
+
 }
