@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaRegListAlt } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 
 const Post = () => {
+    const [post, setPost] = useState([])
+
+    
     return (
+
         <div className='px-20'>
             <div className='flex items-center justify-center gap-5 mb-5'>
                 <FaRegListAlt className='w-6 h-6' />
@@ -31,6 +35,7 @@ const Post = () => {
             <table className="w-full mt-5 bg-white ">
                 <thead>
                     <tr>
+                        <th className="px-4 py-2 border-b">STT</th>
                         <th className="px-4 py-2 border-b">TIÊU ĐỀ</th>
                         <th className="px-4 py-2 border-b">TÁC GIẢ</th>
                         <th className="px-4 py-2 border-b">NGÀY ĐĂNG</th>
@@ -40,6 +45,7 @@ const Post = () => {
                 </thead>
                 <tbody>
                     <tr className='items-center justify-center text-center border-b'>
+                        <td className="px-4 py-2">1</td>
                         <td className="px-4 py-2">Bài viết 1</td>
                         <td className="px-4 py-2">Nguyễn Văn A</td>
                         <td className="px-4 py-2">01/01/2023</td>
@@ -56,6 +62,7 @@ const Post = () => {
                     </tr>
 
                     <tr className='items-center justify-center text-center border-b'>
+                        <td className="px-4 py-2">2</td>
                         <td className="px-4 py-2">Bài viết 2</td>
                         <td className="px-4 py-2">Nguyễn Văn B</td>
                         <td className="px-4 py-2">19/02/2023</td>
