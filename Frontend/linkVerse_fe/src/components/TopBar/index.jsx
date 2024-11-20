@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsMoon, BsSunFill } from "react-icons/bs";
 import { Button, PopperCustom, TextInput } from "~/components/index";
 import { useTranslation } from "react-i18next";
@@ -11,14 +11,14 @@ import { setTheme } from "~/redux/Slices/themeSlice";
 import { logOut } from "~/redux/Slices/userSlice";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { FaFacebookMessenger } from "react-icons/fa6";
-import { MdApps } from "react-icons/md";
 
 const TopBar = ({ title }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const user = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
   const { language } = useSelector((state) => state.language);
+  const navigate = useNavigate();
 
   //language
   const handleChangeLanguage = (e) => {
@@ -330,10 +330,7 @@ const TopBar = ({ title }) => {
             </PopperCustom>
           </Badge>
         </div>
-        {/* chat */}
-        <div>
-          <FaFacebookMessenger size={23} className="cursor-pointer" />
-        </div>
+
         {/* change language */}
         <div className="w-10 h-10 flex items-center justify-center">
           <Select
@@ -372,15 +369,21 @@ const TopBar = ({ title }) => {
         <button onClick={handleTheme}>
           {theme === "dark" ? <BsMoon /> : <BsSunFill />}
         </button>
-        {/* app */}
-        <MdApps size={30} className="cursor-pointer" />
-        {/* <div>
-          <Button
-            onClick={handleLogOut}
-            title={t("Đăng xuất")}
-            containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
-          />
-        </div> */}
+        <div>
+          {user?.token ? (
+            <Button
+              onClick={handleLogOut}
+              title={t("Đăng xuất")}
+              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
+            />
+          ) : (
+            <Button
+              onClick={() => navigate("/login")}
+              title={t("Đăng nhập")}
+              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

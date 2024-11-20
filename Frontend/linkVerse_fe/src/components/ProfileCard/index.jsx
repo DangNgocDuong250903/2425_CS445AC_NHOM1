@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { NoProfile } from "~/assets/index";
 import { LiaEditSolid } from "react-icons/lia";
 import {
@@ -11,9 +11,11 @@ import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
 import { user } from "~/assets/mockData/data";
 import { useTranslation } from "react-i18next";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 const ProfileCard = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   //Update profile
   const handleUpdateProfile = () => {};
@@ -89,6 +91,18 @@ const ProfileCard = () => {
           <span className="text-ascent-1 text-base">
             {moment(user?.createdAt).fromNow()}
           </span>
+        </div>
+      </div>
+      {/* Chat */}
+      <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
+        <p className="text-lg text-ascent-1 font-semibold">Chat</p>
+
+        <div className="flex items-center justify-between">
+          <IoChatboxEllipsesOutline
+            className="text-xl text-ascent-1 cursor-pointer"
+            onClick={() => navigate("/chat")}
+          />
+          <span className="text-ascent-1 text-lg">{user?.views?.length}</span>
         </div>
       </div>
       {/* Social profile */}

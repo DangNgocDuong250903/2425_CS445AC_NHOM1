@@ -418,7 +418,7 @@ const ProfilePage = () => {
                     </label>
                     {file && file?.size > 5120 * 1024 && (
                       <span className="text-xs text-red-600">
-                        vui lòng tải &lt; file 5mb
+                        vui lòng tải file &lt; 5mb
                       </span>
                     )}
                   </div>

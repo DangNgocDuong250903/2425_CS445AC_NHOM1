@@ -1,6 +1,6 @@
-import { Admin, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
+import { Admin, Chat, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
 
-const route1 = [
+export const route = [
     {
         path: '/',
         element: HomePage,
@@ -12,6 +12,7 @@ const route1 = [
     {
         path: '/admin',
         element: Admin,
+        isPrivate: true
     },
     {
         path: '/group/:id',
@@ -20,10 +21,7 @@ const route1 = [
     {
         path: '/friend/:id',
         element: FriendPage,
-    }
-]
-
-const route2 = [
+    },
     {
         path: '*',
         element: NotFoundPage,
@@ -39,10 +37,9 @@ const route2 = [
     {
         path: '/reset-password',
         element: ResetPasswordPage,
+    },
+    {
+        path: '/chat',
+        element: Chat,
     }
 ]
-
-export {
-    route1,
-    route2
-}

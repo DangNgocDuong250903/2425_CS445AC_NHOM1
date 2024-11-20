@@ -6,7 +6,8 @@ const initialState = {
     email: "",
     access_token: "",
     profession: "",
-    storie: ""
+    storie: "",
+    isAdmin: true
 };
 
 const userSlice = createSlice({

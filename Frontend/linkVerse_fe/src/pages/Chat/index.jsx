@@ -1,81 +1,33 @@
 import {
-  DialogCustom,
-  TextInput,
-  TopBar,
-  Wrapper,
   FriendCard,
   ProfileCard,
   Button,
   PostCard,
+  TopBar,
   GroupCard,
   FriendRequest,
   FriendSuggest,
+  DialogCustom,
 } from "~/components";
-import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
-import { FaArrowLeft, FaInstagram } from "react-icons/fa";
-import { CiFacebook } from "react-icons/ci";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
-import Box from "@mui/material/Box";
-import {
-  Avatar,
-  AvatarGroup,
-  Divider,
-  Fab,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { useEffect, useState } from "react";
 import { user, posts } from "~/assets/mockData/data";
+import { useEffect, useState } from "react";
 import { NoProfile } from "~/assets/index";
-
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
+import { MenuItem, Select, TextField } from "@mui/material";
+import { FormControl } from "@mui/material";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
-const FriendPage = () => {
-  const { t } = useTranslation();
-  const theme = useSelector((state) => state.theme.theme);
-  const [value, setValue] = useState(0);
+const Chat = () => {
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
   const [status, setStatus] = useState("");
   const [postState, setPostState] = useState("public");
   const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
-  const [isOpenDialogEdit, setIsOpenDialogEdit] = useState(false);
-
-  const handleChange = (event, newValue) => {
-    setValue(newValue);
-  };
-
-  //tab
-  const CustomTabPanel = (props) => {
-    const { children, value, index, ...other } = props;
-
-    return (
-      <div
-        role="tabpanel"
-        hidden={value !== index}
-        id={`simple-tabpanel-${index}`}
-        aria-labelledby={`simple-tab-${index}`}
-        {...other}
-      >
-        {value === index && <Box sx={{ height: "screen" }}>{children}</Box>}
-      </div>
-    );
-  };
-  const a11yProps = (index) => {
-    return {
-      id: `simple-tab-${index}`,
-      "aria-controls": `simple-tabpanel-${index}`,
-    };
-  };
+  const theme = useSelector((state) => state.theme.theme);
 
   useEffect(() => {
     if (file) {
@@ -107,142 +59,24 @@ const FriendPage = () => {
     setIsOpenDialogAdd(false);
   };
 
-  const handleCloseDiaLogEdit = () => {
-    setIsOpenDialogEdit(false);
-  };
-
   return (
     <>
-      <Wrapper>
-        <div className="w-full bg-bgColor h-screen overflow-hidden">
-          <TopBar title={"Trang cá nhân"} />
-          <div className="w-full h-full justify-center flex">
-            <div className="max-w-[800px] h-full bg-primary mt-2 rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
-              {/* 1 */}
-              <div className="w-full h-auto flex flex-col p-10 pb-4 gap-y-5">
-                <div className="flex justify-between">
-                  <span className="text-2xl font-semibold text-ascent-1">
-                    dhtuan
-                  </span>
-                  <img
-                    src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
-                    alt="avatar"
-                    className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat"
-                  />
-                </div>
-                {/* 2 */}
-                <div className="flex items-center">
-                  <p>{"No story"}</p>
-                </div>
-                {/* 3 */}
-                <div className="flex justify-between items-center">
-                  <AvatarGroup total={27}>
-                    <Avatar
-                      alt="avatar"
-                      src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
-                    />
-                    <Avatar
-                      alt="avatar"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvZ5tlwcyX69noUottK0EDi6CZJS76ds-vqw&s"
-                    />
-                    <Avatar
-                      alt="avatar"
-                      src="https://kenh14cdn.com/2017/images685542-a-1489655177057.jpg"
-                    />
-                  </AvatarGroup>
-                  <div className="flex gap-2">
-                    <FaInstagram
-                      color={theme === "dark" ? "#fff" : "#000"}
-                      size="30px"
-                    />
-                    <CiFacebook
-                      color={theme === "dark" ? "#fff" : "#000"}
-                      size="30px"
-                    />
-                  </div>
-                </div>
-                {/* 4 */}
-                <div className="w-full text-center items-center justify-center flex gap-x-2">
-                  <Button
-                    onClick={() => setIsOpenDialogEdit(true)}
-                    title="Bạn bè"
-                    containerStyles={
-                      "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                    }
-                  />
-                  <Button
-                    onClick={() => setIsOpenDialogEdit(true)}
-                    title="Nhắn tin"
-                    containerStyles={
-                      "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                    }
-                  />
-                </div>
-              </div>
-
-              {/* 2 */}
-              <div className="flex w-full h-auto items-center justify-center">
-                {/* tab */}
-                <div>
-                  <Box sx={{ width: "100%" }}>
-                    <Box
-                      sx={{
-                        borderBottom: 1,
-                        borderColor: "divider",
-                        width: "800px",
-                      }}
-                    >
-                      <Tabs
-                        sx={{
-                          color: theme === "dark" ? "#fff" : "#000",
-                          "& .MuiTabs-indicator": {
-                            backgroundColor: theme === "dark" ? "#fff" : "#000",
-                            height: "1px",
-                          },
-                        }}
-                        indicatorColor="primary"
-                        textColor="inherit"
-                        value={value}
-                        onChange={handleChange}
-                        variant="fullWidth"
-                        aria-label="basic tabs example"
-                      >
-                        <Tab label="Bài đăng" {...a11yProps(0)} />
-                        <Tab label="Trả lời" {...a11yProps(1)} />
-                        <Tab label="Bài đăng lại" {...a11yProps(2)} />
-                      </Tabs>
-                    </Box>
-                    {/* 1 */}
-                    <CustomTabPanel value={value} index={0}>
-                      <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto shadow-newFeed">
-                        {/* post */}
-                        {posts.map((post, i) => (
-                          <PostCard
-                            key={i}
-                            post={post}
-                            user={user}
-                            deletePost={() => {}}
-                            likePost={() => {}}
-                          />
-                        ))}
-                      </div>
-                    </CustomTabPanel>
-                    {/* 2 */}
-                    <CustomTabPanel value={value} index={1}>
-                      <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
-                        <h1>Chưa có bài đăng nào</h1>
-                      </div>
-                    </CustomTabPanel>
-                    {/* 3 */}
-                    <CustomTabPanel value={value} index={2}>
-                      Item Three
-                    </CustomTabPanel>
-                  </Box>
-                </div>
-              </div>
-            </div>
+      <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
+        <TopBar title={"Trang chủ"} />
+        <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
+          {/* trai */}
+          <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
+            <ProfileCard />
+            <FriendCard />
+            <GroupCard />
           </div>
-          {/* Add post */}
+
+          {/* giua */}
+          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex  gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+            <div className=" w-1/3 bg-yellow-50 h-full">1</div>
+            <div className="flex-1 bg-pink-50 h-full">1</div>
+          </div>
+          {/* post */}
           <DialogCustom
             isOpen={isOpenDialogAdd}
             theme={theme}
@@ -453,28 +287,9 @@ const FriendPage = () => {
             </div>
           </DialogCustom>
         </div>
-
-        <div className="absolute bottom-5 right-5">
-          <Fab
-            color="primary"
-            aria-label="add"
-            variant="extended"
-            sx={{
-              zIndex: 10,
-              "&.MuiFab-root": {
-                backgroundColor: `${theme === "dark" ? "#fff" : "#000"}`,
-              },
-            }}
-            onClick={() => setIsOpenDialogAdd(true)}
-          >
-            <AddIcon
-              style={{ color: `${theme === "dark" ? "#000" : "#fff"}` }}
-            />
-          </Fab>
-        </div>
-      </Wrapper>
+      </div>
     </>
   );
 };
 
-export default FriendPage;
+export default Chat;
