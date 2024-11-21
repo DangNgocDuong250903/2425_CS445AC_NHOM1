@@ -28,6 +28,7 @@ public class PostMapperImpl implements PostMapper {
         if ( list != null ) {
             postResponse.keywords( new ArrayList<String>( list ) );
         }
+        postResponse.language( post.getLanguage() );
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
         postResponse.visibility( post.getVisibility() );

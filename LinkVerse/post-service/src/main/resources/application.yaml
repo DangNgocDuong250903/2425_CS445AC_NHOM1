@@ -6,11 +6,18 @@ server:
 spring:
   application:
     bucket:
-      name: image-0
+      name: javatechiestoragee
     name: post-service  # Tên ứng dụng cho post-service
   data:
     mongodb:
       uri: ${URL_MGDB}  # Kết nối MongoDB cho post-service
+  #    elasticsearch:
+  #      rest:
+  #        uris: http://localhost:9200
+  #        username: ${ELASTICSEARCH_USERNAME}
+  #        password: ${ELASTICSEARCH_PASSWORD}
+  #        read-timeout: 5s
+  #        connection-timeout: 1s
 
   datasource:
     url: ${URL_SQL} # Cấu hình kết nối MySQL
@@ -32,9 +39,9 @@ cloud:
       access-key: ${AWS_ACCESS_KEY}
       secret-key: ${AWS_SECRET_KEY}
     region:
-      static: ap-southeast-2
+      static: us-east-2
     stack:
       auto: false
 application:
   bucket:
-    name: image-0
+    name: javatechiestoragee
