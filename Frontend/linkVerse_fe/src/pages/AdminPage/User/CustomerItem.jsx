@@ -10,7 +10,7 @@ const CustomerItem = ({ item, index }) => {
             </td>
             <td className="px-4 py-2 font-medium">{item.name}</td>
             <td className="px-4 py-2 font-medium">{item.email}</td>
-            <td className="px-4 py-2 font-medium">2</td>
+            <td className="px-4 py-2 font-medium">{item.role}</td>
             <td className="px-4 py-2">
                 <Button className="px-4 py-2 font-semibold text-center bg-blue-500 rounded-lg cursor-pointer ">
                     Đặt lại mật khẩu

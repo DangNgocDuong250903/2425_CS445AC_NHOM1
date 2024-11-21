@@ -1,7 +1,8 @@
+import axios from 'axios';
 import React from 'react';
 import { MdDeleteForever } from 'react-icons/md';
 
-const PostItem = ({ item }) => {
+const PostItem = ({ item, deletePostItem }) => {
     return (
         <tr className='items-center justify-center text-center border-b'>
             <td className="px-4 py-2">{item.id}</td>
@@ -14,10 +15,12 @@ const PostItem = ({ item }) => {
                 </p>
             </td>
             <td className="px-4 py-2 text-center align-middle cursor-pointer">
-                <div className="flex items-center justify-center gap-2">
+                <button
+                    className="flex items-center justify-center gap-2"
+                    onClick={() => deletePostItem(item.id)}>
                     <MdDeleteForever className="w-6 h-6 text-red-500" />
                     <p className='text-lg'>Xóa</p>
-                </div>
+                </button>
             </td>
         </tr>
     );

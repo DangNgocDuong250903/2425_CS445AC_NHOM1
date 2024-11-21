@@ -9,6 +9,8 @@ import { BrowserRouter } from "react-router-dom";
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import theme from "./theme.js";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -16,6 +18,7 @@ createRoot(document.getElementById("root")).render(
       <Provider store={store}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
+          <ToastContainer  autoClose={1000} />
           <App />
         </ThemeProvider>
       </Provider>

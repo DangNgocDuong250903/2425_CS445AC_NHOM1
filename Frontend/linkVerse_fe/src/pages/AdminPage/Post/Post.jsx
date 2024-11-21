@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { FaRegListAlt } from "react-icons/fa";
 import PostItem from './PostItem';
 import { set } from 'react-hook-form';
+import { toast } from 'react-toastify';
 
 const Post = () => {
     const [post, setPost] = useState([])
@@ -37,6 +38,19 @@ const Post = () => {
         }
     };
 
+    //xóa bài viết
+    const deletePostItem = async (id) => {
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa bài viết này không?");
+        if (isConfirmed) {
+            try {
+                const res = await axios.delete("https://673def430118dbfe86096cf6.mockapi.io/post/" + id)
+                toast.success("Đã xóa thành công")
+                getPost();
+            } catch (error) {
+                toast.error("Lỗi không thể xóa");
+            }
+        }
+    }
     return (
 
         <div className='px-20'>
@@ -80,7 +94,7 @@ const Post = () => {
                 <tbody>
                     {filterPost.length > 0 ? (
                         filterPost.map((item, index) => (
-                            <PostItem key={index} item={item}></PostItem>
+                            <PostItem key={index} item={item} deletePostItem={deletePostItem}></PostItem>
                         ))
                     ) : (
                         <div>không tìm thấy</div>
@@ -92,5 +106,4 @@ const Post = () => {
         </div>
     );
 };
-
-export default Post;
+export default Post
