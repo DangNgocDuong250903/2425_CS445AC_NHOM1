@@ -4,7 +4,6 @@ import { MdDeleteForever } from "react-icons/md";
 
 const Post = () => {
     const [post, setPost] = useState([])
-
     
     return (
 
