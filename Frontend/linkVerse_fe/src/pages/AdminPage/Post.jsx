@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { FaRegListAlt } from "react-icons/fa";
 import { MdDeleteForever } from "react-icons/md";
 
 const Post = () => {
     const [post, setPost] = useState([])
-    
+    const getPost = async () => {
+        try {
+            const res = await axios.get("https://673def430118dbfe86096cf6.mockapi.io/post")
+            setPost(res.data)
+        } catch (error) {
+            alert("Lỗi kết nối với server")
+        }
+    }
+    useEffect(() => {
+        getPost()
+    }, [])
     return (
 
         <div className='px-20'>
@@ -43,38 +54,25 @@ const Post = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr className='items-center justify-center text-center border-b'>
-                        <td className="px-4 py-2">1</td>
-                        <td className="px-4 py-2">Bài viết 1</td>
-                        <td className="px-4 py-2">Nguyễn Văn A</td>
-                        <td className="px-4 py-2">01/01/2023</td>
-                        <td className="px-4 py-2">
-                            <p className='w-1/2 py-1 mx-auto bg-green-300 rounded-md'>Công Khai</p>
-                        </td>
-                        <td className="px-4 py-2 text-center align-middle cursor-pointer">
-                            <div className="flex items-center justify-center gap-2">
-                                <MdDeleteForever className="w-6 h-6 text-red-500" />
-                                <p className='text-lg'>Xóa</p>
-                            </div>
-                        </td>
-
-                    </tr>
-
-                    <tr className='items-center justify-center text-center border-b'>
-                        <td className="px-4 py-2">2</td>
-                        <td className="px-4 py-2">Bài viết 2</td>
-                        <td className="px-4 py-2">Nguyễn Văn B</td>
-                        <td className="px-4 py-2">19/02/2023</td>
-                        <td className="px-4 py-2">
-                            <p className='w-1/2 py-1 mx-auto bg-red-400 rounded-md'>Ẩn</p>
-                        </td>
-                        <td className="px-4 py-2 text-center align-middle cursor-pointer">
-                            <div className="flex items-center justify-center gap-2">
-                                <MdDeleteForever className="w-6 h-6 text-red-500" />
-                                <p className='text-lg '>Xóa</p>
-                            </div>
-                        </td>
-                    </tr>
+                    {post.map((item, index) => (
+                        <tr className='items-center justify-center text-center border-b'>
+                            <td className="px-4 py-2">{item.id}</td>
+                            <td className="px-4 py-2">{item.title}</td>
+                            <td className="px-4 py-2">{item.author}</td>
+                            <td className="px-4 py-2">{new Date(item.date).toLocaleDateString('vi-VN')}</td>
+                            <td className="px-4 py-2">
+                                <p className={`w-3/4 py-1 font-medium mx-auto rounded-md ${item.status === 'Công Khai' ? 'bg-green-300' : 'bg-red-300'}`}>
+                                    {item.status}
+                                </p>
+                            </td>
+                            <td className="px-4 py-2 text-center align-middle cursor-pointer">
+                                <div className="flex items-center justify-center gap-2">
+                                    <MdDeleteForever className="w-6 h-6 text-red-500" />
+                                    <p className='text-lg'>Xóa</p>
+                                </div>
+                            </td>
+                        </tr>
+                    ))}
                 </tbody>
             </table>
         </div>
