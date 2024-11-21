@@ -1,17 +1,21 @@
 package com.LinkVerse.post.controller;
 
+import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.service.PostService;
+import com.LinkVerse.post.service.TranslationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -27,9 +31,10 @@ import java.util.List;
 public class PostController {
 
     final PostService postService;
+    TranslationService translationService;
 
     // Create a new post
-     @PostMapping("/post-file")
+    @PostMapping("/post-file")
     public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
             @RequestParam("request") String requestJson,
             @RequestParam("files") List<MultipartFile> files) throws IOException {
@@ -41,6 +46,7 @@ public class PostController {
         ApiResponse<PostResponse> response = postService.createPostWithFiles(request, files);
         return ResponseEntity.ok(response);
     }
+
     @PostMapping("/{postId}/share")
     public ApiResponse<PostResponse> sharePost(
             @PathVariable String postId,
@@ -65,19 +71,57 @@ public class PostController {
         return ResponseEntity.ok(response);
     }
 
-   // Get my posts
-   @GetMapping("/my-posts")
+    // Get my posts
+    @GetMapping("/my-posts")
     public ApiResponse<PageResponse<PostResponse>> getMyPosts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "false") boolean includeDeleted) {
         return postService.getMyPosts(page, size, includeDeleted);
     }
-     @GetMapping("/history")
+
+    @GetMapping("/history")
     @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(
+    public ApiResponse<PageResponse<PostResponse>> getHistoryPosts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return postService.getMyPostsHistory(page, size);
+        return postService.getHistoryPosts(page, size);
+    }
+
+    @GetMapping("/download-image")
+    public ResponseEntity<byte[]> downloadImage(
+            @RequestParam String postId,
+            @RequestParam String fileName) {
+        try {
+            // Tải hình ảnh từ bài viết
+            ApiResponse<byte[]> response = postService.downloadImageFromPost(postId, fileName);
+
+            String contentType = FileUtil.getContentTypeFromFileName(fileName);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(contentType)); // Xác định Content-Type tự động
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            return new ResponseEntity<>(response.getResult(), headers, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+    }
+
+
+    @PostMapping("/{postId}/translate")
+    public ResponseEntity<ApiResponse<PostResponse>> translatePostContent(
+            @PathVariable String postId,
+            @RequestParam String targetLanguage) {
+        ApiResponse<PostResponse> response = translationService.translatePostContent(postId, targetLanguage);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @GetMapping("/by-language")
+    public ApiResponse<PageResponse<PostResponse>> getPostsByLanguage(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam String language) {
+        return postService.getPostsByLanguage(page, size, language);
     }
 }

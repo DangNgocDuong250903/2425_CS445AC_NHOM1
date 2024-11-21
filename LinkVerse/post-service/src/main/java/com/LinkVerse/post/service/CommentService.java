@@ -23,7 +23,7 @@ import java.util.UUID;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CommentService {
-      PostRepository postRepository;
+    PostRepository postRepository;
     PostMapper postMapper;
     CommentMapper commentMapper;
 
@@ -39,7 +39,7 @@ public class CommentService {
                 .build();
 
         post.getComments().add(newComment);
-         post.setCommentCount(post.getComments().size());
+        post.setCommentCount(post.getComments().size());
         postRepository.save(post);
 
         return ApiResponse.<PostResponse>builder()
