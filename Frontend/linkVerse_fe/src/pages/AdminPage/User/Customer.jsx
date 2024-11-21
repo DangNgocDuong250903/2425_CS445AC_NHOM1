@@ -13,6 +13,7 @@ const Customer = () => {
         try {
             const res = await axios.get("https://673def430118dbfe86096cf6.mockapi.io/user");
             setUser(res.data);
+            setFilteredUsers(res.data);
         } catch (error) {
             alert("Lỗi kết nối với Server");
         }
@@ -73,9 +74,13 @@ const Customer = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {filteredUsers.map((item, index) => (
-                            <CustomerItem key={index} item={item} />
-                        ))}
+                        {filteredUsers.length > 0 ? (
+                            filteredUsers.map((item, index) => (
+                                <CustomerItem key={index} item={item} />
+                            ))
+                        ) : (
+                            <div className='p-2 text-base font-medium text-center'>Không tìm thấy</div>
+                        )}
                     </tbody>
                 </table>
             </div>

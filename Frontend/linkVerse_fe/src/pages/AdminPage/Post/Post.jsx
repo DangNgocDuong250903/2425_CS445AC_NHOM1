@@ -2,13 +2,17 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FaRegListAlt } from "react-icons/fa";
 import PostItem from './PostItem';
+import { set } from 'react-hook-form';
 
 const Post = () => {
     const [post, setPost] = useState([])
+    const [searchPost, setSearchPost] = useState();
+    const [filterPost, setFilterPost] = useState([])
     const getPost = async () => {
         try {
             const res = await axios.get("https://673def430118dbfe86096cf6.mockapi.io/post")
             setPost(res.data)
+            setFilterPost(res.data)
         } catch (error) {
             alert("Lỗi kết nối với server")
         }
@@ -16,6 +20,23 @@ const Post = () => {
     useEffect(() => {
         getPost()
     }, [])
+
+    const handleSearch = () => {
+        const result = post.filter(
+            (item) =>
+                item.author.toLowerCase().includes(searchPost.toLowerCase()) ||
+                item.title.toLowerCase().includes(searchPost.toLowerCase())
+        )
+        setFilterPost(result)
+    };
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchPost(value);
+        if (value.trim() === "") {
+            setFilterPost(post); // Khi ô input trống, hiển thị toàn bộ danh sách
+        }
+    };
+
     return (
 
         <div className='px-20'>
@@ -28,10 +49,13 @@ const Post = () => {
                     type="text"
                     placeholder="Tìm kiếm..."
                     className="w-1/2 px-6 py-3 border rounded-lg "
+                    onChange={handleInputChange}
                 />
                 <button
                     style={{ backgroundColor: '#3B82F6' }}
-                    className="px-2 py-2 text-white rounded-lg ">
+                    className="px-2 py-2 text-white rounded-lg "
+                    onClick={handleSearch}
+                >
                     Tìm kiếm
                 </button>
                 <div className=''>
@@ -54,9 +78,15 @@ const Post = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {post.map((item, index) => (
-                        <PostItem key={index} item={item}></PostItem>
-                    ))}
+                    {filterPost.length > 0 ? (
+                        filterPost.map((item, index) => (
+                            <PostItem key={index} item={item}></PostItem>
+                        ))
+                    ) : (
+                        <div>không tìm thấy</div>
+                    )
+                    }
+
                 </tbody>
             </table>
         </div>
