@@ -1,24 +1,44 @@
 import React, { useEffect, useState } from 'react';
 import { FaHouseUser } from "react-icons/fa";
-import { CiSearch } from "react-icons/ci";
 import { Button } from 'antd';
-import { IoIosAddCircleOutline } from "react-icons/io";
 import axios from 'axios';
-import { data } from 'autoprefixer';
+import CustomerItem from './CustomerItem';
+
 const Customer = () => {
-    const [user, setUser] = useState([])
+    const [user, setUser] = useState([]); // ds all
+    const [searchUser, setSearchUser] = useState(""); // từ khóa tìm kiếm
+    const [filteredUsers, setFilteredUsers] = useState([]); // ds người dùng đã lọc
 
     const getUser = async () => {
         try {
             const res = await axios.get("https://673def430118dbfe86096cf6.mockapi.io/user");
             setUser(res.data);
         } catch (error) {
-            alert("lỗi kết nối với Server")
+            alert("Lỗi kết nối với Server");
         }
-    }
+    };
+
     useEffect(() => {
         getUser();
-    }, [])
+    }, []);
+
+    const handleSearch = () => {
+        const results = user.filter(
+            (item) =>
+                item.name.toLowerCase().includes(searchUser.toLowerCase()) ||
+                item.email.toLowerCase().includes(searchUser.toLowerCase())
+        );
+        setFilteredUsers(results);
+    };
+
+    const handleInputChange = (e) => {
+        const value = e.target.value;
+        setSearchUser(value);
+        if (value.trim() === "") {
+            setFilteredUsers(user); // Khi ô input trống, hiển thị toàn bộ danh sách
+        }
+    };
+
     return (
         <div className='h-[calc(100vh-150px)] overflow-y-auto'>
             <div className="container px-20 ">
@@ -27,23 +47,22 @@ const Customer = () => {
                     <h1 className='text-2xl font-bold'>QUẢN LÝ NGƯỜI DÙNG</h1>
                 </div>
                 <div className="flex items-center justify-center gap-5 mb-4">
-                    {/* <div className=' w-[200px] bg-gray-300 rounded-md p-2 flex justify-center items-center gap-2 cursor-pointer '>
-                        <IoIosAddCircleOutline className='w-6 h-6' />
-                        <p className='text-lg font-medium'>Thêm Người Dùng</p>
-                    </div> */}
                     <input
                         type="text"
                         placeholder="Nhập tên và email người dùng..."
-                        className="w-1/2 px-6 py-3 border rounded-lg "
+                        className="w-1/2 px-6 py-3 border rounded-lg"
+                        value={searchUser}
+                        onChange={handleInputChange}
                     />
                     <button
                         style={{ backgroundColor: '#3B82F6' }}
-                        className="px-2 py-2 text-white rounded-lg ">
+                        className="px-2 py-2 text-white rounded-lg"
+                        onClick={handleSearch}
+                    >
                         Tìm kiếm
                     </button>
-
                 </div>
-                <table className="w-full mt-5 bg-white ">
+                <table className="w-full mt-5 bg-white">
                     <thead>
                         <tr>
                             <th className="px-4 py-2 text-left border-b">ẢNH</th>
@@ -53,23 +72,9 @@ const Customer = () => {
                             <th className="px-4 py-2 text-left border-b">THAO TÁC</th>
                         </tr>
                     </thead>
-
                     <tbody>
-                        {user.map((item, index) => (
-                            <tr key={index} className='items-center justify-center border-b'>
-                                <td className="px-4 py-2 ">
-                                    <img src={item.images} alt={item.name}
-                                        className="w-10 h-10 rounded-full" />
-                                </td>
-                                <td className="px-4 py-2 font-medium">{item.name}</td>
-                                <td className="px-4 py-2 font-medium">{item.email}</td>
-                                <td className="px-4 py-2 font-medium">2</td>
-                                <td className="px-4 py-2">
-                                    <Button className="px-4 py-2 font-semibold text-center bg-blue-500 rounded-lg cursor-pointer ">
-                                        Đặt lại mật khẩu
-                                    </Button>
-                                </td>
-                            </tr>
+                        {filteredUsers.map((item, index) => (
+                            <CustomerItem key={index} item={item} />
                         ))}
                     </tbody>
                 </table>

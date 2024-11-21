@@ -1,8 +1,8 @@
 import React from "react";
 import { Admin, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
-import Customer from "~/pages/AdminPage/Customer";
+import Customer from "~/pages/AdminPage/User/Customer";
 import Dashboard from "~/pages/AdminPage/Dashboard";
-import Post from "~/pages/AdminPage/Post";
+import Post from "~/pages/AdminPage/Post/Post";
 
 const route1 = [
     {
