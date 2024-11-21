@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -37,4 +38,6 @@ public class SharedPost {
     @ManyToOne
     @JoinColumn(name = "original_post_id")
     Post originalPost;  // Liên kết tới bài viết gốc
+    @ElementCollection
+    List<String> keywords = new ArrayList<>();
 }

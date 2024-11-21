@@ -19,6 +19,7 @@ public interface PostMapper {
     @Named("toPostResponse")
     @Mapping(target = "sharedPost", source = "sharedPost", qualifiedByName = "toPostResponse")
     @Mapping(target = "keywords", source = "keywords")
+    @Mapping(target = "language", source = "language")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
@@ -46,6 +47,7 @@ public interface PostMapper {
                 .comments(toCommentResponses(post.getComments()))
                 .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
                 .keywords(post.getKeywords() != null ? post.getKeywords() : new ArrayList<>()) // Map keywords
+                .language(post.getLanguage())
                 .build();
     }
 
