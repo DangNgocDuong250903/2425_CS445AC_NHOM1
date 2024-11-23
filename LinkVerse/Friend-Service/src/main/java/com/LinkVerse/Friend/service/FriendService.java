@@ -4,6 +4,7 @@ import com.LinkVerse.Friend.dto.FriendshipResponse;
 import com.LinkVerse.Friend.entity.Friendship;
 import com.LinkVerse.Friend.entity.FriendshipStatus;
 import com.LinkVerse.Friend.entity.User;
+import com.LinkVerse.Friend.exception.FriendRequestNotFoundException;
 import com.LinkVerse.Friend.repository.FriendshipRepository;
 import com.LinkVerse.Friend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +13,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class FriendshipService {
+public class FriendService {
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
@@ -28,6 +28,10 @@ public class FriendshipService {
 
         User user1 = userRepository.findById(senderUserId).orElseThrow(() -> new RuntimeException("Sender user not found"));
         User user2 = userRepository.findById(recipientUserId).orElseThrow(() -> new RuntimeException("Recipient user not found"));
+
+        if (isBlocked(user1.getId(), user2.getId())) {
+            throw new RuntimeException("Cannot send friend request to a blocked user");
+        }
 
         Optional<Friendship> existingFriendship = friendshipRepository.findByUser1AndUser2(user1, user2);
         if (existingFriendship.isEmpty()) {
@@ -55,9 +59,14 @@ public class FriendshipService {
         User user2 = userRepository.findById(recipientUserId).orElseThrow(() -> new RuntimeException("Recipient user not found"));
 
         Optional<Friendship> friendship = friendshipRepository.findByUser1AndUser2(user1, user2);
+        if (friendship.isEmpty()) {
+            throw new FriendRequestNotFoundException("Friend request not found");
+        }
+
         friendship.ifPresent(f -> {
             f.setStatus(FriendshipStatus.ACCEPTED);
             friendshipRepository.save(f);
+            kafkaTemplate.send("friendship-requests", "Friend request accepted by " + user2.getUsername() + " from " + user1.getUsername());
         });
 
         return FriendshipResponse.builder()
@@ -67,39 +76,10 @@ public class FriendshipService {
                 .build();
     }
 
-    public FriendshipResponse blockUser(String targetUserId) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName();
-
-        User user1 = userRepository.findById(currentUserId).orElseThrow(() -> new RuntimeException("Current user not found"));
-        User user2 = userRepository.findById(targetUserId).orElseThrow(() -> new RuntimeException("Target user not found"));
-
+    public boolean isBlocked(String userId1, String userId2) {
+        User user1 = userRepository.findById(userId1).orElseThrow(() -> new RuntimeException("User not found"));
+        User user2 = userRepository.findById(userId2).orElseThrow(() -> new RuntimeException("User not found"));
         Optional<Friendship> friendship = friendshipRepository.findByUser1AndUser2(user1, user2);
-        if (friendship.isPresent()) {
-            Friendship existingFriendship = friendship.get();
-            existingFriendship.setStatus(FriendshipStatus.BLOCKED);
-            friendshipRepository.save(existingFriendship);
-        } else {
-            Friendship newFriendship = Friendship.builder()
-                    .user1(user1)
-                    .user2(user2)
-                    .status(FriendshipStatus.BLOCKED)
-                    .build();
-            friendshipRepository.save(newFriendship);
-        }
-
-        return FriendshipResponse.builder()
-                .senderUsername(user1.getUsername())
-                .recipientUsername(user2.getUsername())
-                .status(FriendshipStatus.BLOCKED)
-                .build();
-    }
-
-    public List<Friendship> getAcceptedFriends() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return friendshipRepository.findByUser1AndStatus(user, FriendshipStatus.ACCEPTED);
+        return friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.BLOCKED;
     }
 }

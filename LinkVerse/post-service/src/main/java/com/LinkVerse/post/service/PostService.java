@@ -1,5 +1,6 @@
 package com.LinkVerse.post.service;
 
+
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
@@ -114,6 +115,74 @@ public class PostService {
                     .build();
         }
     }
+//    public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        // Check if the content is appropriate
+//        if (!contentModerationService.isContentAppropriate(request.getContent())) {
+//            return ApiResponse.<PostResponse>builder()
+//                    .code(HttpStatus.BAD_REQUEST.value())
+//                    .message("Post content is inappropriate and violates our content policy.")
+//                    .build();
+//        }
+//
+//        try {
+//            List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
+//                    ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
+//                    : List.of();
+//
+//            // Check if the images are safe
+//            for (String fileUrl : fileUrls) {
+//                String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
+//                S3Object s3Object = s3Service.getObject(fileName);
+//                if (!rekognitionService.isImageSafe(s3Object)) {
+//                    s3Service.deleteFile(fileName);
+//                    return ApiResponse.<PostResponse>builder()
+//                            .code(HttpStatus.BAD_REQUEST.value())
+//                            .message("Uploaded image contains unsafe content.")
+//                            .build();
+//                }
+//            }
+//
+//            Post post = Post.builder()
+//                    .content(request.getContent())
+//                    .userId(authentication.getName())
+//                    .fileUrls(fileUrls)
+//                    .visibility(request.getVisibility())
+//                    .createdDate(Instant.now())
+//                    .modifiedDate(Instant.now())
+//                    .like(0)
+//                    .unlike(0)
+//                    .comments(List.of())
+//                    .build();
+//
+//            String languageCode = keywordService.detectDominantLanguage(request.getContent());
+//            post.setLanguage(languageCode);
+//
+//            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+//            List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
+//            post.setKeywords(keywordIds);
+//
+//            sentimentAnalysisService.analyzeAndSaveSentiment(post);
+//
+//            post = postRepository.save(post);
+//            PostResponse postResponse = postMapper.toPostResponse(post);
+//            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
+//
+//            return ApiResponse.<PostResponse>builder()
+//                    .code(200)
+//                    .message("Post created successfully")
+//                    .result(postResponse)
+//                    .build();
+//        } catch (SdkClientException e) {
+//            log.error("AWS S3 Exception: ", e);
+//
+//            return ApiResponse.<PostResponse>builder()
+//                    .code(HttpStatus.BAD_REQUEST.value())
+//                    .message("Failed to upload files due to AWS configuration issues.")
+//                    .build();
+//        }
+//    }
 
     public ApiResponse<Void> deletePost(String postId) {
         Post post = postRepository.findById(postId)

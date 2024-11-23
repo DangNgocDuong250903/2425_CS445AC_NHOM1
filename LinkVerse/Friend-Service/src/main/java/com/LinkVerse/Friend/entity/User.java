@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -31,4 +32,9 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<Friend> friends;
+    @ElementCollection
+    Set<String> followers = new HashSet<>();
+
+    @ElementCollection
+    Set<String> followings = new HashSet<>();
 }

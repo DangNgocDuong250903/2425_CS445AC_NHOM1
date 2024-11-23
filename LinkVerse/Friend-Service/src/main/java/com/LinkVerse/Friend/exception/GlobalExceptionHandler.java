@@ -4,6 +4,7 @@ package com.LinkVerse.Friend.exception;
 import com.LinkVerse.Friend.dto.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -18,6 +19,12 @@ import java.util.Objects;
 public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
+
+    @ExceptionHandler(FriendRequestNotFoundException.class)
+    public ResponseEntity<ApiResponse> handleFriendRequestNotFoundException(FriendRequestNotFoundException ex) {
+        ApiResponse response = new ApiResponse(ex.getMessage(), HttpStatus.NOT_FOUND.value());
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingRuntimeException(RuntimeException exception) {

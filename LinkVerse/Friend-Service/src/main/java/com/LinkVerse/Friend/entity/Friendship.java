@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @Builder
@@ -28,4 +30,7 @@ public class Friendship {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     FriendshipStatus status;
+
+    @Column(name = "blocked_at")
+    LocalDateTime blockedAt; // Lưu thời gian block, nếu trạng thái là BLOCKED
 }
