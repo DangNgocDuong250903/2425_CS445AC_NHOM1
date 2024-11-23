@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.exception;
+package com.LinkVerse.Friend.exception;
 
 public class AppException extends RuntimeException {
     public AppException(ErrorCode errorCode) {

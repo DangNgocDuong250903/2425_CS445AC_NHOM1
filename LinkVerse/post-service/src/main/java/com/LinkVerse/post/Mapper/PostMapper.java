@@ -47,6 +47,7 @@ public interface PostMapper {
                 .comments(toCommentResponses(post.getComments()))
                 .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
                 .keywords(post.getKeywords() != null ? post.getKeywords() : new ArrayList<>()) // Map keywords
+                .primarySentiment(post.getPrimarySentiment()) // Map this field
                 .language(post.getLanguage())
                 .build();
     }

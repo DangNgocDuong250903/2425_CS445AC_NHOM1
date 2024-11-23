@@ -1,17 +1,15 @@
 package com.LinkVerse.Friend.service;
 
-import com.LinkVerse.identity.dto.request.AuthenticationRequest;
-import com.LinkVerse.identity.dto.request.IntrospectRequest;
-import com.LinkVerse.identity.dto.request.LogoutRequest;
-import com.LinkVerse.identity.dto.request.RefreshRequest;
-import com.LinkVerse.identity.dto.response.AuthenticationResponse;
-import com.LinkVerse.identity.dto.response.IntrospectResponse;
-import com.LinkVerse.identity.entity.InvalidatedToken;
-import com.LinkVerse.identity.entity.User;
-import com.LinkVerse.identity.exception.AppException;
-import com.LinkVerse.identity.exception.ErrorCode;
-import com.LinkVerse.identity.repository.InvalidatedTokenRepository;
-import com.LinkVerse.identity.repository.UserRepository;
+
+import com.LinkVerse.Friend.dto.request.AuthenticationRequest;
+import com.LinkVerse.Friend.dto.request.IntrospectRequest;
+import com.LinkVerse.Friend.dto.response.AuthenticationResponse;
+import com.LinkVerse.Friend.dto.response.IntrospectResponse;
+import com.LinkVerse.Friend.entity.User;
+import com.LinkVerse.Friend.exception.AppException;
+import com.LinkVerse.Friend.exception.ErrorCode;
+import com.LinkVerse.Friend.repository.InvalidatedTokenRepository;
+import com.LinkVerse.Friend.repository.UserRepository;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -144,42 +142,6 @@ public class AuthenticationService {
         }
     }
 
-    public void logout(LogoutRequest request) throws ParseException, JOSEException {
-        try {
-            var signToken = verifyToken(request.getToken(), true);
-
-            String jit = signToken.getJWTClaimsSet().getJWTID();
-            Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
-
-            InvalidatedToken invalidatedToken =
-                    InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
-
-            invalidatedTokenRepository.save(invalidatedToken);
-        } catch (AppException exception) {
-            log.info("Token already expired");
-        }
-    }
-
-    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
-        var signedJWT = verifyToken(request.getToken(), true);
-
-        var jit = signedJWT.getJWTClaimsSet().getJWTID();
-        var expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        InvalidatedToken invalidatedToken =
-                InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
-
-        invalidatedTokenRepository.save(invalidatedToken);
-
-        var username = signedJWT.getJWTClaimsSet().getSubject();
-
-        var user =
-                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
-
-        var token = generateToken(user);
-
-        return AuthenticationResponse.builder().token(token).build();
-    }
 
     private String generateToken(User user) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);

@@ -16,7 +16,7 @@ public class PostsBySentimentController {
 
     private final PostsBySentiment postsBySentiment;
 
-    @GetMapping("/posts/by-sentiment")
+    @GetMapping("/by-sentiment")
     public ResponseEntity<ApiResponse<PageResponse<PostResponse>>> getPostsBySentiment(
             @RequestParam int page,
             @RequestParam int size,

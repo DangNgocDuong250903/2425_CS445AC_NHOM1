@@ -12,7 +12,9 @@ import software.amazon.awssdk.services.comprehend.model.DetectKeyPhrasesRequest;
 import software.amazon.awssdk.services.comprehend.model.DetectKeyPhrasesResponse;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,10 +24,19 @@ public class KeywordService {
     private final ComprehendClient comprehendClient;
     private final KeywordRepository keywordRepository;
 
+    private static final Set<String> SUPPORTED_LANGUAGES = new HashSet<>(List.of(
+            "hi", "de", "zh-TW", "ko", "pt", "en", "it", "fr", "zh", "es", "ar", "ja"
+    ));
+
     public List<Keyword> extractAndSaveKeywords(String content) {
         try {
             String languageCode = detectDominantLanguage(content);
             log.info("Detected language code: {}", languageCode);
+
+            if (!SUPPORTED_LANGUAGES.contains(languageCode)) {
+                log.warn("Language '{}' is not supported for keyword extraction.", languageCode);
+                return List.of(); // Return an empty list or handle as needed
+            }
 
             DetectKeyPhrasesRequest request = DetectKeyPhrasesRequest.builder()
                     .text(content)
@@ -39,10 +50,6 @@ public class KeywordService {
                     .map(keyPhrase -> keyPhrase.text())
                     .collect(Collectors.toList());
             log.info("Extracted phrases: {}", phrases);
-
-            if (phrases.isEmpty()) {
-                log.warn("No key phrases found in the content.");
-            }
 
             List<Keyword> savedKeywords = new ArrayList<>();
             for (String phrase : phrases) {

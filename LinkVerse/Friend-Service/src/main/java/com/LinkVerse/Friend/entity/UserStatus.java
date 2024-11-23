@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.entity;
+package com.LinkVerse.Friend.entity;
 
 public enum UserStatus {
     ONLINE,

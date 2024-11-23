@@ -43,4 +43,12 @@ public class Post {
     String language;
     @ElementCollection
     List<String> keywords = new ArrayList<>(); // Ensure this property is named 'keywords'
+    //Phantich cam xuc
+    String primarySentiment;
+    double positiveScore;
+    double negativeScore;
+    double neutralScore;
+    double mixedScore;
+
+
 }

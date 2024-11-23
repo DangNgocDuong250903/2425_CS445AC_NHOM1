@@ -1,4 +1,4 @@
-package com.LinkVerse.identity.exception;
+package com.LinkVerse.Friend.exception;
 
 import lombok.Getter;
 import org.springframework.http.HttpStatus;

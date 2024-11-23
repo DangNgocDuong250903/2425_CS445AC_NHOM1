@@ -6,11 +6,11 @@ import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostVisibility;
-import com.LinkVerse.post.entity.SharedPost;
+import com.LinkVerse.post.entity.*;
+import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
+import com.amazonaws.SdkClientException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +33,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -43,51 +42,86 @@ public class PostService {
     PostMapper postMapper;
     SharedPostRepository sharedPostRepository;
     ShareMapper shareMapper;
+    PostHistoryRepository postHistoryRepository;
+    @Autowired
+    KeywordService keywordService;
 
     KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired
     S3Service s3Service;
+    @Autowired
+    ContentModerationService contentModerationService;
+    @Autowired
+    TranslationService translationService;
 
+    SentimentAnalysisService sentimentAnalysisService;
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        // Kiểm tra kỹ nếu files không null và chỉ chứa file không rỗng
-        List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
-                ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
-                : List.of();
+        // Check if the content is appropriate
+        if (!contentModerationService.isContentAppropriate(request.getContent())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post content is inappropriate and violates our content policy.")
+                    .build();
+        }
 
-        Post post = Post.builder()
-                .content(request.getContent())
-                .userId(authentication.getName())
-                .fileUrls(fileUrls) // lấy cái này để hiển thị trên FE
-                .visibility(request.getVisibility())
-                .createdDate(Instant.now())
-                .modifiedDate(Instant.now())
-                .like(0)
-                .unlike(0)
-                .comments(List.of())
-                .build();
+        try {
+            List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
+                    ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
+                    : List.of();
 
-        post = postRepository.save(post);
+            Post post = Post.builder()
+                    .content(request.getContent())
+                    .userId(authentication.getName())
+                    .fileUrls(fileUrls)
+                    .visibility(request.getVisibility())
+                    .createdDate(Instant.now())
+                    .modifiedDate(Instant.now())
+                    .like(0)
+                    .unlike(0)
+                    .comments(List.of())
+                    .build();
 
-        return ApiResponse.<PostResponse>builder()
-                .code(200)
-                .message("Post created successfully")
-                .result(postMapper.toPostResponse(post))
-                .build();
+            String languageCode = keywordService.detectDominantLanguage(request.getContent());
+            post.setLanguage(languageCode);
+
+
+            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+            List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
+            post.setKeywords(keywordIds);
+
+            sentimentAnalysisService.analyzeAndSaveSentiment(post);
+
+
+            post = postRepository.save(post);
+            PostResponse postResponse = postMapper.toPostResponse(post);
+            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
+
+
+            return ApiResponse.<PostResponse>builder()
+                    .code(200)
+                    .message("Post created successfully")
+                    .result(postResponse)
+                    .build();
+        } catch (SdkClientException e) {
+            log.error("AWS S3 Exception: ", e);
+
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Failed to upload files due to AWS configuration issues.")
+                    .build();
+        }
     }
 
-
     public ApiResponse<Void> deletePost(String postId) {
-        // Lấy bài viết từ cơ sở dữ liệu
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
-        // kt quyền xóa bài viết
         if (!post.getUserId().equals(currentUserId)) {
             throw new RuntimeException("Not authorized to delete this post");
         }
@@ -100,21 +134,76 @@ public class PostService {
 
                 if (fileName != null) {
                     String result = s3Service.deleteFile(fileName);
-                    log.info(result); // Ghi log việc xóa file từ S3
+                    log.info(result);
                 }
             }
         }
-        //Đánh dấu đã xóa
-        post.setDeleted(true);
-        post.setModifiedDate(Instant.now()); // Cập nhật thời gian sửa
-        postRepository.save(post);
+
+        PostHistory postHistory = PostHistory.builder()
+                .id(post.getId())
+                .content(post.getContent())
+                .fileUrls(post.getFileUrls())
+                .visibility(post.getVisibility())
+                .userId(post.getUserId())
+                .createdDate(post.getCreatedDate())
+                .modifiedDate(post.getModifiedDate())
+                .like(post.getLike())
+                .unlike(post.getUnlike())
+                .commentCount(post.getCommentCount())
+                .comments(post.getComments())
+                .sharedPost(postMapper.toPostResponse(post.getSharedPost()))
+                .build();
+
+        postHistoryRepository.save(postHistory);
+
+        postRepository.delete(post);
 
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
-                .message("Post marked as deleted successfully")
+                .message("Post deleted and moved to history successfully")
                 .build();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse<PageResponse<PostResponse>> getHistoryPosts(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("createdDate")));
+        var pageData = postHistoryRepository.findAll(pageable);
+
+        List<PostHistory> posts = pageData.getContent();
+
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Deleted posts retrieved successfully")
+                .result(PageResponse.<PostResponse>builder()
+                        .currentPage(page)
+                        .pageSize(pageData.getSize())
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(posts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    public ApiResponse<PageResponse<PostResponse>> getPostsByLanguage(int page, int size, String language) {
+        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
+        Pageable pageable = PageRequest.of(page - 1, size, sort);
+
+        var pageData = postRepository.findAllByLanguage(language, pageable);
+
+        List<Post> posts = pageData.getContent();
+
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Posts retrieved successfully")
+                .result(PageResponse.<PostResponse>builder()
+                        .currentPage(page)
+                        .pageSize(pageData.getSize())
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(posts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
 
     public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -146,34 +235,6 @@ public class PostService {
                 .build();
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    public ApiResponse<PageResponse<PostResponse>> getMyPostsHistory(int page, int size) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userID = authentication.getName();
-
-        Sort sort = Sort.by(Sort.Order.desc("createdDate"));
-        Pageable pageable = PageRequest.of(page - 1, size, sort);
-
-        var pageData = postRepository.findAllByUserId(userID, pageable);
-
-        List<Post> filteredPosts = pageData.getContent().stream()
-                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
-                        (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
-                        post.getVisibility() == PostVisibility.PRIVATE)
-                .toList();
-
-        return ApiResponse.<PageResponse<PostResponse>>builder()
-                .code(200)
-                .message("My posts history retrieved successfully")
-                .result(PageResponse.<PostResponse>builder()
-                        .currentPage(page)
-                        .pageSize(pageData.getSize())
-                        .totalPage(pageData.getTotalPages())
-                        .totalElement(pageData.getTotalElements())
-                        .data(filteredPosts.stream().map(postMapper::toPostResponse).toList())
-                        .build())
-                .build();
-    }
 
     public ApiResponse<PostResponse> sharePost(String postId, String content, PostVisibility visibility) {
         // Tìm bài gốc theo postId
@@ -212,14 +273,22 @@ public class PostService {
                 .originalPost(originalPost)
                 .build();
 
+        // Extract and save keywords for the shared post
+        List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(content);
+        List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
+        sharedPost.setKeywords(keywordIds);
+
         // Lưu bài viết chia sẻ mới vào SharedPostRepository
         sharedPost = sharedPostRepository.save(sharedPost);
 
         // Sử dụng ShareMapper để ánh xạ SharedPost sang PostResponse
+        PostResponse postResponse = shareMapper.toPostResponse(sharedPost);
+        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
+
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post shared successfully")
-                .result(shareMapper.toPostResponse(sharedPost))
+                .result(postResponse)
                 .build();
     }
 
@@ -239,4 +308,34 @@ public class PostService {
         return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
     }
 
+    public ApiResponse<byte[]> downloadImageFromPost(String postId, String imageFileName) {
+        // Lấy bài viết từ cơ sở dữ liệu
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Kiểm tra xem bài viết có chứa URL của hình ảnh hay không
+        List<String> fileUrls = post.getFileUrls();
+        if (fileUrls == null || fileUrls.isEmpty()) {
+            throw new RuntimeException("No images found in this post");
+        }
+
+        // Tìm URL khớp với tên file hình ảnh
+        String matchedUrl = fileUrls.stream()
+                .filter(url -> extractFileNameFromUrl(decodeUrl(url)).equals(imageFileName))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Image not found in this post"));
+
+        // Tải dữ liệu hình ảnh từ Amazon S3
+        byte[] imageData = s3Service.downloadFile(imageFileName);
+
+        return ApiResponse.<byte[]>builder()
+                .code(HttpStatus.OK.value())
+                .message("Image downloaded successfully")
+                .result(imageData)
+                .build();
+    }
+
+    public ApiResponse<PostResponse> translatePostContent(String postId, String targetLanguage) {
+        return translationService.translatePostContent(postId, targetLanguage);
+    }
 }

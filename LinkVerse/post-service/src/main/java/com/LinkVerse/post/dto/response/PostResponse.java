@@ -31,4 +31,5 @@ public class PostResponse {
     PostResponse sharedPost;
     private List<String> keywords;
     String language;
+    private String primarySentiment;
 }
