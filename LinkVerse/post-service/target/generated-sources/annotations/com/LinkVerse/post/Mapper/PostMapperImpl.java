@@ -39,6 +39,7 @@ public class PostMapperImpl implements PostMapper {
         postResponse.unlike( post.getUnlike() );
         postResponse.commentCount( post.getCommentCount() );
         postResponse.comments( toCommentResponses( post.getComments() ) );
+        postResponse.primarySentiment( post.getPrimarySentiment() );
 
         return postResponse.build();
     }

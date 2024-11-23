@@ -40,5 +40,11 @@ spring:
             - StripPrefix=2
           metadata:
             websocket: true
+        - id: Friend-Service
+          uri: http://localhost:8085
+          predicates:
+            - Path=${app.api-prefix}/friend/**
+          filters:
+            - StripPrefix=2
 
 #https://docs.spring.io/spring-cloud-gateway/reference/spring-cloud-gateway/request-predicates-factories.html
