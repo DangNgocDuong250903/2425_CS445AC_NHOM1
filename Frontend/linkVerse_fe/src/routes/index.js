@@ -3,6 +3,7 @@ import { Admin, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, Regis
 import Customer from "~/pages/AdminPage/User/Customer";
 import Dashboard from "~/pages/AdminPage/Dashboard";
 import Post from "~/pages/AdminPage/Post/Post";
+import Group from "~/pages/AdminPage/Group/Group";
 
 const route1 = [
     {
@@ -50,6 +51,10 @@ const route3 = [
     {
         path: '/post',
         element: Post
+    },
+    {
+        path: '/groupadmin',
+        element: Group
     },
 
 ]

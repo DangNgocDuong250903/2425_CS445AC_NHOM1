@@ -2,16 +2,13 @@ import React from 'react';
 import { Menu } from 'antd';
 import { CiAt } from "react-icons/ci";
 import { PiFileText } from "react-icons/pi";
+import { GrGroup } from "react-icons/gr";
 
 import {
     DashboardOutlined,
-    ShoppingCartOutlined,
     UserOutlined,
     TransactionOutlined,
     MessageOutlined,
-    SettingOutlined,
-    QuestionCircleOutlined,
-    LogoutOutlined,
 } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 const Sidebar = () => {
@@ -29,14 +26,14 @@ const Sidebar = () => {
                     <CiAt />
                     <span className='text-xl'>LinkVerse</span>
                 </div>
-                <Menu.Item key="dashboard" icon={<DashboardOutlined />} style={{ color: 'white' }}>
+                <Menu.Item icon={<DashboardOutlined />} style={{ color: 'white' }}>
                     <Link to="/admin">Trang Chủ</Link>
                 </Menu.Item>
-                <Menu.Item key="products" icon={<PiFileText />} style={{ color: 'white' }}>
+                <Menu.Item icon={<PiFileText />} style={{ color: 'white' }}>
                     <Link to="/post">Bài Viết</Link>
                 </Menu.Item>
-                <Menu.Item key="orders" icon={<ShoppingCartOutlined />} style={{ color: 'white' }}>
-                    <Link to="/orders">Orders</Link>
+                <Menu.Item icon={<GrGroup/>} style={{ color: 'white' }}>
+                    <Link to="/groupadmin">Nhóm</Link>
                 </Menu.Item>
                 <Menu.Item key="customers" icon={<UserOutlined />} style={{ color: 'white' }}>
                     <Link to="/customers">Người Dùng</Link>

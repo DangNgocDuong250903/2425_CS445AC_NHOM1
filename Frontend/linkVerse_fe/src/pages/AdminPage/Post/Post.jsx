@@ -2,13 +2,21 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { FaRegListAlt } from "react-icons/fa";
 import PostItem from './PostItem';
-import { set } from 'react-hook-form';
 import { toast } from 'react-toastify';
+import SortAdmin from '~/components/Admin/SortAdmin';
 
 const Post = () => {
     const [post, setPost] = useState([])
     const [searchPost, setSearchPost] = useState();
     const [filterPost, setFilterPost] = useState([])
+    const [selectedSort, setSelectedSort] = useState({
+        sortBy: "",
+        sortValue: ""
+    });
+    const onSort = (sortBy, sortValue) => {
+        setSelectedSort({ sortBy, sortValue });
+        console.log("Sort selected in App:", sortBy, sortValue);
+    }
     const getPost = async () => {
         try {
             const res = await axios.get("https://673def430118dbfe86096cf6.mockapi.io/post")
@@ -27,9 +35,15 @@ const Post = () => {
             (item) =>
                 item.author.toLowerCase().includes(searchPost.toLowerCase()) ||
                 item.title.toLowerCase().includes(searchPost.toLowerCase())
-        )
+        );
         setFilterPost(result)
     };
+
+
+
+
+
+
     const handleInputChange = (e) => {
         const value = e.target.value;
         setSearchPost(value);
@@ -73,10 +87,12 @@ const Post = () => {
                     Tìm kiếm
                 </button>
                 <div className=''>
-                    <select className="px-4 py-2 bg-gray-200 border rounded cursor-pointer">
-                        <option value="" className='font-medium'>Tất cả trạng thái</option>
-                        <option className='font-medium' value="public">Công khai</option>
-                        <option className='font-medium' value="hidden">Ẩn</option>
+                    <select
+                        className="px-4 py-2 bg-gray-200 border rounded cursor-pointer"
+                    >
+                        <option value="-1" className="font-medium">Tất Cả</option>
+                        <option className="font-medium" value="1">Công khai</option>
+                        <option className="font-medium" value="0">Ẩn</option>
                     </select>
                 </div>
             </div>
@@ -97,7 +113,9 @@ const Post = () => {
                             <PostItem key={index} item={item} deletePostItem={deletePostItem}></PostItem>
                         ))
                     ) : (
-                        <div>không tìm thấy</div>
+                        <tr>
+                            <td colSpan="6" className="p-2 text-base font-medium text-center">Không tìm thấy</td>
+                        </tr>
                     )
                     }
 

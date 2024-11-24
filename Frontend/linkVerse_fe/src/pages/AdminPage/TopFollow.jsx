@@ -3,7 +3,7 @@ import React from 'react';
 const TopFollow = () => {
     return (
         <div className='w-[30%] p-5 mt-5 bg-white border border-gray-200 rounded-lg shadow-lg '>
-            <h2 className='px-4 mb-4 text-lg font-medium'>Top Người Theo Dõi</h2>
+            <h2 className='px-2 mb-4 text-lg font-medium'>Hoạt Động Gần Đây</h2>
             <div className='flex flex-col gap-4 mt-4'>
                 <div className="flex">
                     <div className='w-12 h-12 overflow-hidden bg-gray-200 rounded-lg min-w-10'>

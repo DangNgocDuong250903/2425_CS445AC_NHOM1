@@ -1,5 +1,7 @@
 import { Button } from 'antd';
 import React from 'react';
+import { GoBlocked } from "react-icons/go";
+import { CiUnlock } from "react-icons/ci";
 
 const CustomerItem = ({ item, index }) => {
     return (
@@ -11,10 +13,18 @@ const CustomerItem = ({ item, index }) => {
             <td className="px-4 py-2 font-medium">{item.name}</td>
             <td className="px-4 py-2 font-medium">{item.email}</td>
             <td className="px-4 py-2 font-medium">{item.role}</td>
-            <td className="px-4 py-2">
-                <Button className="px-4 py-2 font-semibold text-center bg-blue-500 rounded-lg cursor-pointer ">
-                    Đặt lại mật khẩu
-                </Button>
+            <td>
+                <div className="flex justify-center gap-2 font-semibold cursor-pointer">
+                    <button className="flex items-center gap-2">
+                        <GoBlocked className="w-5 h-5 text-red-400" />
+                        <span className="text-center">Khóa</span>
+                    </button>
+                    <button className="flex items-center gap-2">
+                        <CiUnlock className="w-5 h-5 text-green-400" />
+                        <span className="text-center">Mở khóa</span>
+                    </button>
+                </div>
+
             </td>
         </tr>
     );

@@ -65,12 +65,12 @@ const Customer = () => {
                 </div>
                 <table className="w-full mt-5 bg-white">
                     <thead>
-                        <tr>
+                        <tr className=''>
                             <th className="px-4 py-2 text-left border-b">ẢNH</th>
                             <th className="px-4 py-2 text-left border-b">TÊN NGƯỜI DÙNG</th>
                             <th className="px-4 py-2 text-left border-b">EMAIL</th>
                             <th className="px-4 py-2 text-left border-b">VAI TRÒ</th>
-                            <th className="px-4 py-2 text-left border-b">THAO TÁC</th>
+                            <th className="px-4 py-2 text-center border-b">Hành Động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -79,7 +79,9 @@ const Customer = () => {
                                 <CustomerItem key={index} item={item} />
                             ))
                         ) : (
-                            <div className='p-2 text-base font-medium text-center'>Không tìm thấy</div>
+                            <tr>
+                                <td colSpan="6" className="p-2 text-base font-medium text-center">Không tìm thấy</td>
+                            </tr>
                         )}
                     </tbody>
                 </table>
