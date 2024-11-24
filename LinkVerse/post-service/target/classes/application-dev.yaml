@@ -35,16 +35,16 @@ spring:
 cloud:
   aws:
     credentials:
-      access-key: AKIATCKANL35JUXP2NFF
-      secret-key: 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
+      access-key: AKIAS6J7QIGOAHPPSVWK
+      secret-key: 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
     region:
-      static: ap-southeast-2
+      static: us-east-2
     stack:
       auto: false
 
 application:
   bucket:
-    name: image-0
+    name: javatechiestoragee
 
 feign:
   client:

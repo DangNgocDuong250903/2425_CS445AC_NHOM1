@@ -26,7 +26,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class S3Service {
 
-    String bucketName = "image-0";
+    String bucketName = "javatechiestoragee";
 
     @Autowired
     AmazonS3 s3Client;
