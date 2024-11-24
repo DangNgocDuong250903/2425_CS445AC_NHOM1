@@ -3,8 +3,6 @@ package com.LinkVerse.post.Mapper;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostHistory;
-import java.util.ArrayList;
-import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -24,10 +22,6 @@ public class PostMapperImpl implements PostMapper {
         PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
 
         postResponse.sharedPost( toPostResponse( post.getSharedPost() ) );
-        List<String> list = post.getKeywords();
-        if ( list != null ) {
-            postResponse.keywords( new ArrayList<String>( list ) );
-        }
         postResponse.language( post.getLanguage() );
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
@@ -40,6 +34,8 @@ public class PostMapperImpl implements PostMapper {
         postResponse.commentCount( post.getCommentCount() );
         postResponse.comments( toCommentResponses( post.getComments() ) );
         postResponse.primarySentiment( post.getPrimarySentiment() );
+
+        postResponse.fileUrl( post.getFileUrls() != null ? String.join(",", post.getFileUrls()) : "" );
 
         return postResponse.build();
     }
