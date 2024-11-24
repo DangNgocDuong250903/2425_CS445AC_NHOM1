@@ -7,6 +7,7 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+@Getter
 @Data
 @Builder
 @NoArgsConstructor
@@ -18,4 +19,5 @@ public class PostRequest {
     String language;
     @ElementCollection
     List<String> fileUrls;
+    String PostId;
 }

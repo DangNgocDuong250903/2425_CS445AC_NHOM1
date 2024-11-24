@@ -51,4 +51,7 @@ public class Post {
     double mixedScore;
 
 
+    boolean hasViolation = false;
+    boolean violationResolved = false;
+
 }

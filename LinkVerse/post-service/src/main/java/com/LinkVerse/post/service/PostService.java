@@ -12,6 +12,7 @@ import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
 import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.S3Object;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -54,7 +56,8 @@ public class PostService {
     ContentModerationService contentModerationService;
     @Autowired
     TranslationService translationService;
-
+    @Autowired
+    RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
@@ -72,11 +75,23 @@ public class PostService {
             List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                     ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
                     : List.of();
-
+            //1 mang luu tru cac file anh an toan, neu co file anh khong an toan thi xoa file do
+            List<String> safeFileUrls = new ArrayList<>();
+            for (String fileUrl : fileUrls) {
+                String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
+                S3Object s3Object = s3Service.getObject(fileName);
+                log.info("Checking image safety for file: {}", fileName);
+                if (rekognitionService.isImageSafe(s3Object)) {
+                    safeFileUrls.add(fileUrl);
+                } else {
+                    log.warn("Unsafe content detected in file: {}", fileName);
+                    s3Service.deleteFile(fileName);
+                }
+            }
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(authentication.getName())
-                    .fileUrls(fileUrls)
+                    .fileUrls(safeFileUrls) //-> cho ra " " vi pham an toan
                     .visibility(request.getVisibility())
                     .createdDate(Instant.now())
                     .modifiedDate(Instant.now())
@@ -88,18 +103,15 @@ public class PostService {
             String languageCode = keywordService.detectDominantLanguage(request.getContent());
             post.setLanguage(languageCode);
 
-
             List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
-
             post = postRepository.save(post);
             PostResponse postResponse = postMapper.toPostResponse(post);
-            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
-
+//        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
             return ApiResponse.<PostResponse>builder()
                     .code(200)
@@ -352,7 +364,7 @@ public class PostService {
 
         // Sử dụng ShareMapper để ánh xạ SharedPost sang PostResponse
         PostResponse postResponse = shareMapper.toPostResponse(sharedPost);
-        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
+//        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
         return ApiResponse.<PostResponse>builder()
                 .code(200)

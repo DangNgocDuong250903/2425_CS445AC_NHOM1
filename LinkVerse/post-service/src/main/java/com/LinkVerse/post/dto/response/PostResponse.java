@@ -29,7 +29,6 @@ public class PostResponse {
 
     List<CommentResponse> comments; // Danh sách bình luận
     PostResponse sharedPost;
-    private List<String> keywords;
     String language;
     private String primarySentiment;
 }

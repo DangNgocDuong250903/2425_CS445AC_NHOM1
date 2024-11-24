@@ -4,6 +4,7 @@ import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.Sentiment;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SentimentRepository;
+import com.LinkVerse.post.repository.SentimentSpikeDetectionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import software.amazon.awssdk.services.comprehend.model.DetectDominantLanguageRe
 import software.amazon.awssdk.services.comprehend.model.DetectSentimentRequest;
 import software.amazon.awssdk.services.comprehend.model.DetectSentimentResponse;
 
+import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -25,6 +27,12 @@ public class SentimentAnalysisService {
     private final PostRepository postRepository;
     private final SentimentRepository sentimentRepository;
     private final ComprehendClient comprehendClient;
+    private final SentimentSpikeDetectionRepository sentimentSpikeDetectionRepository;
+
+    public long countNegativePostsInTimeRange(Instant start, Instant end) {
+        Long count = sentimentSpikeDetectionRepository.countNegativePostsInTimeRange(start, end);
+        return count != null ? count : 0L;
+    }
 
     private static final Set<String> SUPPORTED_LANGUAGES = new HashSet<>(List.of(
             "en", "es", "fr", "de", "it", "pt", "ar", "hi", "ja", "ko", "zh", "zh-TW"
