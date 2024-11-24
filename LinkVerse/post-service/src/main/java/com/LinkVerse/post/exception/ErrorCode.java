@@ -15,6 +15,8 @@ public enum ErrorCode {
     GROUP_NOT_FOUND(1009, "Group not found", HttpStatus.NOT_FOUND),
     FORBIDDEN(1010, "Forbidden", HttpStatus.FORBIDDEN),
     PERMISSION_DENIED(1011, "Permission denied", HttpStatus.FORBIDDEN),
+    SDK_CLIENT_EXCEPTION(1012, "SDK client exception", HttpStatus.INTERNAL_SERVER_ERROR),
+    VIOLATION_POLICY(1013, "VIOLATION_POLICY", HttpStatus.BAD_REQUEST),
     ;
 
 
