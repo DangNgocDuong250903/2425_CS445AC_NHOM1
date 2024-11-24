@@ -25,6 +25,7 @@ public class Post {
 
     @ElementCollection
     List<String> fileUrls;
+    String fileUrl;
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;

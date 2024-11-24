@@ -1,6 +1,7 @@
 package com.LinkVerse.post.service;
 
 
+import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
@@ -10,12 +11,17 @@ import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.*;
 import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
+import com.LinkVerse.post.repository.PostSearchRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
+import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.amazonaws.SdkClientException;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,10 +34,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -46,6 +55,7 @@ public class PostService {
     PostHistoryRepository postHistoryRepository;
     @Autowired
     KeywordService keywordService;
+    PostSearchRepository postSearchRepository;
 
     KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired
@@ -56,6 +66,82 @@ public class PostService {
     TranslationService translationService;
 
     SentimentAnalysisService sentimentAnalysisService;
+    ProfileServiceClient profileServiceClient;
+
+    public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (!FileUtil.isImageFile(avatarFile)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Only image files are allowed.")
+                    .build();
+        }
+
+        // Upload file lên S3 và lấy avatar URL
+        String avatarUrl = s3Service.uploadFile(avatarFile);
+
+        PostVisibility visibility = request.getVisibility();
+        if (visibility == null) {
+            visibility = PostVisibility.PUBLIC; // Gán giá trị mặc định
+        }
+
+        // Nếu visibility không hợp lệ, trả về lỗi
+        if (!EnumUtils.isValidEnum(PostVisibility.class, visibility.name())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(400)
+                    .message("Invalid visibility value")
+                    .build();
+        }
+
+        // Tạo đối tượng Post mới
+        Post post = Post.builder()
+                .content(request.getContent())
+                .userId(authentication.getName())
+                .fileUrl(avatarUrl)
+                .visibility(request.getVisibility())
+                .createdDate(Instant.now())
+                .modifiedDate(Instant.now())
+                .like(0)
+                .unlike(0)
+                .comments(List.of())
+                .build();
+
+        post = postRepository.save(post);
+
+        // Lưu vào Elasticsearch
+        if (post.getId() != null) {
+            PostDocument postDocument = PostDocument.builder()
+                    .id(post.getId())
+                    .content(post.getContent())
+                    .userId(post.getUserId())
+                    .fileUrls(post.getFileUrls())
+                    .visibility(post.getVisibility())
+                    .createdAt(post.getCreatedDate())
+                    .updatedAt(post.getModifiedDate())
+                    .comments(new ArrayList<>())
+                    .build();
+            postSearchRepository.save(postDocument);
+            log.info("Save postDocument", postDocument);
+        }
+
+        // Cập nhật avatar của người dùng
+        try {
+            profileServiceClient.updateImage(authentication.getName(), avatarUrl);
+        } catch (FeignException e) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Failed to update avatar in profile-service: " + e.getMessage())
+                    .build();
+        }
+
+        // Trả về thông tin post mới cùng với response
+        return ApiResponse.<PostResponse>builder()
+                .code(200)
+                .message("Avatar post created successfully and profile updated")
+                .result(postMapper.toPostResponse(post))
+                .build();
+    }
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -72,6 +158,18 @@ public class PostService {
             List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                     ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
                     : List.of();
+
+            PostVisibility visibility = request.getVisibility();
+            if (visibility == null) {
+                visibility = PostVisibility.PUBLIC; // Set default value
+            }
+
+            if (!EnumUtils.isValidEnum(PostVisibility.class, visibility.name())) {
+                return ApiResponse.<PostResponse>builder()
+                        .code(400)
+                        .message("Invalid visibility value")
+                        .build();
+            }
 
             Post post = Post.builder()
                     .content(request.getContent())
@@ -100,6 +198,20 @@ public class PostService {
             PostResponse postResponse = postMapper.toPostResponse(post);
             postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
+            // lưu vào Elasticsearch
+            if (post.getId() != null) {
+                PostDocument postDocument = PostDocument.builder()
+                        .id(post.getId())
+                        .content(post.getContent())
+                        .userId(post.getUserId())
+                        .fileUrls(post.getFileUrls())
+                        .visibility(post.getVisibility())
+                        .createdAt(post.getCreatedDate())
+                        .updatedAt(post.getModifiedDate())
+                        .comments(new ArrayList<>())
+                        .build();
+                postSearchRepository.save(postDocument);
+            }
 
             return ApiResponse.<PostResponse>builder()
                     .code(200)
@@ -115,74 +227,7 @@ public class PostService {
                     .build();
         }
     }
-//    public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
-//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-//
-//        // Check if the content is appropriate
-//        if (!contentModerationService.isContentAppropriate(request.getContent())) {
-//            return ApiResponse.<PostResponse>builder()
-//                    .code(HttpStatus.BAD_REQUEST.value())
-//                    .message("Post content is inappropriate and violates our content policy.")
-//                    .build();
-//        }
-//
-//        try {
-//            List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
-//                    ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
-//                    : List.of();
-//
-//            // Check if the images are safe
-//            for (String fileUrl : fileUrls) {
-//                String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
-//                S3Object s3Object = s3Service.getObject(fileName);
-//                if (!rekognitionService.isImageSafe(s3Object)) {
-//                    s3Service.deleteFile(fileName);
-//                    return ApiResponse.<PostResponse>builder()
-//                            .code(HttpStatus.BAD_REQUEST.value())
-//                            .message("Uploaded image contains unsafe content.")
-//                            .build();
-//                }
-//            }
-//
-//            Post post = Post.builder()
-//                    .content(request.getContent())
-//                    .userId(authentication.getName())
-//                    .fileUrls(fileUrls)
-//                    .visibility(request.getVisibility())
-//                    .createdDate(Instant.now())
-//                    .modifiedDate(Instant.now())
-//                    .like(0)
-//                    .unlike(0)
-//                    .comments(List.of())
-//                    .build();
-//
-//            String languageCode = keywordService.detectDominantLanguage(request.getContent());
-//            post.setLanguage(languageCode);
-//
-//            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
-//            List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
-//            post.setKeywords(keywordIds);
-//
-//            sentimentAnalysisService.analyzeAndSaveSentiment(post);
-//
-//            post = postRepository.save(post);
-//            PostResponse postResponse = postMapper.toPostResponse(post);
-//            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
-//
-//            return ApiResponse.<PostResponse>builder()
-//                    .code(200)
-//                    .message("Post created successfully")
-//                    .result(postResponse)
-//                    .build();
-//        } catch (SdkClientException e) {
-//            log.error("AWS S3 Exception: ", e);
-//
-//            return ApiResponse.<PostResponse>builder()
-//                    .code(HttpStatus.BAD_REQUEST.value())
-//                    .message("Failed to upload files due to AWS configuration issues.")
-//                    .build();
-//        }
-//    }
+
 
     public ApiResponse<Void> deletePost(String postId) {
         Post post = postRepository.findById(postId)
@@ -226,6 +271,8 @@ public class PostService {
         postHistoryRepository.save(postHistory);
 
         postRepository.delete(post);
+        // Xóa bài viết khỏi Elasticsearch
+        postSearchRepository.deleteById(postId);
 
         return ApiResponse.<Void>builder()
                 .code(HttpStatus.OK.value())
@@ -377,32 +424,7 @@ public class PostService {
         return URLDecoder.decode(encodedUrl, StandardCharsets.UTF_8);
     }
 
-    public ApiResponse<byte[]> downloadImageFromPost(String postId, String imageFileName) {
-        // Lấy bài viết từ cơ sở dữ liệu
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Kiểm tra xem bài viết có chứa URL của hình ảnh hay không
-        List<String> fileUrls = post.getFileUrls();
-        if (fileUrls == null || fileUrls.isEmpty()) {
-            throw new RuntimeException("No images found in this post");
-        }
-
-        // Tìm URL khớp với tên file hình ảnh
-        String matchedUrl = fileUrls.stream()
-                .filter(url -> extractFileNameFromUrl(decodeUrl(url)).equals(imageFileName))
-                .findFirst()
-                .orElseThrow(() -> new RuntimeException("Image not found in this post"));
-
-        // Tải dữ liệu hình ảnh từ Amazon S3
-        byte[] imageData = s3Service.downloadFile(imageFileName);
-
-        return ApiResponse.<byte[]>builder()
-                .code(HttpStatus.OK.value())
-                .message("Image downloaded successfully")
-                .result(imageData)
-                .build();
-    }
 
     public ApiResponse<PostResponse> translatePostContent(String postId, String targetLanguage) {
         return translationService.translatePostContent(postId, targetLanguage);

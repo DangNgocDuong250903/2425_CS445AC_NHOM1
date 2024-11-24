@@ -10,6 +10,7 @@
         <option value="$PROJECT_DIR$/LinkVerse/identity-service/pom.xml" />
         <option value="$PROJECT_DIR$/LinkVerse/notification-service/pom.xml" />
         <option value="$PROJECT_DIR$/LinkVerse/Friend-Service/pom.xml" />
+        <option value="$PROJECT_DIR$/LinkVerse/MessageRealtime/pom.xml" />
       </list>
     </option>
   </component>
