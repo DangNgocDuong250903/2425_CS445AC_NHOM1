@@ -42,6 +42,23 @@ spring:
           filters:
             - RewritePath=/post/(?<segment>.*), /$\{segment}
 
+        - id: MessageRealtime
+          uri: http://localhost:8084
+          predicates:
+            - Path=/message/**, /v3/api-docs/chat-service
+          filters:
+            - RewritePath=/message/(?<segment>.*), /$\{segment}
+          metadata:
+            websocket: true
+
+
+        - id: Friend-Service
+          uri: http://localhost:8085
+          predicates:
+            - Path=/friend/**, /v3/api-docs/friend-service
+          filters:
+            - RewritePath=/friend/(?<segment>.*), /$\{segment}
+
 
 springdoc:
   api-docs:
@@ -61,16 +78,12 @@ springdoc:
         name: Notification Service
       - url: /v3/api-docs/post-service
         name: Post Service
-
+      - url: /v3/api-docs/chat-service
+        name: Message Realtime
+      - url: /v3/api-docs/friend-service
+        name: Friend Service
 
 redis:
   host: localhost
   port: 6379
 
-#grpc:
-#  client:
-#    verify-token-service:
-#      address: static://localhost:9091
-#      enableKeepAlive: true
-#      keepAliveWithoutCalls: true
-#      negotiationType: plaintext
