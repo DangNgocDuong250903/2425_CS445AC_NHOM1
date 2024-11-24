@@ -9,10 +9,11 @@ import org.mapstruct.Named;
 
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Mapper
 public interface CommentMapper {
-      @Named("toPostResponse")
-      CommentResponse toPostResponse(Post post);
+    @Named("toPostResponse")
+    CommentResponse toPostResponse(Post post);
 
     // Phương thức ánh xạ một comment đơn lẻ
     default CommentResponse toCommentResponse(Comment comment) {
@@ -29,7 +30,7 @@ public interface CommentMapper {
     // Phương thức ánh xạ danh sách comment
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
         return comments.stream()
-            .map(this::toCommentResponse) // Sử dụng phương thức ánh xạ đơn lẻ
-            .collect(Collectors.toList());
+                .map(this::toCommentResponse) // Sử dụng phương thức ánh xạ đơn lẻ
+                .collect(Collectors.toList());
     }
 }

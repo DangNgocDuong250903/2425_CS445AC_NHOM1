@@ -2,13 +2,8 @@ package com.LinkVerse.post.dto.response;
 
 import com.LinkVerse.post.entity.PostVisibility;
 import jakarta.persistence.ElementCollection;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import java.time.Instant;
 import java.util.List;
@@ -34,4 +29,7 @@ public class PostResponse {
 
     List<CommentResponse> comments; // Danh sách bình luận
     PostResponse sharedPost;
+    private List<String> keywords;
+    String language;
+    private String primarySentiment;
 }

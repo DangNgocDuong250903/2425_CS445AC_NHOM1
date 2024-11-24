@@ -2,6 +2,8 @@ package com.LinkVerse.post.Mapper;
 
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.SharedPost;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,10 @@ public class ShareMapperImpl implements ShareMapper {
         postResponse.like( sharedPost.getLike() );
         postResponse.unlike( sharedPost.getUnlike() );
         postResponse.commentCount( sharedPost.getCommentCount() );
+        List<String> list = sharedPost.getKeywords();
+        if ( list != null ) {
+            postResponse.keywords( new ArrayList<String>( list ) );
+        }
 
         postResponse.fileUrl( sharedPost.getFileUrls() != null ? String.join(",", sharedPost.getFileUrls()) : null );
 

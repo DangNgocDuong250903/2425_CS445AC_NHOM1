@@ -20,7 +20,7 @@ import java.util.List;
 public class PostRequest {
     String content;
     PostVisibility visibility;
-
+    String language;
     @ElementCollection
     List<String> fileUrls;
 }

@@ -1,11 +1,12 @@
 package com.LinkVerse.post.repository;
 
 import com.LinkVerse.post.entity.Comment;
-import com.LinkVerse.post.entity.Post;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.config.EnableMongoRepositories;
 
+@EnableMongoRepositories
 public interface CommentRespository extends MongoRepository<Comment, String> {
     Page<Comment> findAllByUserId(String userId, Pageable pageable);
 

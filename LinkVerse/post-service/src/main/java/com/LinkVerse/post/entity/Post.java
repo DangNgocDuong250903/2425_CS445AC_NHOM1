@@ -1,4 +1,3 @@
-
 package com.LinkVerse.post.entity;
 
 import jakarta.persistence.*;
@@ -16,7 +15,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@FieldDefaults(level = AccessLevel.PUBLIC)
+@Document(value = "post")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Post {
     @MongoId
     String id;
@@ -25,10 +25,9 @@ public class Post {
 
     @ElementCollection
     List<String> fileUrls;
-    String fileUrl;
 
     @Enumerated(EnumType.STRING)
-    PostVisibility visibility;
+    private PostVisibility visibility;
 
     Instant createdDate;
     Instant modifiedDate;
@@ -41,4 +40,15 @@ public class Post {
     @JoinColumn(name = "shared_post_id")
     Post sharedPost;
     boolean deleted = false;
+    String language;
+    @ElementCollection
+    List<String> keywords = new ArrayList<>(); // Ensure this property is named 'keywords'
+    //Phantich cam xuc
+    String primarySentiment;
+    double positiveScore;
+    double negativeScore;
+    double neutralScore;
+    double mixedScore;
+
+
 }

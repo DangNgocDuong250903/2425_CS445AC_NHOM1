@@ -1,9 +1,8 @@
 package com.LinkVerse.identity.exception;
 
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
-
-import lombok.Getter;
 
 @Getter
 public enum ErrorCode {
@@ -29,6 +28,8 @@ public enum ErrorCode {
     ALREADY_MEMBER(1019, "Already a member", HttpStatus.BAD_REQUEST),
     GROUP_NOT_FOUND(1020, "Group not found", HttpStatus.NOT_FOUND),
     USER_NOT_IN_GROUP(1021, "User not in group", HttpStatus.FORBIDDEN),
+    STORY_NOT_EXISTED(1022, "Story not existed", HttpStatus.NOT_FOUND),
+    FORBIDDEN(1023, "Forbidden", HttpStatus.FORBIDDEN),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

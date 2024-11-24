@@ -1,21 +1,25 @@
-
 package com.LinkVerse.post.Mapper;
 
 import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostDocument;
+import com.LinkVerse.post.entity.PostHistory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper
+@Mapper(componentModel = "spring")
 public interface PostMapper {
+
     @Named("toPostResponse")
+    @Mapping(target = "sharedPost", source = "sharedPost", qualifiedByName = "toPostResponse")
+    @Mapping(target = "keywords", source = "keywords")
+    @Mapping(target = "language", source = "language")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
@@ -31,7 +35,6 @@ public interface PostMapper {
 
     @Named("toPostResponseWithShared")
     @Mapping(source = "sharedPost", target = "sharedPost", qualifiedByName = "toPostResponse")
-    // Ánh xạ Post có sharedPost
     default PostResponse toPostResponseWithShared(Post post) {
         return PostResponse.builder()
                 .id(post.getId())
@@ -42,9 +45,13 @@ public interface PostMapper {
                 .like(post.getLike())
                 .unlike(post.getUnlike())
                 .comments(toCommentResponses(post.getComments()))
-                // Kiểm tra nếu có sharedPost thì gọi đệ quy để ánh xạ
                 .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
+                .keywords(post.getKeywords() != null ? post.getKeywords() : new ArrayList<>()) // Map keywords
+                .primarySentiment(post.getPrimarySentiment()) // Map this field
+                .language(post.getLanguage())
                 .build();
     }
+
+    PostResponse toPostResponse(PostHistory postHistory);
 
 }
