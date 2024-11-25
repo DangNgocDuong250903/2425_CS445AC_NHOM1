@@ -1,4 +1,4 @@
-import { Admin, Chat, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
+import { Admin, ChatPage, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPage, ProfilePage, RegisterPage, ResetPasswordPage } from "~/pages";
 
 export const route = [
     {
@@ -40,6 +40,6 @@ export const route = [
     },
     {
         path: '/chat',
-        element: Chat,
+        element: ChatPage,
     }
 ]

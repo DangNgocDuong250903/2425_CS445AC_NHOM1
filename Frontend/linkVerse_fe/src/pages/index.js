@@ -7,8 +7,8 @@ import ProfilePage from "./ProfilePage";
 import Admin from "./AdminPage";
 import GroupPage from "./GroupPage";
 import FriendPage from "./FriendPage";
-import Chat from "./Chat"
+import ChatPage from "./ChatPage"
 
 export {
-    Chat, Admin, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage, FriendPage
+    ChatPage, Admin, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage, FriendPage
 }

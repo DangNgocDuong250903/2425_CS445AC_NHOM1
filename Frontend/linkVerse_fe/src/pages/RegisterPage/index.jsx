@@ -1,17 +1,21 @@
-import { TbSocial } from "react-icons/tb";
 import { TextInput, Loading, Button as CustomButton } from "~/components";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BgImage } from "~/assets";
 import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
 import { AiOutlineInteraction } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
+import { IoMdEye } from "react-icons/io";
+import { IoMdEyeOff } from "react-icons/io";
+import { useMutationHook } from "~/hooks/useMutationHook";
+import * as UserService from "~/services/UserService";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
+  const [hide, setHide] = useState("hide");
   const {
     register,
     handleSubmit,
@@ -19,7 +23,20 @@ const RegisterPage = () => {
     formState: { errors },
   } = useForm({ mode: "onChange" });
 
-  const onSubmit = async (data) => {};
+  const mutation = useMutationHook((data) => UserService.register(data));
+  const { data, isPending, isSuccess, isError } = mutation;
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("bu");
+    } else if (isError) {
+      console.log("an l");
+    }
+  }, [isSuccess, isError]);
+
+  const onSubmit = async (data) => {
+    mutation.mutate(data);
+  };
 
   const [errMsg, setErrMsg] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -136,7 +153,20 @@ const RegisterPage = () => {
                 name="password"
                 label="Password"
                 placeholder={t("Mật khẩu")}
-                type="password"
+                type={hide === "hide" ? "password" : "text"}
+                iconRight={
+                  hide === "hide" ? (
+                    <IoMdEyeOff
+                      className="cursor-pointer"
+                      onClick={() => setHide("show")}
+                    />
+                  ) : (
+                    <IoMdEye
+                      className="cursor-pointer"
+                      onClick={() => setHide("hide")}
+                    />
+                  )
+                }
                 styles="w-full"
                 register={register("password", {
                   required: t("Mật khẩu là bắt buộc"),
@@ -147,7 +177,20 @@ const RegisterPage = () => {
               <TextInput
                 label="Confirm Password"
                 placeholder="Password"
-                type="password"
+                type={hide === "hide" ? "password" : "text"}
+                iconRight={
+                  hide === "hide" ? (
+                    <IoMdEyeOff
+                      className="cursor-pointer"
+                      onClick={() => setHide("show")}
+                    />
+                  ) : (
+                    <IoMdEye
+                      className="cursor-pointer"
+                      onClick={() => setHide("hide")}
+                    />
+                  )
+                }
                 styles="w-full mb-2"
                 register={register("cPassword", {
                   validate: (value) => {

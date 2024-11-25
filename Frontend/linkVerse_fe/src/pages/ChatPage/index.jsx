@@ -8,8 +8,9 @@ import {
   FriendRequest,
   FriendSuggest,
   DialogCustom,
+  TextInput,
 } from "~/components";
-import { user, posts } from "~/assets/mockData/data";
+import { user, posts, messages } from "~/assets/mockData/data";
 import { useEffect, useState } from "react";
 import { NoProfile } from "~/assets/index";
 import { BsImages } from "react-icons/bs";
@@ -20,8 +21,11 @@ import { FormControl } from "@mui/material";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import Message from "~/components/Message";
+import { GoDotFill } from "react-icons/go";
+import { HiDotsHorizontal } from "react-icons/hi";
 
-const Chat = () => {
+const ChatPage = () => {
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
   const [status, setStatus] = useState("");
@@ -72,9 +76,61 @@ const Chat = () => {
           </div>
 
           {/* giua */}
-          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex  gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
-            <div className=" w-1/3 bg-yellow-50 h-full">1</div>
-            <div className="flex-1 bg-pink-50 h-full">1</div>
+          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 p-3 flex  gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-hidden">
+            {/* trai */}
+            <div className=" w-1/3 h-full overflow-y-auto">
+              <TextInput
+                placeholder="Search..."
+                styles="rounded-2xl w-full mb-5"
+              />
+              <div className="gap-y-2 flex flex-col">
+                {messages
+                  .concat(messages)
+                  .concat(messages)
+                  .map((item, i) => (
+                    <Message
+                      key={i}
+                      name={item?.firstName + " " + item?.lastName}
+                      status={item?.status}
+                      message={item?.message}
+                      avatar={item?.profileUrl}
+                    />
+                  ))}
+              </div>
+            </div>
+            {/* phai */}
+            <div className="flex-1 flex flex-col h-screen overflow-y-hidden">
+              {/* header */}
+              <div className="w-full flex items-center justify-between">
+                <div className="flex items-center gap-x-2 relative">
+                  <div>
+                    <img
+                      src={NoProfile}
+                      alt="avt"
+                      className="h-14 w-14 rounded-full border-1 border-borderNewFeed object-cover"
+                    />
+                    <GoDotFill
+                      color="#53C259"
+                      className="h-6 w-6 absolute -top-1 -left-1"
+                    />
+                  </div>
+                  <span className="text-ascent-1">Tuan</span>
+                </div>
+                <HiDotsHorizontal className="h-6 w-6 text-bgStandard" />
+              </div>
+              {/* body */}
+              <div className="bg-pink-50">
+                <div>content</div>
+              </div>
+              {/* footer */}
+              <div className="flex text-ascent-1 w-full">
+                <TextInput
+                  styles="w-full rounded-full"
+                  placeholder="Type a message..."
+                  iconRight={`bg-[url('~/assets/icons/send.svg')] bg-right bg-no-repeat bg-[length:25px_25px]`}
+                />
+              </div>
+            </div>
           </div>
           {/* post */}
           <DialogCustom
@@ -292,4 +348,4 @@ const Chat = () => {
   );
 };
 
-export default Chat;
+export default ChatPage;

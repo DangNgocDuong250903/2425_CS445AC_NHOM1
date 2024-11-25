@@ -73,9 +73,7 @@ const HomePage = () => {
 
           {/* giua */}
           <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
-            {/* Container cuộn dọc cho cả Story và Post */}
             <div className="flex flex-col gap-6">
-              {/* Header Story cuộn ngang */}
               <div className="w-full h-24 flex justify-center bg-primary rounded-lg overflow-x-auto overflow-y-hidden">
                 {/* story */}
                 {/* <div className="flex w-full p-3 justify-center items-center">

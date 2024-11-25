@@ -277,3 +277,31 @@ export const postComments = [
     __v: 1,
   },
 ];
+
+export const messages = [
+  {
+    _id: "64df3aec4180b81adfe41d32",
+    firstName: "Ngoc",
+    lastName: "Duong",
+    message: 'alo',
+    status: 'active',
+    profileUrl:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk-vbPLtYJm0nLT9icuT2VT1wl-fAa3LzBdQ&s",
+  },
+  {
+    _id: "64df39704180b81adfe41d0b",
+    firstName: "Mohamed",
+    lastName: "Salah",
+    message: "hello my friend",
+    status: 'inactive',
+    profileUrl: "https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg",
+  },
+  {
+    _id: "64df424b4a4c0d47b5369f65",
+    firstName: "Virgil",
+    lastName: "Vandijk",
+    message: "i love you",
+    status: 'active',
+    profileUrl: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvZ5tlwcyX69noUottK0EDi6CZJS76ds-vqw&s",
+  },
+]
