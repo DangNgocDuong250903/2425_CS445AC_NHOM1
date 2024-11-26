@@ -8,20 +8,20 @@ spring:
     name: Friend-Service
   data:
     mongodb:
-      uri: ${URL_MGDB} # Kết nối MongoDB
+      uri: ${URL_MGDB}
   datasource:
-    url: ${URL_SQL}   # Cấu hình kết nối MySQL
+    url: ${URL_SQL}
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: ${USERNAME_SQL}
     password: ${PASS_SQL}
   jpa:
     hibernate:
-      ddl-auto: update  # Cập nhật tự động schema JPA
-    show-sql: true      # Hiển thị các câu lệnh SQL
+      ddl-auto: update
+    show-sql: true
   servlet:
     multipart:
       max-file-size: 10MB
-      max-request-size: 100MB  # Cấu hình upload file lớn trong Spring Boot
+      max-request-size: 100MB
   kafka:
     bootstrap-servers: localhost:9094
     producer:
@@ -29,10 +29,10 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
 
 jwt:
-  signerKey: ${KEY_JWT} # JWT ký khóa
-  valid-duration: 3600 # Thời gian sống của JWT (1 giờ)
-  refreshable-duration: 720000 # Thời gian refreshable của JWT (200 giờ)
+  signerKey: ${KEY_JWT}
+  valid-duration: 3600
+  refreshable-duration: 720000
 
 app:
   services:
-    profile: "http://localhost:8081/profile"  # URL của profile service
+    profile: "http://localhost:8081/profile"
