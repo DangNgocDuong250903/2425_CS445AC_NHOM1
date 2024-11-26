@@ -12,7 +12,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
 public class Friend {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
@@ -26,6 +25,6 @@ public class Friend {
     User friend;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'PENDING'")
-    FriendStatus status = FriendStatus.PENDING;
+    @Column(nullable = false)
+    FriendshipStatus status;
 }

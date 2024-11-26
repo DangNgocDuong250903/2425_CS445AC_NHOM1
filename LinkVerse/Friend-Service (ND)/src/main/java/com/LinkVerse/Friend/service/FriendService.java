@@ -3,9 +3,13 @@ package com.LinkVerse.Friend.service;
 import com.LinkVerse.Friend.dto.FriendshipResponse;
 import com.LinkVerse.Friend.entity.Friendship;
 import com.LinkVerse.Friend.entity.FriendshipStatus;
+import com.LinkVerse.Friend.entity.User;
 import com.LinkVerse.Friend.exception.FriendRequestNotFoundException;
 import com.LinkVerse.Friend.repository.FriendshipRepository;
+import com.LinkVerse.Friend.repository.UserRepository;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -15,10 +19,11 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FriendService {
-    private final FriendshipRepository friendshipRepository;
-    private final UserRepository userRepository;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    FriendshipRepository friendshipRepository;
+    UserRepository userRepository;
+    KafkaTemplate<String, String> kafkaTemplate;
 
     public FriendshipResponse sendFriendRequest(String recipientUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

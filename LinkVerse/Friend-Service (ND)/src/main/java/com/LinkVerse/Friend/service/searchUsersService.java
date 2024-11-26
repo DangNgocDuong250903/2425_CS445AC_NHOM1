@@ -1,5 +1,7 @@
 package com.LinkVerse.Friend.service;
 
+import com.LinkVerse.Friend.entity.User;
+import com.LinkVerse.Friend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
