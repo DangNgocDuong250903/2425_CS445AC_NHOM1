@@ -1,6 +1,5 @@
 package com.LinkVerse.Friend.controller;
 
-import com.LinkVerse.Friend.entity.User;
 import com.LinkVerse.Friend.service.searchUsersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -2,7 +2,6 @@ package com.LinkVerse.Friend.repository;
 
 import com.LinkVerse.Friend.entity.Friendship;
 import com.LinkVerse.Friend.entity.FriendshipStatus;
-import com.LinkVerse.Friend.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
