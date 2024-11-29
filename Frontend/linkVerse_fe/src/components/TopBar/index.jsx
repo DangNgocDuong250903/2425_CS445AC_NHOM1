@@ -8,7 +8,6 @@ import { Badge, MenuItem, Select } from "@mui/material";
 import { VieIcon, EnIcon } from "~/assets";
 import { setLanguage } from "~/redux/Slices/languageSlice";
 import { setTheme } from "~/redux/Slices/themeSlice";
-import { logOut } from "~/redux/Slices/userSlice";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 
@@ -34,9 +33,7 @@ const TopBar = ({ title }) => {
   };
 
   //logout
-  const handleLogOut = () => {
-    dispatch(logOut());
-  };
+  const handleLogOut = () => {};
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
@@ -370,7 +367,7 @@ const TopBar = ({ title }) => {
           {theme === "dark" ? <BsMoon /> : <BsSunFill />}
         </button>
         <div>
-          {user?.token ? (
+          {user?.access_token ? (
             <Button
               onClick={handleLogOut}
               title={t("Đăng xuất")}

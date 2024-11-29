@@ -15,6 +15,7 @@ const TextInput = React.forwardRef(
       onChange,
       iconRight,
       iconLeft,
+      ...rest
     },
     ref
   ) => {
@@ -36,6 +37,7 @@ const TextInput = React.forwardRef(
             placeholder={placeholder}
             name={name}
             ref={ref}
+            {...rest}
             className={`bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5 placeholder:text-[#666] 
               ${iconLeft ? "pl-10" : ""} 
               ${iconRight ? "pr-10" : ""} 

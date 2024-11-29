@@ -1,34 +1,74 @@
-import { TbSocial } from "react-icons/tb";
 import { Loading, Button as CustomButton, TextInput } from "~/components";
 import { useForm } from "react-hook-form";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BgImage } from "~/assets/index";
 import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
 import { AiOutlineInteraction } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
-import { logIn } from "~/redux/Slices/userSlice";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
+import { useMutationHook } from "~/hooks/useMutationHook";
+import * as UserService from "~/services/UserService";
+import { updateUser } from "~/redux/Slices/userSlice";
+import { jwtDecode } from "jwt-decode";
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const location = useLocation();
+  const { state } = useLocation();
   const navigate = useNavigate();
+  const [hide, setHide] = useState("hide");
+  const [errMsg, setErrMsg] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm({ mode: "onChange" });
 
-  const onSubmit = async (data) => {
-    dispatch(logIn());
-    navigate("/");
+  const mutation = useMutationHook((data) => UserService.login(data));
+  const { data, isPending, isSuccess, isError } = mutation;
+
+  useEffect(() => {
+    if (isSuccess) {
+      if (location?.state) {
+        console.log("Login successful");
+        navigate(location?.state);
+      } else {
+        console.log("Login successful");
+        navigate("/");
+      }
+      localStorage.setItem(
+        "access_token",
+        JSON.stringify(data?.message?.metaData?.tokens?.accessToken)
+      );
+      if (data?.message?.metaData?.tokens) {
+        const decoded = jwtDecode(data?.message?.metaData?.tokens?.accessToken);
+        if (decoded?.userId) {
+          handleGetDetailUser(
+            decoded?.userId,
+            data?.message?.metaData?.tokens?.accessToken
+          );
+        }
+      }
+    }
+  }, [isSuccess]);
+
+  const handleGetDetailUser = async (id, token) => {
+    try {
+      const res = await UserService.getDetailUser(id, token);
+      dispatch(updateUser({ ...res?.message?.metaData, access_token: token }));
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  const [errMsg, setErrMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const dispatch = useDispatch();
+  const onSubmit = async (data) => {
+    mutation.mutate(data);
+  };
 
   return (
     <div className="bg-bgColor w-full h-[100vh] flex items-center justify-center p-6 ">
@@ -111,7 +151,7 @@ const LoginPage = () => {
                 required: t("Địa chỉ email là bắt buộc"),
               })}
               styles="w-full rounded-full"
-              labelStyle="ml-2"
+              labelStyles="ml-2"
               error={errors.email ? errors.email.message : ""}
             />
 
@@ -119,9 +159,22 @@ const LoginPage = () => {
               name="password"
               label="Password"
               placeholder={t("Mật khẩu")}
-              type="password"
+              type={hide === "hide" ? "password" : "text"}
               styles="w-full rounded-full"
-              labelStyle="ml-2"
+              labelStyles="ml-2"
+              iconRight={
+                hide === "hide" ? (
+                  <IoMdEyeOff
+                    className="cursor-pointer"
+                    onClick={() => setHide("show")}
+                  />
+                ) : (
+                  <IoMdEye
+                    className="cursor-pointer"
+                    onClick={() => setHide("hide")}
+                  />
+                )
+              }
               register={register("password", {
                 required: t("Mật khẩu là bắt buộc"),
               })}

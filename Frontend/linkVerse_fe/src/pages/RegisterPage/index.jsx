@@ -1,6 +1,6 @@
 import { TextInput, Loading, Button as CustomButton } from "~/components";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { BgImage } from "~/assets";
@@ -8,14 +8,17 @@ import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
 import { AiOutlineInteraction } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
-import { IoMdEye } from "react-icons/io";
-import { IoMdEyeOff } from "react-icons/io";
+import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const [hide, setHide] = useState("hide");
+  const [errMsg, setErrMsg] = useState("");
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -28,7 +31,7 @@ const RegisterPage = () => {
 
   useEffect(() => {
     if (isSuccess) {
-      console.log("bu");
+      navigate("/login", { state: data?.message?.metaData?.metadata });
     } else if (isError) {
       console.log("an l");
     }
@@ -38,77 +41,23 @@ const RegisterPage = () => {
     mutation.mutate(data);
   };
 
-  const [errMsg, setErrMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const dispatch = useDispatch();
-
   return (
     <div className="bg-bgColor w-full h-[100vh] flex items-center justify-center p-6">
       <div className="w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex flex-row-reverse bg-primary rounded-xl overflow-hidden shadow-xl">
         {/* trai */}
-        <div className="w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center ">
-          <div className="w-full flex gap-2 items-center mb-6">
-            <div className="p-1 rounded text-white">
-              <svg
-                width="50px"
-                height="50px"
-                viewBox="-5.28 -5.28 34.56 34.56"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                stroke="#ffff"
-              >
-                <g
-                  id="SVGRepo_bgCarrier"
-                  strokeWidth={0}
-                  transform="translate(0,0), scale(1)"
-                >
-                  <rect
-                    x="-5.28"
-                    y="-5.28"
-                    width="34.56"
-                    height="34.56"
-                    rx="17.28"
-                    fill="#000"
-                    strokeWidth={0}
-                  />
-                </g>
-                <g
-                  id="SVGRepo_tracerCarrier"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  stroke="#CCCCCC"
-                  strokeWidth="4.8"
-                >
-                  <path
-                    d="M15.8571 12C15.8571 14.1303 14.1302 15.8572 12 15.8572C9.86972 15.8572 8.14282 14.1303 8.14282 12C8.14282 9.86979 9.86972 8.14288 12 8.14288C14.1302 8.14288 15.8571 9.86979 15.8571 12ZM15.8571 12L15.8571 13.2857C15.8571 14.7059 17.0084 15.8571 18.4286 15.8571C19.3408 15.8571 20.1422 15.3821 20.5986 14.6658C20.8528 14.2671 21 13.7936 21 13.2857V12C21 9.3345 19.8412 6.93964 18 5.29168M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C13.9122 21 15.6851 20.4037 17.1429 19.3868"
-                    stroke="#fffff"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-                <g id="SVGRepo_iconCarrier">
-                  <path
-                    d="M15.8571 12C15.8571 14.1303 14.1302 15.8572 12 15.8572C9.86972 15.8572 8.14282 14.1303 8.14282 12C8.14282 9.86979 9.86972 8.14288 12 8.14288C14.1302 8.14288 15.8571 9.86979 15.8571 12ZM15.8571 12L15.8571 13.2857C15.8571 14.7059 17.0084 15.8571 18.4286 15.8571C19.3408 15.8571 20.1422 15.3821 20.5986 14.6658C20.8528 14.2671 21 13.7936 21 13.2857V12C21 9.3345 19.8412 6.93964 18 5.29168M12 3C7.02944 3 3 7.02944 3 12C3 16.9706 7.02944 21 12 21C13.9122 21 15.6851 20.4037 17.1429 19.3868"
-                    stroke="#fffff"
-                    strokeWidth="2.4"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </g>
-              </svg>
-            </div>
+        <div className="w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center">
+          {/* header */}
+          <div className="w-full flex flex-col gap-2 mb-2">
             <span className="text-2xl text-[#065ad8] font-semibold">
               LinkVerse
             </span>
+            <p className="text-ascent-1 text-base font-semibold">
+              {t("Tạo tài khoản")}
+            </p>
           </div>
 
-          <p className="text-ascent-1 text-base font-semibold">
-            {t("Tạo tài khoản")}
-          </p>
-
           <form
-            className="py-8 flex flex-col gap-5="
+            className="flex flex-col pb-2"
             onSubmit={handleSubmit(onSubmit)}
           >
             <div className="w-full flex flex-col lg:flex-row gap-1 md:gap-2">
@@ -117,7 +66,7 @@ const RegisterPage = () => {
                 label="First Name"
                 placeholder="First Name"
                 type="text"
-                styles="w-full"
+                styles="w-full h-10"
                 register={register("firstName", {
                   required: "First Name is required!",
                 })}
@@ -125,15 +74,75 @@ const RegisterPage = () => {
               />
 
               <TextInput
+                name="lastName"
                 label="Last Name"
                 placeholder="Last Name"
-                type="lastName"
-                styles="w-full"
+                type="text"
+                styles="w-full h-10"
                 register={register("lastName", {
-                  required: "Last Name do no match",
+                  required: "Last Name is required",
                 })}
                 error={errors.lastName ? errors.lastName?.message : ""}
               />
+            </div>
+
+            <TextInput
+              name="birthday"
+              type="date"
+              label="Ngày sinh"
+              styles="w-full h-10"
+              register={register("birthday", {
+                required: "Birthday is required",
+              })}
+              error={errors.birthday ? errors.birthday?.message : ""}
+            />
+
+            <div className="w-full flex flex-col mt-2">
+              <p className="text-ascent-2 text-sm mb-2">Sex</p>
+
+              <div className="w-full h-10 flex flex-col lg:flex-row gap-1 md:gap-2">
+                <div className="flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5">
+                  <label className="text-ascent-1" htmlFor="male">
+                    Male
+                  </label>
+                  <input
+                    type="radio"
+                    id="male"
+                    value="male"
+                    {...register("sex", { required: "Sex is required" })}
+                  />
+                </div>
+
+                <div className="flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5">
+                  <label className="text-ascent-1" htmlFor="female">
+                    Female
+                  </label>
+                  <input
+                    type="radio"
+                    id="female"
+                    value="female"
+                    {...register("sex", { required: "Sex is required" })}
+                  />
+                </div>
+
+                <div className="flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5">
+                  <label className="text-ascent-1" htmlFor="other">
+                    Other
+                  </label>
+                  <input
+                    type="radio"
+                    id="other"
+                    value="other"
+                    {...register("sex", { required: "Sex is required" })}
+                  />
+                </div>
+              </div>
+
+              {errors.sex && (
+                <span className="text-xs text-[#f64949fe] mt-0.5">
+                  {errors.sex.message}
+                </span>
+              )}
             </div>
 
             <TextInput
@@ -144,70 +153,34 @@ const RegisterPage = () => {
               register={register("email", {
                 required: t("Địa chỉ email là bắt buộc"),
               })}
-              styles="w-full"
+              styles="w-full h-10"
               error={errors.email ? errors.email.message : ""}
             />
 
-            <div className="w-full flex flex-col lg:flex-row gap-1 md:gap-2">
-              <TextInput
-                name="password"
-                label="Password"
-                placeholder={t("Mật khẩu")}
-                type={hide === "hide" ? "password" : "text"}
-                iconRight={
-                  hide === "hide" ? (
-                    <IoMdEyeOff
-                      className="cursor-pointer"
-                      onClick={() => setHide("show")}
-                    />
-                  ) : (
-                    <IoMdEye
-                      className="cursor-pointer"
-                      onClick={() => setHide("hide")}
-                    />
-                  )
-                }
-                styles="w-full"
-                register={register("password", {
-                  required: t("Mật khẩu là bắt buộc"),
-                })}
-                error={errors.password ? errors.password?.message : ""}
-              />
-
-              <TextInput
-                label="Confirm Password"
-                placeholder="Password"
-                type={hide === "hide" ? "password" : "text"}
-                iconRight={
-                  hide === "hide" ? (
-                    <IoMdEyeOff
-                      className="cursor-pointer"
-                      onClick={() => setHide("show")}
-                    />
-                  ) : (
-                    <IoMdEye
-                      className="cursor-pointer"
-                      onClick={() => setHide("hide")}
-                    />
-                  )
-                }
-                styles="w-full mb-2"
-                register={register("cPassword", {
-                  validate: (value) => {
-                    const { password } = getValues();
-
-                    if (password != value) {
-                      return "Passwords do no match";
-                    }
-                  },
-                })}
-                error={
-                  errors.cPassword && errors.cPassword.type === "validate"
-                    ? errors.cPassword?.message
-                    : ""
-                }
-              />
-            </div>
+            <TextInput
+              name="password"
+              label="Password"
+              placeholder={t("Mật khẩu")}
+              type={hide === "hide" ? "password" : "text"}
+              iconRight={
+                hide === "hide" ? (
+                  <IoMdEyeOff
+                    className="cursor-pointer"
+                    onClick={() => setHide("show")}
+                  />
+                ) : (
+                  <IoMdEye
+                    className="cursor-pointer"
+                    onClick={() => setHide("hide")}
+                  />
+                )
+              }
+              styles="w-full h-10"
+              register={register("password", {
+                required: t("Mật khẩu là bắt buộc"),
+              })}
+              error={errors.password ? errors.password?.message : ""}
+            />
 
             {errMsg?.message && (
               <span
@@ -221,12 +194,12 @@ const RegisterPage = () => {
               </span>
             )}
 
-            {isSubmitting ? (
+            {isPending ? (
               <Loading />
             ) : (
               <CustomButton
                 type="submit"
-                containerStyles={`inline-flex justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium text-white outline-none`}
+                containerStyles={`mt-5 inline-flex justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#ccc] hover:text-black`}
                 title={t("Đăng ký")}
               />
             )}
@@ -236,7 +209,7 @@ const RegisterPage = () => {
             {t("Đã có tài khoản")} ?{" "}
             <Link
               to="/login"
-              className="text-[#065ad8] font-semibold ml-2 cursor-pointer"
+              className="text-[#065ad8] font-semibold ml-2 cursor-pointer hover:text-white"
             >
               {t("Đăng nhập")}
             </Link>
@@ -248,22 +221,28 @@ const RegisterPage = () => {
             <img
               src={BgImage}
               alt="Bg Image"
-              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover"
+              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-newFeed"
             />
 
-            <div className="absolute flex items-center gap-1 bg-white right-10 top-10 py-2 px-5 rounded-full">
-              <BsShare size={14} />
-              <span className="text-xs font-medium">{t("Chia sẻ")}</span>
+            <div className="absolute flex items-center gap-1 bg-primary right-10 top-10 py-2 px-5 rounded-full">
+              <BsShare size={14} className="text-ascent-1" />
+              <span className="text-ascent-1 text-xs font-medium">
+                {t("Chia sẻ")}
+              </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-white left-10 top-6 py-2 px-5 rounded-full">
-              <ImConnection />
-              <span className="text-xs font-medium">{t("Kết nối")}</span>
+            <div className="absolute flex items-center gap-1 bg-primary left-10 top-6 py-2 px-5 rounded-full">
+              <ImConnection className="text-ascent-1" />
+              <span className="text-ascent-1 text-xs font-medium">
+                {t("Kết nối")}
+              </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-white left-12 bottom-6 py-2 px-5 rounded-full">
-              <AiOutlineInteraction />
-              <span className="text-xs font-medium">{t("Tương tác")}</span>
+            <div className="absolute flex items-center gap-1 bg-primary left-12 bottom-6 py-2 px-5 rounded-full">
+              <AiOutlineInteraction className="text-ascent-1" />
+              <span className="text-ascent-1 text-xs font-medium">
+                {t("Tương tác")}
+              </span>
             </div>
           </div>
 

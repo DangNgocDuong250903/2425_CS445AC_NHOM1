@@ -48,7 +48,7 @@ const ResetPasswordPage = () => {
               required: t("Địa chỉ email là bắt buộc"),
             })}
             styles="w-full rounded-lg"
-            labelStyle="ml-2"
+            labelStyles="ml-2"
             error={errors.email ? errors.email.message : ""}
           />
           {errMsg?.message && (

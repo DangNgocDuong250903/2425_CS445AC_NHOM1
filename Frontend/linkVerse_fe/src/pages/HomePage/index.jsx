@@ -20,11 +20,14 @@ import { FormControl } from "@mui/material";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
+import { useMutationHook } from "~/hooks/useMutationHook";
+import * as UserService from "~/services/UserService";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
   const [status, setStatus] = useState("");
+  const user = useSelector((state) => state?.user);
   const [postState, setPostState] = useState("public");
   const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
   const theme = useSelector((state) => state.theme.theme);

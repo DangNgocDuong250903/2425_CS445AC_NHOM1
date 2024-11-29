@@ -9,13 +9,14 @@ import {
 } from "react-icons/bs";
 import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
-import { user } from "~/assets/mockData/data";
 import { useTranslation } from "react-i18next";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { useSelector } from "react-redux";
 
 const ProfileCard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const user = useSelector((state) => state?.user);
 
   //Update profile
   const handleUpdateProfile = () => {};
@@ -24,9 +25,9 @@ const ProfileCard = () => {
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       {/* tren */}
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
-        <Link to={"/profile/" + user?._id} className="flex gap-2">
+        <Link to={"/profile/" + user?.id} className="flex gap-2">
           <img
-            src={user?.profileUrl ?? NoProfile}
+            src={user?.avatar || NoProfile}
             alt={user?.email}
             className="w-14 h-14 object-cover rounded-full"
           />
@@ -61,29 +62,29 @@ const ProfileCard = () => {
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <div className="flex gap-2 items-center text-ascent-2">
           <CiLocationOn className="text-xl text-ascent-1" />
-          <span>{user?.location ?? "Thêm địa chỉ"}</span>
+          <span>{user?.address || "Thêm địa chỉ"}</span>
         </div>
 
         <div className="flex gap-2 items-center text-ascent-2">
           <BsBriefcase className="text-lg text-ascent-1" />
-          <span>{user?.profession ?? "Thêm nghề nghiệp"}</span>
+          <span>{user?.profession || "Thêm nghề nghiệp"}</span>
         </div>
       </div>
       {/* Friends */}
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
-          {user?.friends.length} {t("Bạn bè")}
+          {user?.following.length} {t("Bạn bè")}
         </p>
 
-        <div className="flex items-center justify-between">
+        {/* <div className="flex items-center justify-between">
           <span className="text-ascent-2">
             {t("Ai đã xem tài khoản của bạn")}
           </span>
           <span className="text-ascent-1 text-lg">{user?.views?.length}</span>
-        </div>
+        </div> */}
 
         <span className="text-base text-blue">
-          {user?.verified ? "Verified account" : "Not verified"}
+          {user?.isActive ? "Verified account" : "Not verified"}
         </span>
 
         <div className="flex items-center justify-between">
