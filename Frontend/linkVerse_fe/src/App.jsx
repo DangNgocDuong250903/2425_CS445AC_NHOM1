@@ -1,5 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { route } from "./routes";
 import { useEffect } from "react";
 import { isJsonString } from "./utils";
@@ -13,15 +13,43 @@ function App() {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    let token = localStorage.getItem("access_token");
-    if (token && isJsonString(token)) {
-      token = JSON.parse(token);
-      const decoded = jwtDecode(token);
-      if (decoded?.userId) {
-        handleGetDetailUser(decoded?.userId, token);
-      }
+    const { decoded, token } = handleDecoded();
+    if (decoded?.userId) {
+      handleGetDetailUser(decoded?.userId, token);
     }
   }, []);
+
+  const handleDecoded = () => {
+    let token = localStorage.getItem("access_token");
+    let decoded = {};
+    if (token && isJsonString(token)) {
+      token = JSON.parse(token);
+      decoded = jwtDecode(token);
+    }
+    return { decoded, token };
+  };
+
+  UserService.axiosJWT.interceptors.request.use(
+    async function (config) {
+      try {
+        const { decoded } = handleDecoded();
+        const currentTime = new Date();
+        if (decoded?.exp < currentTime.getTime() / 1000) {
+          const data = await UserService.handleRefreshToken(decoded?.userId);
+          config.headers["x-api-key"] = "pass";
+          config.headers["x-client-id"] = decoded?.userId;
+          config.headers["authorization"] =
+            data?.message?.metaData?.tokens?.accessToken;
+        }
+        return config;
+      } catch (error) {
+        return Promise.reject(error);
+      }
+    },
+    function (error) {
+      return Promise.reject(error);
+    }
+  );
 
   const handleGetDetailUser = async (id, token) => {
     try {

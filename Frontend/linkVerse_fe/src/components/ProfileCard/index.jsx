@@ -36,7 +36,7 @@ const ProfileCard = () => {
               {user?.firstName} {user?.lastName}
             </p>
             <span className="text-ascent-1">
-              {user?.profession ?? "No profession"}
+              {user?.profession || "No profession"}
             </span>
           </div>
         </Link>

@@ -16,7 +16,7 @@ const initialState = {
     roles: [],
     followers: [],
     following: [],
-    isActive: true,
+    isActive: false,
 };
 
 const userSlice = createSlice({
@@ -33,7 +33,7 @@ const userSlice = createSlice({
                 access_token = "",
                 birthday = "",
                 roles = [],
-                isActive = true,
+                isActive = false,
                 following = [],
                 followers = []
             } = action.payload
@@ -50,10 +50,24 @@ const userSlice = createSlice({
             state.password = password
             state.followers = followers
             state.following = following
+        },
+        resetUser(state, action) {
+            state.lastName = ""
+            state.firstName = ""
+            state.id = ""
+            state.email = ""
+            state.birthday = ""
+            state.sex = ""
+            state.roles = []
+            state.isActive = false
+            state.access_token = ""
+            state.password = ""
+            state.followers = []
+            state.following = []
         }
     },
 });
 
-export const { updateUser } = userSlice.actions
+export const { updateUser, resetUser } = userSlice.actions
 
 export default userSlice.reducer;

@@ -10,6 +10,8 @@ import { setLanguage } from "~/redux/Slices/languageSlice";
 import { setTheme } from "~/redux/Slices/themeSlice";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import * as UserService from "~/services/UserService";
+import { resetUser } from "~/redux/Slices/userSlice";
 
 const TopBar = ({ title }) => {
   const dispatch = useDispatch();
@@ -33,7 +35,12 @@ const TopBar = ({ title }) => {
   };
 
   //logout
-  const handleLogOut = () => {};
+  const handleLogOut = async () => {
+    await UserService.logout(user?.id, user?.access_token);
+    dispatch(resetUser());
+    localStorage.removeItem("access_token");
+    navigate("/login");
+  };
 
   const [anchorEl, setAnchorEl] = useState(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
