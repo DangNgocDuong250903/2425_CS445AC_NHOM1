@@ -1,11 +1,11 @@
-import NoProfile from "./images/avatar.png";
+import BlankAvatar from "./images/blank_avatar.jpg";
 import BgImage from "./images/img.jpeg";
 import VieIcon from "./icons/vie.svg"
 import EnIcon from "./icons/en.svg"
 
 export {
-    NoProfile,
     BgImage,
     VieIcon,
     EnIcon,
+    BlankAvatar
 }

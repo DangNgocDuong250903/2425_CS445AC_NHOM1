@@ -12,7 +12,6 @@ import {
 } from "~/components";
 import { user, posts, messages } from "~/assets/mockData/data";
 import { useEffect, useState } from "react";
-import { NoProfile } from "~/assets/index";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
@@ -24,6 +23,7 @@ import { useSelector } from "react-redux";
 import Message from "~/components/Message";
 import { GoDotFill } from "react-icons/go";
 import { HiDotsHorizontal } from "react-icons/hi";
+import { BlankAvatar } from "~/assets";
 
 const ChatPage = () => {
   const [file, setFile] = useState(null);
@@ -105,7 +105,7 @@ const ChatPage = () => {
                 <div className="flex items-center gap-x-2 relative">
                   <div>
                     <img
-                      src={NoProfile}
+                      src={BlankAvatar}
                       alt="avt"
                       className="h-14 w-14 rounded-full border-1 border-borderNewFeed object-cover"
                     />
@@ -170,7 +170,7 @@ const ChatPage = () => {
                 <div className="flex gap-x-3">
                   {/* 1 */}
                   <img
-                    src={user?.profileUrl ?? NoProfile}
+                    src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
                     className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
                   />

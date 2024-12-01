@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { NoProfile } from "~/assets/index";
+import { BlankAvatar } from "~/assets/index";
 import { LiaEditSolid } from "react-icons/lia";
 import {
   BsBriefcase,
@@ -27,7 +27,7 @@ const ProfileCard = () => {
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
         <Link to={"/profile/" + user?.id} className="flex gap-2">
           <img
-            src={user?.avatar || NoProfile}
+            src={user?.avatar || BlankAvatar}
             alt={user?.email}
             className="w-14 h-14 object-cover rounded-full"
           />
@@ -90,7 +90,7 @@ const ProfileCard = () => {
         <div className="flex items-center justify-between">
           <span className="text-ascent-2">{t("Tham gia")}</span>
           <span className="text-ascent-1 text-base">
-            {moment(user?.createdAt).fromNow()}
+            {moment(user?.createdAt).fromNow() || "none"}
           </span>
         </div>
       </div>

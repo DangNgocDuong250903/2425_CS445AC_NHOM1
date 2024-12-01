@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { suggests } from "~/assets/mockData/data";
 import { BsPersonFillAdd } from "react-icons/bs";
 import { useTranslation } from "react-i18next";
+import { BlankAvatar } from "~/assets";
 
 const FriendSuggest = () => {
   const { t } = useTranslation();
@@ -19,7 +20,7 @@ const FriendSuggest = () => {
               className="flex w-full gap-4 items-center cursor-pointer"
             >
               <img
-                src={friend?.profileUrl ?? NoProfile}
+                src={friend?.profileUrl ?? BlankAvatar}
                 alt={friend?.firstName}
                 className="w-10 h-10 object-cover rounded-full"
               />

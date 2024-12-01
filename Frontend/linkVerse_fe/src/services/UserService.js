@@ -35,7 +35,6 @@ export const logout = async (id, token) => {
     return res.data;
 };
 
-
 export const getDetailUser = async (id, token) => {
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/user/get-detail/${id}`, {
         headers: {

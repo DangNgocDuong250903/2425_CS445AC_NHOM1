@@ -12,6 +12,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as UserService from "~/services/UserService";
 import { resetUser } from "~/redux/Slices/userSlice";
+import { IoIosSearch } from "react-icons/io";
 
 const TopBar = ({ title }) => {
   const dispatch = useDispatch();
@@ -100,14 +101,9 @@ const TopBar = ({ title }) => {
           >
             <TextInput
               placeholder="Search..."
-              styles=" lg:w-[12rem] rounded-l-full py-2"
+              styles=" lg:w-[16rem] rounded-full py-2"
+              iconLeft={<IoIosSearch size={20} />}
               register={register("search")}
-            />
-
-            <Button
-              title="Search"
-              type="submit"
-              containerStyles="border-1 border-borderNewFeed px-3 py-2 mt-2 rounded-r-full text-ascent-1"
             />
           </form>
         </div>

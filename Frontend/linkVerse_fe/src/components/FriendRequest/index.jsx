@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { requests } from "~/assets/mockData/data";
 import { Button } from "..";
 import { useTranslation } from "react-i18next";
+import { BlankAvatar } from "~/assets";
 
 const FriendRequest = () => {
   const { t } = useTranslation();
@@ -21,7 +22,7 @@ const FriendRequest = () => {
               className="w-full flex gap-4 items-center cursor-pointer"
             >
               <img
-                src={from?.profileUrl ?? NoProfile}
+                src={from?.profileUrl ?? BlankAvatar}
                 alt={from?.firstName}
                 className="w-10 h-10 object-cover rounded-full"
               />

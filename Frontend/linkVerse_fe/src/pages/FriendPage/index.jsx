@@ -31,13 +31,13 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
 import { user, posts } from "~/assets/mockData/data";
-import { NoProfile } from "~/assets/index";
 
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
+import { BlankAvatar } from "~/assets";
 
 const FriendPage = () => {
   const { t } = useTranslation();
@@ -280,7 +280,7 @@ const FriendPage = () => {
                 <div className="flex gap-x-3">
                   {/* 1 */}
                   <img
-                    src={user?.profileUrl ?? NoProfile}
+                    src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
                     className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
                   />

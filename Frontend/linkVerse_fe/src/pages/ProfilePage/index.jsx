@@ -32,17 +32,18 @@ import {
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
 import { posts, user } from "~/assets/mockData/data";
-import { NoProfile } from "~/assets/index";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
+import { BlankAvatar } from "~/assets";
 
 const ProfilePage = () => {
   const { t } = useTranslation();
   const theme = useSelector((state) => state.theme.theme);
+  const user = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
@@ -154,20 +155,19 @@ const ProfilePage = () => {
                 {/* 1 */}
                 <div className="flex justify-between">
                   <span className="text-2xl font-semibold text-ascent-1">
-                    {name ? name : "No name"}
+                    {/* {name ? name : "No name"} */}
+                    {user?.firstName + user?.lastName || "No name"}
                   </span>
                   <img
-                    src={avatar ? avatar : NoProfile}
+                    src={avatar ? avatar : BlankAvatar}
                     alt="avatar"
                     className="rounded-full object-cover w-[84px] h-[84px] bg-no-repeat shadow-newFeed"
                   />
                 </div>
                 {/* 2 */}
-                {storie && (
-                  <div className="flex items-center">
-                    <p>{storie}</p>
-                  </div>
-                )}
+                <div className="flex items-center">
+                  <p>{storie || "No storie"}</p>
+                </div>
                 {/* 3 */}
                 <div className="flex justify-between items-center">
                   <AvatarGroup total={27}>
@@ -329,7 +329,7 @@ const ProfilePage = () => {
                 <div className="flex gap-x-3">
                   {/* 1 */}
                   <img
-                    src={user?.profileUrl ?? NoProfile}
+                    src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
                     className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
                   />
@@ -526,7 +526,7 @@ const ProfilePage = () => {
 
                   <div className="relative group w-14 h-14">
                     <img
-                      src={avatar ? avatar : NoProfile}
+                      src={avatar ? avatar : BlankAvatar}
                       alt="avatar"
                       className="rounded-full object-cover bg-no-repeat w-full h-full"
                     />

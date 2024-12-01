@@ -17,6 +17,7 @@ const initialState = {
     followers: [],
     following: [],
     isActive: false,
+    createdAt: ""
 };
 
 const userSlice = createSlice({
@@ -35,7 +36,8 @@ const userSlice = createSlice({
                 roles = [],
                 isActive = false,
                 following = [],
-                followers = []
+                followers = [],
+                createdAt = ""
             } = action.payload
 
             state.lastName = lastName
@@ -50,6 +52,7 @@ const userSlice = createSlice({
             state.password = password
             state.followers = followers
             state.following = following
+            state.createdAt = createdAt
         },
         resetUser(state, action) {
             state.lastName = ""
@@ -64,6 +67,7 @@ const userSlice = createSlice({
             state.password = ""
             state.followers = []
             state.following = []
+            state.createdAt = ""
         }
     },
 });

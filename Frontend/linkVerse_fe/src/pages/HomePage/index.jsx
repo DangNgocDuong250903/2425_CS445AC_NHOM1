@@ -9,9 +9,9 @@ import {
   FriendSuggest,
   DialogCustom,
 } from "~/components";
-import { user, posts } from "~/assets/mockData/data";
+import { posts } from "~/assets/mockData/data";
 import { useEffect, useState } from "react";
-import { NoProfile } from "~/assets/index";
+import { BlankAvatar } from "~/assets/index";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
@@ -22,28 +22,29 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
+import * as PostService from "~/services/PostService";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
-  const [image, setImage] = useState("");
-  const [status, setStatus] = useState("");
-  const user = useSelector((state) => state?.user);
-  const [postState, setPostState] = useState("public");
+  const [img, setImg] = useState("");
+  const [text, setText] = useState("");
+  const user = useSelector((state) => state.user);
+  const [status, setStatus] = useState("public");
   const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
   const theme = useSelector((state) => state.theme.theme);
 
   useEffect(() => {
     if (file) {
       getBase64(file)
-        .then((result) => setImage(result))
+        .then((result) => setImg(result))
         .catch((error) => console.error(error));
     }
   }, [file]);
 
   //delete
-  const handleDeleteImage = () => {
+  const handleDeleteImg = () => {
     setFile(null);
-    setImage("");
+    setImg("");
   };
 
   const handleFileChange = (e) => {
@@ -53,9 +54,24 @@ const HomePage = () => {
     }
   };
 
+  //create post
+  const mutation = useMutationHook((newPost) => {
+    PostService.createPost(newPost);
+  });
+
+  const { data: dataCreatedPost, isPending, isSuccess, isError } = mutation;
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(dataCreatedPost);
+    } else if (isError) {
+      console.log("error");
+    }
+  }, [isSuccess]);
   //submit
   const handleSubmitPost = () => {
-    console.log({ status, image, postState });
+    const newPost = { postedBy: user.id, text, img, status };
+    mutation.mutate(newPost);
   };
 
   const handleCloseDiaLogAdd = () => {
@@ -102,7 +118,7 @@ const HomePage = () => {
                 <div className="w-full flex items-center justify-between gap-3 py-4 border-b border-[#66666645]">
                   <div className="flex items-center gap-4">
                     <img
-                      src={user?.profileUrl ?? NoProfile}
+                      src={user?.profileUrl ?? BlankAvatar}
                       alt="User Image"
                       className="w-14 h-14 rounded-full object-cover"
                     />
@@ -180,7 +196,7 @@ const HomePage = () => {
                 <div className="flex gap-x-3">
                   {/* 1 */}
                   <img
-                    src={user?.profileUrl ?? NoProfile}
+                    src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
                     className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
                   />
@@ -188,7 +204,7 @@ const HomePage = () => {
                   <TextField
                     label="Có gì mới ?"
                     multiline
-                    onChange={(e) => setStatus(e.target.value)}
+                    onChange={(e) => setText(e.target.value)}
                     maxRows={5}
                     variant="standard"
                     fullWidth
@@ -276,29 +292,29 @@ const HomePage = () => {
                 </div>
                 {/* 3 */}
                 <div>
-                  {image && file?.type?.includes("mp4") && (
+                  {img && file?.type?.includes("mp4") && (
                     <div className="relative">
                       <video
                         width="100%"
                         controls
                         className="rounded-xl border-1 border-borderNewFeed"
                       >
-                        <source src={image} />
+                        <source src={img} />
                       </video>
                       <IoCloseCircle
-                        onClick={handleDeleteImage}
+                        onClick={handleDeleteImg}
                         className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
                       />
                     </div>
                   )}
 
-                  {image &&
+                  {img &&
                     (file?.type.includes("jpeg") ||
                       file?.type.includes("png") ||
                       file?.type.includes("gif")) && (
                       <div className="w-full h-[300px] relative">
                         <img
-                          src={image}
+                          src={img}
                           className="rounded-xl border-1 shadow-newFeed border-borderNewFeed"
                           style={{
                             height: "100%",
@@ -307,7 +323,7 @@ const HomePage = () => {
                           }}
                         />
                         <IoCloseCircle
-                          onClick={handleDeleteImage}
+                          onClick={handleDeleteImg}
                           className="absolute top-0 right-0 m-2 w-7 h-7 fill-[#8D867F] cursor-pointer"
                         />
                       </div>
@@ -324,8 +340,8 @@ const HomePage = () => {
                       disableUnderline="true"
                       labelId="demo-select-small-label"
                       id="demo-select-small"
-                      value={postState}
-                      onChange={(e) => setPostState(e.target.value)}
+                      value={status}
+                      onChange={(e) => setStatus(e.target.value)}
                       sx={{
                         boxShadow: "none",
                         "& .MuiSelect-icon": {
@@ -344,9 +360,9 @@ const HomePage = () => {
                   <Button
                     type="submit"
                     title="Đăng"
-                    disable={status === null || !status.trim() ? true : false}
+                    disable={text === null || !text.trim() ? true : false}
                     onClick={handleSubmitPost}
-                    containerStyles="bg-bgColor px-5 py-1 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                    containerStyles="bg-bgColor px-5 py-1 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed hover:bg-[#ccc]"
                   />
                 </div>
               </div>

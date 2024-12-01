@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { NoProfile } from "~/assets/index";
+import { BlankAvatar } from "~/assets/index";
 import { friends } from "~/assets/mockData/data";
 
 const FriendCard = () => {
@@ -19,7 +19,7 @@ const FriendCard = () => {
               className="flex gap-4 items-center cursor-pointer"
             >
               <img
-                src={friend?.profileUrl ?? NoProfile}
+                src={friend?.profileUrl ?? BlankAvatar}
                 alt={friend?.firstName}
                 className="w-10 h-10 object-cover rounded-full"
               />

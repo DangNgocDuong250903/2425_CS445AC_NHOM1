@@ -1,5 +1,4 @@
 import React from "react";
-import { NoProfile } from "~/assets";
 import { GoDotFill } from "react-icons/go";
 import { messages } from "~/assets/mockData/data";
 

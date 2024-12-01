@@ -1,10 +1,10 @@
 import moment from "moment";
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { NoProfile } from "~/assets/index";
 import { BiComment, BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
+import { BlankAvatar } from "~/assets";
 
 const PostCard = ({ post, user, deletePost, likePost }) => {
   const [showAll, setShowAll] = useState(0);
@@ -25,7 +25,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
       <div className="flex gap-3 items-center mb-2">
         <Link to={"/friend"}>
           <img
-            src={post?.userId?.profileUrl ?? NoProfile}
+            src={post?.userId?.profileUrl ?? BlankAvatar}
             alt={post?.userId?.firstName}
             className="w-14 h-14 object-cover rounded-full"
           />

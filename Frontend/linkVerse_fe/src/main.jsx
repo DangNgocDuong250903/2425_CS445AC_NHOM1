@@ -4,6 +4,7 @@ import "./index.css";
 import App from "./App.jsx";
 import { store } from "~/redux/store";
 import { Provider } from "react-redux";
+import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter } from "react-router-dom";
 import { CssBaseline } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
