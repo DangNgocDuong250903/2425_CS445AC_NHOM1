@@ -24,7 +24,7 @@ public class Post {
     String content;
 
     @ElementCollection
-    List<String> fileUrls;
+    List<String> ImageUrl;
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;
@@ -43,6 +43,7 @@ public class Post {
     String language;
     @ElementCollection
     List<String> keywords = new ArrayList<>(); // Ensure this property is named 'keywords'
+
     //Phantich cam xuc
     String primarySentiment;
     double positiveScore;

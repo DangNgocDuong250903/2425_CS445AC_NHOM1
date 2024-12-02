@@ -38,7 +38,7 @@ public interface PostMapper {
                 .content(post.getContent())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
-                .fileUrl(post.getFileUrls() != null ? String.join(",", post.getFileUrls()) : "")
+                .fileUrl(post.getImageUrl() != null ? String.join(",", post.getImageUrl()) : "")
                 .like(post.getLike())
                 .unlike(post.getUnlike())
                 .comments(toCommentResponses(post.getComments()))

@@ -17,7 +17,7 @@ public interface ShareMapper {
     // Ánh xạ SharedPost sang PostResponse
     @Mapping(source = "originalPost.id", target = "sharedPost.id")
     @Mapping(source = "originalPost.content", target = "sharedPost.content")
-    @Mapping(source = "originalPost.fileUrls", target = "sharedPost.fileUrl", qualifiedByName = "mapFileUrls")
+    @Mapping(source = "originalPost.imageUrl", target = "sharedPost.fileUrl", qualifiedByName = "mapFileUrls")
     @Mapping(source = "originalPost.visibility", target = "sharedPost.visibility")
     @Mapping(source = "originalPost.userId", target = "sharedPost.userId")
     @Mapping(source = "originalPost.createdDate", target = "sharedPost.createdDate")

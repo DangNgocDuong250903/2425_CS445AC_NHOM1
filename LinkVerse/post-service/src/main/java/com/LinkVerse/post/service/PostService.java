@@ -91,7 +91,7 @@ public class PostService {
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(authentication.getName())
-                    .fileUrls(safeFileUrls) //-> cho ra " " vi pham an toan
+                    .ImageUrl(safeFileUrls) //-> cho ra " " vi pham an toan
                     .visibility(request.getVisibility())
                     .createdDate(Instant.now())
                     .modifiedDate(Instant.now())
@@ -207,7 +207,7 @@ public class PostService {
             throw new RuntimeException("Not authorized to delete this post");
         }
 
-        List<String> fileUrls = post.getFileUrls();
+        List<String> fileUrls = post.getImageUrl();
         if (fileUrls != null && !fileUrls.isEmpty()) {
             for (String fileUrl : fileUrls) {
                 String decodedUrl = decodeUrl(fileUrl);
@@ -223,7 +223,7 @@ public class PostService {
         PostHistory postHistory = PostHistory.builder()
                 .id(post.getId())
                 .content(post.getContent())
-                .fileUrls(post.getFileUrls())
+                .fileUrls(post.getImageUrl())
                 .visibility(post.getVisibility())
                 .userId(post.getUserId())
                 .createdDate(post.getCreatedDate())
@@ -337,8 +337,8 @@ public class PostService {
         String currentUserId = authentication.getName();
 
         // Lấy URL của các file từ bài viết gốc, nếu có
-        List<String> fileUrls = originalPost.getFileUrls() != null ?
-                List.copyOf(originalPost.getFileUrls()) : List.of();
+        List<String> fileUrls = originalPost.getImageUrl() != null ?
+                List.copyOf(originalPost.getImageUrl()) : List.of();
 
         // Tạo một bản ghi SharedPost thay vì Post
         SharedPost sharedPost = SharedPost.builder()
@@ -395,7 +395,7 @@ public class PostService {
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
         // Kiểm tra xem bài viết có chứa URL của hình ảnh hay không
-        List<String> fileUrls = post.getFileUrls();
+        List<String> fileUrls = post.getImageUrl();
         if (fileUrls == null || fileUrls.isEmpty()) {
             throw new RuntimeException("No images found in this post");
         }

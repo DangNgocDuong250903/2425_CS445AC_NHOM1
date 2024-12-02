@@ -29,7 +29,6 @@ public class GroupService {
     GroupRepository groupRepository;
     GroupMemberRepository groupMemberRepository;
     UserRepository userRepository;
-    AuthenticationService authenticationService;
     GroupEventProducer groupEventProducer;
 
     @Transactional
