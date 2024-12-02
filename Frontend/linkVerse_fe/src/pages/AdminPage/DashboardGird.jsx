@@ -9,7 +9,7 @@ const DashboardGird = () => {
         <div className="grid grid-cols-4 grid-rows-1 gap-4">
             <div className='flex gap-3 p-4 bg-white border border-gray-300 rounded-lg'>
                 <div className='flex items-center'>
-                    <FaUserFriends size={30} />
+                    <FaUserFriends className='text-[#8e8fa2]' size={30} />
                 </div>
                 <div>
                     <span className='text-sm font-light text-gray-500'>Total Users</span>
@@ -21,7 +21,7 @@ const DashboardGird = () => {
             </div>
             <div className='flex gap-3 p-4 bg-white border border-gray-300 rounded-lg'>
                 <div className='flex items-center'>
-                    <IoChatbubblesSharp size={30} />
+                    <IoChatbubblesSharp className='text-blue' size={30} />
                 </div>
                 <div>
                     <span className='text-sm font-light text-gray-500'>Total Posts</span>
@@ -33,7 +33,7 @@ const DashboardGird = () => {
             </div>
             <div className='flex gap-3 p-4 bg-white border border-gray-300 rounded-lg'>
                 <div className='flex items-center'>
-                    <FaHeart size={30} />
+                    <FaHeart className='text-red-500' size={30} />
                 </div>
                 <div>
                     <span className='text-sm font-light text-gray-500'>Total Likes</span>
@@ -45,7 +45,7 @@ const DashboardGird = () => {
             </div>
             <div className='flex gap-3 p-4 bg-white border border-gray-300 rounded-lg'>
                 <div className='flex items-center'>
-                    <FaShare size={30} />
+                    <FaShare className='text-green-500' size={30} />
                 </div>
                 <div>
                     <span className='text-sm font-light text-gray-500'>Total Shares</span>

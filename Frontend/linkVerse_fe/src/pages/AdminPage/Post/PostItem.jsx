@@ -10,7 +10,7 @@ const PostItem = ({ item, deletePostItem }) => {
             <td className="px-4 py-2">{item.author}</td>
             <td className="px-4 py-2">{new Date(item.date).toLocaleDateString('vi-VN')}</td>
             <td className="px-4 py-2">
-                <p className={`w-3/4 py-1 font-medium mx-auto rounded-md ${item.status === 'Công Khai' ? 'bg-green-300' : 'bg-red-300'}`}>
+                <p className={` font-medium mx-auto  ${item.status === 'công khai' ? 'text-green-500' : 'text-red-500'}`}>
                     {item.status}
                 </p>
             </td>

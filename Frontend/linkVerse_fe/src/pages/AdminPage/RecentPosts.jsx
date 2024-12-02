@@ -1,6 +1,21 @@
-import React from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 
 const RecentPosts = () => {
+    const [recentPost, setRecentPost] = useState([]);
+
+    const getRecentPost = async () => {
+        try {
+            const res = await axios.get("http://localhost:3000/recentpost");
+            setRecentPost(res.data);
+        } catch (error) {
+            console.error("Lỗi kết nối với server:", error);
+            alert("Lỗi kết nối với server");
+        }
+    }
+    useEffect(() => {
+        getRecentPost()
+    }, [])
     return (
         <div className='w-[65%] h-screen p-5 mt-5 bg-white border border-gray-200 rounded-lg shadow-lg '>
             <h2 className='px-4 mb-4 text-lg font-medium'>Bài Đăng Gần Đây</h2>
@@ -16,20 +31,20 @@ const RecentPosts = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        <tr className='border-b'>
-                            <td className="px-4 py-2 font-medium">1</td>
-                            <td className="px-4 py-2 font-medium">Thanh</td>
-                            <td className="px-4 py-2 font-medium">Angular vs React</td>
-                            <td className="px-4 py-2 font-medium">2023-09-05</td>
-                            <td className="px-4 py-2 font-medium">Công khai</td>
-                        </tr>
-                        <tr>
-                            <td className="px-4 py-2 font-medium">2</td>
-                            <td className="px-4 py-2 font-medium">An</td>
-                            <td className="px-4 py-2 font-medium">GraphQL Introduction</td>
-                            <td className="px-4 py-2 font-medium">2023-08-25</td>
-                            <td className="px-4 py-2 font-medium">Cá nhân</td>
-                        </tr>
+                        {recentPost.map((item, index) => (
+                            <tr key={index} className='border-b'>
+                                <td className="px-4 py-2 font-medium">{item.id}</td>
+                                <td className="px-4 py-2 font-medium">{item.author}</td>
+                                <td className="px-4 py-2 font-medium">{item.title}</td>
+                                <td className="px-4 py-2">{new Date(item.postdate).toLocaleDateString('vi-VN')}</td>
+                                <td className="px-4 py-2">
+                                    <p className={` font-medium mx-auto  ${item.status === 'công khai' ? 'text-green-500' : 'text-red-500'}`}>
+                                        {item.status}
+                                    </p>
+                                </td>
+                            </tr>
+                        ))}
+
                     </tbody>
                 </table>
             </div>
