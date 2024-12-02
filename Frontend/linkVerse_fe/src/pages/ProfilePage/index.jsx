@@ -166,7 +166,7 @@ const ProfilePage = () => {
                 </div>
                 {/* 2 */}
                 <div className="flex items-center">
-                  <p>{storie || "No storie"}</p>
+                  <p className="text-ascent-1">{storie || "No storie"}</p>
                 </div>
                 {/* 3 */}
                 <div className="flex justify-between items-center">

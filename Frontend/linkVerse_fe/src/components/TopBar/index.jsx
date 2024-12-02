@@ -4,7 +4,7 @@ import { BsMoon, BsSunFill } from "react-icons/bs";
 import { Button, PopperCustom, TextInput } from "~/components/index";
 import { useTranslation } from "react-i18next";
 import i18n from "~/utils/i18n/i18n";
-import { Badge, MenuItem, Select } from "@mui/material";
+import { Badge, MenuItem, Select, useColorScheme } from "@mui/material";
 import { VieIcon, EnIcon } from "~/assets";
 import { setLanguage } from "~/redux/Slices/languageSlice";
 import { setTheme } from "~/redux/Slices/themeSlice";
@@ -30,8 +30,10 @@ const TopBar = ({ title }) => {
   };
 
   //theme
+  const { mode, setMode } = useColorScheme();
   const handleTheme = () => {
     const themeValue = theme === "light" ? "dark" : "light";
+    setMode(theme === "light" ? "dark" : "light");
     dispatch(setTheme(themeValue));
   };
 

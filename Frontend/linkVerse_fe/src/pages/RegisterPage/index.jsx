@@ -2,7 +2,6 @@ import { TextInput, Loading, Button as CustomButton } from "~/components";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { BgImage } from "~/assets";
 import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
@@ -12,15 +11,12 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 import { FaCircleExclamation } from "react-icons/fa6";
-import { Tooltip } from "@mui/material";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
   const [hide, setHide] = useState("hide");
   const [errMsg, setErrMsg] = useState("");
-  const [alert, setAlert] = useState("");
   const navigate = useNavigate();
-  const dispatch = useDispatch();
 
   const {
     register,
@@ -36,7 +32,7 @@ const RegisterPage = () => {
     if (isSuccess) {
       navigate("/login", { state: data?.message?.metaData?.metadata });
     } else if (isError) {
-      console.log("an l");
+      setErrMsg("Email is already registered");
     }
   }, [isSuccess, isError]);
 
@@ -46,9 +42,9 @@ const RegisterPage = () => {
 
   return (
     <div className="bg-bgColor w-full h-[100vh] flex items-center justify-center p-6">
-      <div className="w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex flex-row-reverse bg-primary rounded-xl overflow-hidden shadow-xl border-1 border-borderNewFeed">
+      <div className="w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex flex-row-reverse bg-primary rounded-xl overflow-hidden shadow-2xl border-1 border-borderNewFeed">
         {/* phai */}
-        <div className="w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center">
+        <div className="w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center shadow-xl">
           {/* header */}
           <div className="w-full flex flex-col gap-2 mb-2">
             <span className="text-2xl text-[#065ad8] font-semibold">
@@ -209,6 +205,7 @@ const RegisterPage = () => {
                   />
                 )
               }
+              iconRightStyles="right-4"
               styles={`w-full h-10 ${errors.password ? "border-red-600" : ""}`}
               toolTip={errors.password ? errors.password?.message : ""}
               register={register("password", {
@@ -228,8 +225,12 @@ const RegisterPage = () => {
               </span>
             )} */}
 
+            {errMsg && (
+              <span className={`text-sm mt-0.5 text-red-600`}>{errMsg}</span>
+            )}
+
             {isPending ? (
-              <div className="h-10">
+              <div className="h-10 ">
                 <Loading />
               </div>
             ) : (
@@ -256,29 +257,29 @@ const RegisterPage = () => {
           </p>
         </div>
         {/* trai */}
-        <div className="hidden w-1/2 h-full lg:flex flex-col items-center justify-center bg-blue">
+        <div className="hidden w-1/2 h-full lg:flex flex-col items-center justify-center bg-blue shadow-xl">
           <div className="relative w-full flex items-center justify-center">
             <img
               src={BgImage}
               alt="Bg Image"
-              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-newFeed"
+              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-xl"
             />
 
-            <div className="absolute flex items-center gap-1 bg-primary right-10 top-10 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary right-10 top-10 py-2 px-5 rounded-full shadow-xl">
               <BsShare size={14} className="text-ascent-1" />
               <span className="text-ascent-1 text-xs font-medium">
                 {t("Chia sẻ")}
               </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-primary left-10 top-6 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary left-10 top-6 py-2 px-5 rounded-full shadow-xl">
               <ImConnection className="text-ascent-1" />
               <span className="text-ascent-1 text-xs font-medium">
                 {t("Kết nối")}
               </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-primary left-12 bottom-6 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary left-12 bottom-6 py-2 px-5 rounded-full shadow-xl">
               <AiOutlineInteraction className="text-ascent-1" />
               <span className="text-ascent-1 text-xs font-medium">
                 {t("Tương tác")}

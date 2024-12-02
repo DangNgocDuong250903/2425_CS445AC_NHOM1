@@ -13,6 +13,7 @@ import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "~/redux/Slices/userSlice";
 import { jwtDecode } from "jwt-decode";
+import { FaCircleExclamation } from "react-icons/fa6";
 
 const LoginPage = () => {
   const { t } = useTranslation();
@@ -20,13 +21,12 @@ const LoginPage = () => {
   const navigate = useNavigate();
   const [hide, setHide] = useState("hide");
   const [errMsg, setErrMsg] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
 
   const mutation = useMutationHook((data) => UserService.login(data));
@@ -54,8 +54,10 @@ const LoginPage = () => {
           );
         }
       }
+    } else if (isError) {
+      setErrMsg("Something went wrong!");
     }
-  }, [isSuccess]);
+  }, [isSuccess, isError]);
 
   const handleGetDetailUser = async (id, token) => {
     try {
@@ -103,9 +105,16 @@ const LoginPage = () => {
               register={register("email", {
                 required: t("Địa chỉ email là bắt buộc"),
               })}
-              styles="w-full rounded-full"
+              styles={`w-full rounded-full ${
+                errors.email ? "border-red-600" : ""
+              }`}
+              iconRight={
+                errors.email ? <FaCircleExclamation color="red" /> : ""
+              }
+              iconRightStyles="right-5"
+              toolTip={errors.email ? errors.email?.message : ""}
               labelStyles="ml-2"
-              error={errors.email ? errors.email.message : ""}
+              // error={errors.email ? errors.email.message : ""}
             />
 
             <TextInput
@@ -113,10 +122,14 @@ const LoginPage = () => {
               label="Password"
               placeholder={t("Mật khẩu")}
               type={hide === "hide" ? "password" : "text"}
-              styles="w-full rounded-full"
+              styles={`w-full rounded-full  ${
+                errors.password ? "border-red-600" : ""
+              }`}
               labelStyles="ml-2"
               iconRight={
-                hide === "hide" ? (
+                errors.password ? (
+                  <FaCircleExclamation color="red" />
+                ) : hide === "hide" ? (
                   <IoMdEyeOff
                     className="cursor-pointer"
                     onClick={() => setHide("show")}
@@ -128,20 +141,29 @@ const LoginPage = () => {
                   />
                 )
               }
+              toolTip={errors.password ? errors.password?.message : ""}
+              iconRightStyles="right-5"
               register={register("password", {
                 required: t("Mật khẩu là bắt buộc"),
               })}
-              error={errors.password ? errors.password?.message : ""}
+              // error={errors.password ? errors.password?.message : ""}
             />
 
-            <Link
-              to="/reset-password"
-              className="text-sm text-right text-blue font-semibold my-1"
-            >
-              {t("Quên mật khẩu")} ?
-            </Link>
+            <div className="flex justify-between items-center">
+              {errMsg ? (
+                <span className={`text-sm text-red-600 py-1`}>{errMsg}</span>
+              ) : (
+                <span className="flex-1" />
+              )}
+              <Link
+                to="/reset-password"
+                className="text-sm text-right text-blue font-semibold my-1 py-1 ml-auto hover:text-[#065ad898]"
+              >
+                {t("Quên mật khẩu")} ?
+              </Link>
+            </div>
 
-            {errMsg?.message && (
+            {/* {errMsg?.message && (
               <span
                 className={`text-sm ${
                   errMsg?.status == "failed"
@@ -151,14 +173,18 @@ const LoginPage = () => {
               >
                 {errMsg?.message}
               </span>
-            )}
+            )} */}
 
-            {isSubmitting ? (
-              <Loading />
+            {isPending ? (
+              <div className="h-10 ">
+                <Loading />
+              </div>
             ) : (
               <CustomButton
                 type="submit"
-                containerStyles={`inline-flex text-white justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium outline-none`}
+                containerStyles={`inline-flex text-white justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium outline-none hover:bg-[#065ad898] hover:text-black ${
+                  !isValid && "cursor-not-allowed"
+                }`}
                 title={t("Đăng nhập")}
               />
             )}
@@ -168,7 +194,7 @@ const LoginPage = () => {
             {t("Không có tài khoản")} ?
             <Link
               to="/register"
-              className="text-[#065ad8] font-semibold ml-2 cursor-pointer"
+              className="text-[#065ad8] font-semibold ml-2 cursor-pointer hover:text-[#065ad898]"
             >
               {t("Tạo tài khoản")}
             </Link>
@@ -180,24 +206,24 @@ const LoginPage = () => {
             <img
               src={BgImage}
               alt="Bg Image"
-              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover"
+              className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-xl"
             />
 
-            <div className="absolute flex items-center gap-1 bg-primary  right-10 top-10 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary  right-10 top-10 py-2 px-5 rounded-full shadow-xl">
               <BsShare size={14} className="text-ascent-1" />
               <span className="text-xs font-medium text-ascent-1">
                 {t("Chia sẻ")}
               </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-primary left-10 top-6 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary left-10 top-6 py-2 px-5 rounded-full shadow-xl">
               <ImConnection size={14} className="text-ascent-1" />
               <span className="text-xs font-medium text-ascent-1">
                 {t("Kết nối")}
               </span>
             </div>
 
-            <div className="absolute flex items-center gap-1 bg-primary left-12 bottom-6 py-2 px-5 rounded-full">
+            <div className="absolute flex items-center gap-1 bg-primary left-12 bottom-6 py-2 px-5 rounded-full shadow-xl">
               <AiOutlineInteraction size={14} className="text-ascent-1" />
               <span className="text-xs font-medium text-ascent-1">
                 {t("Tương tác")}

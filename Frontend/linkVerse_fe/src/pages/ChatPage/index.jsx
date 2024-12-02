@@ -2,16 +2,13 @@ import {
   FriendCard,
   ProfileCard,
   Button,
-  PostCard,
   TopBar,
   GroupCard,
-  FriendRequest,
-  FriendSuggest,
   DialogCustom,
   TextInput,
 } from "~/components";
 import { user, posts, messages } from "~/assets/mockData/data";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
@@ -24,10 +21,15 @@ import Message from "~/components/Message";
 import { GoDotFill } from "react-icons/go";
 import { HiDotsHorizontal } from "react-icons/hi";
 import { BlankAvatar } from "~/assets";
+import { IoIosSearch } from "react-icons/io";
+import { FiSend } from "react-icons/fi";
+import { FiUpload } from "react-icons/fi";
 
 const ChatPage = () => {
   const [file, setFile] = useState(null);
   const [image, setImage] = useState("");
+  const [fileMessage, setFileMessage] = useState(null);
+  const [imageMessage, setImageMessage] = useState("");
   const [status, setStatus] = useState("");
   const [postState, setPostState] = useState("public");
   const [isOpenDialogAdd, setIsOpenDialogAdd] = useState(false);
@@ -63,6 +65,30 @@ const ChatPage = () => {
     setIsOpenDialogAdd(false);
   };
 
+  const fileInputRef = useRef(null);
+
+  const handleUploadClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  //message
+  const handleChangeFileMessage = (e) => {
+    const selectedFile = e.target.files[0];
+    if (selectedFile) {
+      setFileMessage(selectedFile);
+    }
+  };
+
+  useEffect(() => {
+    if (fileMessage) {
+      getBase64(fileMessage)
+        .then((result) => setImageMessage(result))
+        .catch((error) => console.error(error));
+    }
+  }, [fileMessage]);
+
   return (
     <>
       <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
@@ -76,58 +102,75 @@ const ChatPage = () => {
           </div>
 
           {/* giua */}
-          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 p-3 flex  gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-hidden">
+          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 py-2 flex  gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-hidden">
             {/* trai */}
-            <div className=" w-1/3 h-full overflow-y-auto">
-              <TextInput
-                placeholder="Search..."
-                styles="rounded-2xl w-full mb-5"
-              />
+
+            <div className="w-1/3 h-full overflow-y-auto">
+              <div className="sticky bg-primary w-full py-2 pb-3 top-0 z-10">
+                <TextInput
+                  placeholder="Search..."
+                  iconLeft={<IoIosSearch size={20} />}
+                  styles="rounded-full w-full"
+                />
+              </div>
+
               <div className="gap-y-2 flex flex-col">
-                {messages
-                  .concat(messages)
-                  .concat(messages)
-                  .map((item, i) => (
-                    <Message
-                      key={i}
-                      name={item?.firstName + " " + item?.lastName}
-                      status={item?.status}
-                      message={item?.message}
-                      avatar={item?.profileUrl}
-                    />
-                  ))}
+                {messages.map((item, i) => (
+                  <Message
+                    key={i}
+                    name={item?.firstName + " " + item?.lastName}
+                    status={item?.status}
+                    message={item?.message}
+                    avatar={item?.profileUrl}
+                  />
+                ))}
               </div>
             </div>
+
             {/* phai */}
-            <div className="flex-1 flex flex-col h-screen overflow-y-hidden">
+            <div className="flex-1 flex flex-col overflow-y-hidden">
               {/* header */}
               <div className="w-full flex items-center justify-between">
-                <div className="flex items-center gap-x-2 relative">
-                  <div>
-                    <img
-                      src={BlankAvatar}
-                      alt="avt"
-                      className="h-14 w-14 rounded-full border-1 border-borderNewFeed object-cover"
-                    />
-                    <GoDotFill
-                      color="#53C259"
-                      className="h-6 w-6 absolute -top-1 -left-1"
-                    />
-                  </div>
-                  <span className="text-ascent-1">Tuan</span>
+                <div className="flex items-center gap-x-2 relative py-3">
+                  <img
+                    src={BlankAvatar}
+                    alt="avt"
+                    className="h-12 w-12 rounded-full shadow-md object-cover"
+                  />
+                  <span className="text-ascent-1 font-semibold">
+                    Dương Hà Tuấn
+                  </span>
                 </div>
                 <HiDotsHorizontal className="h-6 w-6 text-bgStandard" />
               </div>
               {/* body */}
-              <div className="bg-pink-50">
-                <div>content</div>
+              <div className="flex-1 overflow-y-auto">
+                <div className="gap-y-2 flex flex-col"></div>
               </div>
               {/* footer */}
               <div className="flex text-ascent-1 w-full">
                 <TextInput
-                  styles="w-full rounded-full"
+                  styles="w-full py-4 px-10 rounded-full"
                   placeholder="Type a message..."
-                  iconRight={`bg-[url('~/assets/icons/send.svg')] bg-right bg-no-repeat bg-[length:25px_25px]`}
+                  iconRight={<FiSend size={20} className="cursor-pointer" />}
+                  iconLeft={
+                    <FiUpload
+                      size={20}
+                      onClick={handleUploadClick}
+                      className="cursor-pointer"
+                    />
+                  }
+                  iconLeftStyles="left-4"
+                  iconRightStyles="right-6"
+                />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleChangeFileMessage}
+                  className="hidden"
+                  id="imgUpload"
+                  data-max-size="5120"
+                  accept=".jpg, .jpeg, .png, .gif, .mp4, .avi, .mkv"
                 />
               </div>
             </div>

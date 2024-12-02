@@ -81,21 +81,7 @@ const TextInput = React.forwardRef(
               aria-invalid={error ? "true" : "false"}
             />
           )}
-          {/* <input
-            onChange={onChange}
-            value={value}
-            type={type}
-            placeholder={placeholder}
-            name={name}
-            ref={ref}
-            {...rest}
-            className={`bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5 placeholder:text-[#666] 
-              ${iconLeft ? "pl-10" : ""} 
-              ${iconRight ? "pr-10" : ""} 
-              ${styles}`}
-            {...register}
-            aria-invalid={error ? "true" : "false"}
-          /> */}
+
           {iconRight && toolTip ? (
             <Tooltip title={toolTip} placement="right-end">
               <span

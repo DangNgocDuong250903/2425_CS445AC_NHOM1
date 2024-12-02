@@ -2,6 +2,7 @@ import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
     palette: {
+        mode: 'dark',
         primary: {
             main: "#000",
             black: "#fff",
@@ -9,10 +10,28 @@ const theme = createTheme({
             dark: "rgb(16,16,16)",
             light: "#fff",
         },
-        dark: "rgb(16,16,16)",
+        bgDark: "rgb(24,24,24)",
+        dark: "rgb(255,255,255)",
         light: "#fff",
         borderDark: "rgb(51,51,51)",
-        borderLight: "rgb(213, 213, 213)"
+        borderLight: "rgb(213, 213, 213)",
+        text: {
+            dark: "rgb(255,255,255)",
+        }
+    },
+    colorSchemes: {
+        light: {
+            primary: {
+                main: "rgb(255,255,255)"
+            },
+            border: "rgb(213, 213, 213)"
+        },
+        dark: {
+            primary: {
+                main: "rgb(24,24,24)"
+            },
+            border: "rgb(45, 45, 45)"
+        }
     },
 
     components: {
@@ -67,7 +86,7 @@ const theme = createTheme({
         MuiDivider: {
             styleOverrides: {
                 root: {
-                    borderColor: "#212121"
+                    borderColor: "#ccc"
                 }
             }
         },

@@ -6,6 +6,7 @@ import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "./redux/Slices/userSlice";
+import useMediaQuery from "@mui/material/useMediaQuery";
 
 function App() {
   const { theme } = useSelector((state) => state.theme);
@@ -66,7 +67,8 @@ function App() {
         <Routes>
           {route.map((route, i) => {
             const Page = route.element;
-            const isCheckAuth = !route.isPrivate || user.isAdmin;
+            const isCheckAuth =
+              !route.isPrivate || user.roles.includes("ADMIN");
             return (
               <Route
                 key={i}

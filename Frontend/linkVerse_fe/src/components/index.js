@@ -13,11 +13,13 @@ import FriendSuggest from "./FriendSuggest"
 import PopperCustom from "./PopperCustom"
 import Story from "./Story"
 import DragToScroll from "./DragToScroll"
+import CustomizeMenu from "./CustomizeMenu"
 
 export {
     TopBar,
     Button,
     TextInput,
+    CustomizeMenu,
     Loading,
     FriendCard,
     ProfileCard,

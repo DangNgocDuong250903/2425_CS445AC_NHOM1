@@ -5,8 +5,17 @@ import { BiComment, BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
 import { BlankAvatar } from "~/assets";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { CustomizeMenu } from "..";
+import { Divider, MenuItem, styled } from "@mui/material";
+import { FiBookmark } from "react-icons/fi";
+import { TbMessageReport } from "react-icons/tb";
+import { RiAttachment2 } from "react-icons/ri";
+import { ImUserMinus } from "react-icons/im";
+import { useSelector } from "react-redux";
 
 const PostCard = ({ post, user, deletePost, likePost }) => {
+  const theme = useSelector((state) => state.theme.theme);
   const [showAll, setShowAll] = useState(0);
   const [showReply, setShowReply] = useState(0);
   const [comments, setComments] = useState([]);
@@ -20,6 +29,25 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
   const handleLike = () => {
     setLike(like === true ? false : true);
   };
+
+  //Menu
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const StyledDivider = styled(Divider)(({ theme }) => ({
+    borderColor: theme.colorSchemes.light.border,
+    margin: `${theme.spacing(0.5)} 0`,
+    ...theme.applyStyles("dark", {
+      borderColor: theme.colorSchemes.dark.border,
+    }),
+  }));
+
   return (
     <div className="mb-2 bg-primary p-4 rounded-xl">
       <div className="flex gap-3 items-center mb-2">
@@ -33,16 +61,72 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
 
         <div className="w-full flex justify-between">
           <div>
-            <Link to={"/friend"}>
-              <p className="font-medium text-lg text-ascent-1">
-                {post?.userId?.firstName} {post?.userId?.lastName}
-              </p>
-            </Link>
-            <span className="text-ascent-2">{post?.userId?.location}</span>
+            <div className="flex items-center gap-2">
+              <Link to={"/friend"}>
+                <p className="font-medium text-lg text-ascent-1">
+                  {post?.userId?.firstName} {post?.userId?.lastName}
+                </p>
+              </Link>
+              <span className="text-ascent-2">
+                {moment(post?.createdAt ?? "2024-10-10").fromNow()}
+              </span>
+            </div>
+            <span className="text-ascent-2 text-base">
+              {post?.userId?.location}
+            </span>
           </div>
-          <span className="text-ascent-2">
-            {moment(post?.createdAt ?? "2024-10-10").fromNow()}
-          </span>
+          <div className="flex justify-center items-center">
+            <div className="p-1 rounded-full transition-all duration-20 hover:bg-gradient-to-r hover:from-[#1E1E1E] hover:via-[#1E1E1E] hover:to-[#1E1E1E]">
+              <BiDotsHorizontalRounded
+                size={25}
+                color="#686868"
+                className="cursor-pointer "
+                onClick={handleClick}
+                id="demo-customized-button"
+                aria-controls={open ? "demo-customized-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                variant="contained"
+                disableElevation
+              />
+              <CustomizeMenu
+                handleClose={handleClose}
+                anchorEl={anchorEl}
+                open={open}
+              >
+                <MenuItem onClick={handleClose} disableRipple>
+                  <div className="flex items-center justify-between w-full">
+                    <span className={theme === "light" && "text-black"}>
+                      Save
+                    </span>
+                    <FiBookmark color={theme === "light" && "black"} />
+                  </div>
+                </MenuItem>
+                <StyledDivider />
+                <MenuItem onClick={handleClose} disableRipple>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-red-600">Report</span>
+                    <TbMessageReport color="red" />
+                  </div>
+                </MenuItem>
+                <MenuItem onClick={handleClose} disableRipple>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-red-600">Block</span>
+                    <ImUserMinus color="red" />
+                  </div>
+                </MenuItem>
+                <StyledDivider />
+                <MenuItem onClick={handleClose} disableRipple>
+                  <div className="flex items-center justify-between w-full">
+                    <span className={theme === "light" && "text-black"}>
+                      Copy address
+                    </span>
+                    <RiAttachment2 color={theme === "light" && "black"} />
+                  </div>
+                </MenuItem>
+              </CustomizeMenu>
+            </div>
+          </div>
         </div>
       </div>
       <div>
@@ -85,9 +169,9 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
           )} */}
           <div onClick={handleLike}>
             {like ? (
-              <BiSolidLike size={20} color="blue" />
+              <BiSolidLike size={20} color="blue" className="hover:scale-105" />
             ) : (
-              <BiLike size={20} />
+              <BiLike size={20} className="hover:scale-105" />
             )}
           </div>
           {post?.likes?.length} Likes

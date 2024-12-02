@@ -42,7 +42,7 @@ const ProfileCard = () => {
         </Link>
         {/* update profile */}
         <div className="">
-          {user?._id ? (
+          {user?.id ? (
             <LiaEditSolid
               size={22}
               className="text-blue cursor-pointer"

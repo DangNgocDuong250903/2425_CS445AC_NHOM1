@@ -124,7 +124,7 @@ const HomePage = () => {
                     />
                     <span
                       onClick={() => setIsOpenDialogAdd(true)}
-                      className="text-ascent-2 text-sm cursor-pointer hover:text-white"
+                      className="text-ascent-2 text-sm cursor-pointer  opacity-100 hover:opacity-[0.1]"
                     >
                       Có gì mới ?
                     </span>
@@ -132,7 +132,7 @@ const HomePage = () => {
                   <Button
                     title="Post"
                     onClick={() => setIsOpenDialogAdd(true)}
-                    containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm"
+                    containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm  border-borderNewFeed shadow-md"
                   />
                 </div>
               </div>
@@ -198,7 +198,7 @@ const HomePage = () => {
                   <img
                     src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
-                    className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
+                    className="w-14 h-14 rounded-full object-cover shadow-newFeed"
                   />
                   {/* 2 */}
                   <TextField
@@ -362,7 +362,7 @@ const HomePage = () => {
                     title="Đăng"
                     disable={text === null || !text.trim() ? true : false}
                     onClick={handleSubmitPost}
-                    containerStyles="bg-bgColor px-5 py-1 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed hover:bg-[#ccc]"
+                    containerStyles="bg-bgColor px-5 py-1 rounded-xl text-ascent-2 border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed hover:bg-[#ccc]"
                   />
                 </div>
               </div>
