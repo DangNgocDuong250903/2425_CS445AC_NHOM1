@@ -199,8 +199,8 @@ export const posts = [
     createdAt: "2023-08-18T09:50:08.431Z",
     updatedAt: "2023-08-21T03:44:36.962Z",
     __v: 0,
-    image:
-      "https://photo.znews.vn/w660/Uploaded/mdf_drokxr/2020_05_21/ronaldo_7.jpg",
+    video:
+      "https://res.cloudinary.com/duktr2ml5/video/upload/v1733144620/cxe0mi0xohrqgecylpy8.mp4",
   },
 ];
 

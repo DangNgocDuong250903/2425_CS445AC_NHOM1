@@ -3,14 +3,8 @@ import {
   TextInput,
   TopBar,
   Wrapper,
-  FriendCard,
-  ProfileCard,
   Button,
   PostCard,
-  GroupCard,
-  FriendRequest,
-  FriendSuggest,
-  DragToScroll,
 } from "~/components";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
@@ -31,7 +25,7 @@ import {
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import { useEffect, useState } from "react";
-import { posts, user } from "~/assets/mockData/data";
+import { posts } from "~/assets/mockData/data";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
@@ -170,20 +164,18 @@ const ProfilePage = () => {
                 </div>
                 {/* 3 */}
                 <div className="flex justify-between items-center">
-                  <AvatarGroup total={27}>
-                    <Avatar
-                      alt="avatar"
-                      src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
-                    />
-                    <Avatar
-                      alt="avatar"
-                      src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTvZ5tlwcyX69noUottK0EDi6CZJS76ds-vqw&s"
-                    />
-                    <Avatar
-                      alt="avatar"
-                      src="https://kenh14cdn.com/2017/images685542-a-1489655177057.jpg"
-                    />
-                  </AvatarGroup>
+                  {user?.following.length > 0 ? (
+                    <AvatarGroup total={user?.following.length}>
+                      {user.following.map((item, i) => (
+                        <Avatar
+                          alt="avatar"
+                          src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
+                        />
+                      ))}
+                    </AvatarGroup>
+                  ) : (
+                    <span>0 friends</span>
+                  )}
                   <div className="flex gap-2">
                     <FaInstagram
                       color={theme === "dark" ? "#fff" : "#000"}
@@ -331,7 +323,7 @@ const ProfilePage = () => {
                   <img
                     src={user?.profileUrl ?? BlankAvatar}
                     alt="User Image"
-                    className="w-14 h-14 rounded-full object-cover border-1 border-borderNewFeed shadow-newFeed"
+                    className="w-14 h-14 rounded-full object-cover shadow-newFeed"
                   />
                   {/* 2 */}
                   <TextField

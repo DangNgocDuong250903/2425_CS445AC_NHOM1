@@ -14,11 +14,13 @@ import PopperCustom from "./PopperCustom"
 import Story from "./Story"
 import DragToScroll from "./DragToScroll"
 import CustomizeMenu from "./CustomizeMenu"
+import CustomizeModal from "./CustomizeModal"
 
 export {
     TopBar,
     Button,
     TextInput,
+    CustomizeModal,
     CustomizeMenu,
     Loading,
     FriendCard,

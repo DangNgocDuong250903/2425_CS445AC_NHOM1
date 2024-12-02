@@ -1,12 +1,12 @@
 import moment from "moment";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { BiComment, BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
 import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { CustomizeMenu } from "..";
+import { CustomizeMenu, CustomizeModal } from "..";
 import { Divider, MenuItem, styled } from "@mui/material";
 import { FiBookmark } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
@@ -14,8 +14,9 @@ import { RiAttachment2 } from "react-icons/ri";
 import { ImUserMinus } from "react-icons/im";
 import { useSelector } from "react-redux";
 
-const PostCard = ({ post, user, deletePost, likePost }) => {
+const PostCard = ({ post, user, deletePost, likePost, isShowImage }) => {
   const theme = useSelector((state) => state.theme.theme);
+  const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
   const [showReply, setShowReply] = useState(0);
   const [comments, setComments] = useState([]);
@@ -48,6 +49,19 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
     }),
   }));
 
+  //preview img
+  const imgRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [openImagePreview, setOpenImagePreview] = useState(false);
+  const handleClickImage = () => {
+    setImagePreview(imgRef.current.src);
+    setOpenImagePreview(true);
+  };
+
+  const handleClosePreview = () => {
+    setOpenImagePreview(false);
+  };
+
   return (
     <div className="mb-2 bg-primary p-4 rounded-xl">
       <div className="flex gap-3 items-center mb-2">
@@ -71,12 +85,12 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
                 {moment(post?.createdAt ?? "2024-10-10").fromNow()}
               </span>
             </div>
-            <span className="text-ascent-2 text-base">
+            <span className="text-ascent-2 text-sm">
               {post?.userId?.location}
             </span>
           </div>
           <div className="flex justify-center items-center">
-            <div className="p-1 rounded-full transition-all duration-20 hover:bg-gradient-to-r hover:from-[#1E1E1E] hover:via-[#1E1E1E] hover:to-[#1E1E1E]">
+            <div className="p-1 rounded-full transition-colors duration-20 hover:bg-gradient-to-r hover:from-bgColor hover:via-from-bgColor hover:to-from-bgColor">
               <BiDotsHorizontalRounded
                 size={25}
                 color="#686868"
@@ -152,12 +166,34 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
             ))}
         </p>
 
-        {post?.image && (
-          <img
-            src={post?.image}
-            alt="post image"
-            className="w-full mt-2 rounded-lg"
-          />
+        {post?.image && !isShowImage && (
+          <>
+            <img
+              ref={imgRef}
+              onClick={handleClickImage}
+              src={post?.image}
+              alt="post image"
+              className="w-full mt-2 rounded-lg cursor-pointer"
+            />
+            <CustomizeModal
+              imageSrc={imagePreview}
+              open={openImagePreview}
+              handleOpen={handleClickImage}
+              handleClose={handleClosePreview}
+            />
+          </>
+        )}
+
+        {post?.video && !isShowImage && (
+          <div className="relative">
+            <video
+              width="100%"
+              controls
+              className="w-full mt-2 rounded-lg cursor-pointer"
+            >
+              <source src={post?.video} />
+            </video>
+          </div>
         )}
       </div>
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
@@ -180,6 +216,7 @@ const PostCard = ({ post, user, deletePost, likePost }) => {
         <p
           className="flex gap-2 items-center text-base cursor-pointer"
           onClick={() => {
+            navigate(`/post/${user?.id}`);
             setShowComments(showComments === post._id ? null : post?._id);
             getComments(post?._id);
           }}

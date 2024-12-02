@@ -92,7 +92,7 @@ const ChatPage = () => {
   return (
     <>
       <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
-        <TopBar title={"Trang chủ"} />
+        <TopBar title={"Chat"} />
         <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
           {/* trai */}
           <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
