@@ -10,14 +10,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
 import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -120,6 +119,62 @@ public class S3Service {
 //            fileObj.delete();
 //        }
 //    }
+
+    private MultipartFile resizeImage(MultipartFile originalFile, int width, int height) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Thumbnails.of(originalFile.getInputStream())
+                    .size(width, height)
+                    .outputFormat("jpg") // Đảm bảo định dạng ảnh (nếu cần)
+                    .toOutputStream(outputStream);
+
+            return new MultipartFile() {
+                @Override
+                public String getName() {
+                    return originalFile.getName();
+                }
+
+                @Override
+                public String getOriginalFilename() {
+                    return originalFile.getOriginalFilename();
+                }
+
+                @Override
+                public String getContentType() {
+                    return "image/jpeg";
+                }
+
+                @Override
+                public boolean isEmpty() {
+                    return outputStream.size() == 0;
+                }
+
+                @Override
+                public long getSize() {
+                    return outputStream.size();
+                }
+
+                @Override
+                public byte[] getBytes() throws IOException {
+                    return outputStream.toByteArray();
+                }
+
+                @Override
+                public InputStream getInputStream() {
+                    return new ByteArrayInputStream(outputStream.toByteArray());
+                }
+
+                @Override
+                public void transferTo(File dest) throws IOException, IllegalStateException {
+                    try (FileOutputStream fos = new FileOutputStream(dest)) {
+                        fos.write(outputStream.toByteArray());
+                    }
+                }
+            };
+        } catch (IOException e) {
+            log.error("Error resizing image: ", e);
+            throw new RuntimeException("Failed to resize image.", e);
+        }
+    }
 
     public String deleteFile(String fileName) {
         try {

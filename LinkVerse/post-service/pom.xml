@@ -22,6 +22,13 @@
         <spring-cloud.version>2023.0.1</spring-cloud.version>
     </properties>
     <dependencies>
+        <!-- size image -->
+        <dependency>
+            <groupId>net.coobird</groupId>
+            <artifactId>thumbnailator</artifactId>
+            <version>0.4.14</version>
+        </dependency>
+
         <!--elasticsearch -->
         <!--        <dependency>-->
         <!--            <groupId>org.springframework.boot</groupId>-->

@@ -18,6 +18,6 @@ public class PostRequest {
     PostVisibility visibility;
     String language;
     @ElementCollection
-    List<String> fileUrls;
+    List<String> ImageUrl;
     String PostId;
 }

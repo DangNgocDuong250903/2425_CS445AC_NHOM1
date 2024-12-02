@@ -91,7 +91,7 @@ public class PostService {
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(authentication.getName())
-                    .ImageUrl(safeFileUrls) //-> cho ra " " vi pham an toan
+                    .imageUrl(safeFileUrls) //-> cho ra " " vi pham an toan
                     .visibility(request.getVisibility())
                     .createdDate(Instant.now())
                     .modifiedDate(Instant.now())
@@ -344,7 +344,7 @@ public class PostService {
         SharedPost sharedPost = SharedPost.builder()
                 .content(content)
                 .userId(currentUserId)
-                .fileUrls(fileUrls)
+                .imageUrl(fileUrls)
                 .visibility(visibility)
                 .createdDate(Instant.now())
                 .modifiedDate(Instant.now())

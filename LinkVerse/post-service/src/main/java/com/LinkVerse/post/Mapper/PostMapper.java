@@ -18,9 +18,8 @@ public interface PostMapper {
 
     @Named("toPostResponse")
     @Mapping(target = "sharedPost", source = "sharedPost", qualifiedByName = "toPostResponse")
-//    @Mapping(target = "keywords", source = "keywords")
     @Mapping(target = "language", source = "language")
-    @Mapping(target = "fileUrl", expression = "java(post.getFileUrls() != null ? String.join(\",\", post.getFileUrls()) : \"\")")
+    @Mapping(target = "imageUrl", source = "imageUrl")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
@@ -38,17 +37,15 @@ public interface PostMapper {
                 .content(post.getContent())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
-                .fileUrl(post.getImageUrl() != null ? String.join(",", post.getImageUrl()) : "")
+                .imageUrl(post.getImageUrl())
                 .like(post.getLike())
                 .unlike(post.getUnlike())
                 .comments(toCommentResponses(post.getComments()))
                 .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
-//                .keywords(post.getKeywords() != null ? post.getKeywords() : new ArrayList<>()) // Map keywords
-                .primarySentiment(post.getPrimarySentiment()) // Map this field
+                .primarySentiment(post.getPrimarySentiment())
                 .language(post.getLanguage())
                 .build();
     }
 
     PostResponse toPostResponse(PostHistory postHistory);
-
 }

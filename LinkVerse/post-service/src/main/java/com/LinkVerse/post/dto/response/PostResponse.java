@@ -18,7 +18,7 @@ public class PostResponse {
     String content;
 
     @ElementCollection
-    String fileUrl;
+    List<String> imageUrl;
     PostVisibility visibility;
     String userId;
     Instant createdDate;

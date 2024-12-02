@@ -4,20 +4,16 @@ import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.SharedPost;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface ShareMapper {
 
-    ShareMapper INSTANCE = Mappers.getMapper(ShareMapper.class);
-
-    // Ánh xạ SharedPost sang PostResponse
+    // Map from SharedPost to PostResponse
     @Mapping(source = "originalPost.id", target = "sharedPost.id")
     @Mapping(source = "originalPost.content", target = "sharedPost.content")
-    @Mapping(source = "originalPost.imageUrl", target = "sharedPost.fileUrl", qualifiedByName = "mapFileUrls")
+    @Mapping(source = "originalPost.imageUrl", target = "sharedPost.imageUrl")
     @Mapping(source = "originalPost.visibility", target = "sharedPost.visibility")
     @Mapping(source = "originalPost.userId", target = "sharedPost.userId")
     @Mapping(source = "originalPost.createdDate", target = "sharedPost.createdDate")
@@ -25,11 +21,10 @@ public interface ShareMapper {
     @Mapping(source = "originalPost.like", target = "sharedPost.like")
     @Mapping(source = "originalPost.unlike", target = "sharedPost.unlike")
     @Mapping(source = "originalPost.commentCount", target = "sharedPost.commentCount")
-    @Mapping(target = "fileUrl", expression = "java(sharedPost.getFileUrls() != null ? String.join(\",\", sharedPost.getFileUrls()) : \"\")")
+    @Mapping(source = "imageUrl", target = "imageUrl")
     PostResponse toPostResponse(SharedPost sharedPost);
 
-    @Named("mapFileUrls")
-    default String mapFileUrls(List<String> fileUrls) {
-        return fileUrls != null ? String.join(",", fileUrls) : "";
+    default String mapImageUrl(List<String> imageUrl) {
+        return imageUrl != null ? String.join(",", imageUrl) : "";
     }
 }

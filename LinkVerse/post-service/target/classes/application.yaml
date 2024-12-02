@@ -42,6 +42,6 @@ cloud:
       static: us-east-2
     stack:
       auto: false
-application:
-  bucket:
-    name: javatechiestoragee
+aws:
+  s3:
+    bucket-name: imgpost-0
