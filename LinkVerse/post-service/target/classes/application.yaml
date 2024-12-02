@@ -1,0 +1,47 @@
+server:
+  port: 8083  # Cổng cho post-service
+  servlet:
+    context-path: /post  # Cấu hình context path cho post-service
+
+spring:
+  application:
+    bucket:
+      name: javatechiestoragee
+    name: post-service  # Tên ứng dụng cho post-service
+  data:
+    mongodb:
+      uri: ${URL_MGDB}  # Kết nối MongoDB cho post-service
+  #    elasticsearch:
+  #      rest:
+  #        uris: http://localhost:9200
+  #        username: ${ELASTICSEARCH_USERNAME}
+  #        password: ${ELASTICSEARCH_PASSWORD}
+  #        read-timeout: 5s
+  #        connection-timeout: 1s
+
+  datasource:
+    url: ${URL_SQL} # Cấu hình kết nối MySQL
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: ${USERNAME_SQL}
+    password: ${PASS_SQL}
+  jpa:
+    hibernate:
+      ddl-auto: update  # Cập nhật schema JPA tự động
+    show-sql: true  # Hiển thị SQL khi thực hiện các query
+
+  servlet:
+    multipart:
+      max-file-size: 10MB  # Giới hạn kích thước file tối đa là 10MB
+      max-request-size: 100MB  # Giới hạn kích thước request tối đa là 100MB
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+application:
+  bucket:
+    name: javatechiestoragee
