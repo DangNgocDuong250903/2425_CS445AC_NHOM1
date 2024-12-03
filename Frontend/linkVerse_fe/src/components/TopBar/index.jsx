@@ -13,6 +13,8 @@ import { useForm } from "react-hook-form";
 import * as UserService from "~/services/UserService";
 import { resetUser } from "~/redux/Slices/userSlice";
 import { IoIosSearch } from "react-icons/io";
+import { MdApps } from "react-icons/md";
+import { IoChatboxEllipsesOutline } from "react-icons/io5";
 
 const TopBar = ({ title }) => {
   const dispatch = useDispatch();
@@ -111,7 +113,7 @@ const TopBar = ({ title }) => {
         </div>
       </div>
       {/* 2 */}
-      <div className="flex  items-center justify-center w-fit h-full my-auto">
+      <div className="flex  items-center justify-center w-fit h-full my-auto ">
         <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
           {t(title)}
         </h1>
@@ -119,7 +121,7 @@ const TopBar = ({ title }) => {
       {/* 3 */}
       <div className="flex-1 w-full flex gap-4 items-center text-ascent-1 text-base md:text-xl justify-end">
         {/* notification */}
-        <div className="hidden lg:flex">
+        <div className="hidden lg:flex p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
           <Badge variant="dot" color="warning">
             <svg
               fill={
@@ -334,7 +336,7 @@ const TopBar = ({ title }) => {
         </div>
 
         {/* change language */}
-        <div className="w-10 h-10 flex items-center justify-center">
+        {/* <div className="w-10 h-10 flex items-center justify-center">
           <Select
             IconComponent={() => {}}
             sx={{
@@ -365,12 +367,23 @@ const TopBar = ({ title }) => {
               <img src={EnIcon} alt="icon" />
             </MenuItem>
           </Select>
-        </div>
-
+        </div> */}
         {/* change theme */}
-        <button onClick={handleTheme}>
+        {/* <button onClick={handleTheme}>
           {theme === "dark" ? <BsMoon /> : <BsSunFill />}
-        </button>
+        </button> */}
+        {/* chat */}
+        <div
+          onClick={() => navigate("/chat")}
+          className="p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform"
+        >
+          <IoChatboxEllipsesOutline size={25} />
+        </div>
+        {/* app */}
+        <div className="p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
+          <MdApps size={28} className="cursor-pointer" />
+        </div>
+        {/* log out + log in */}
         <div>
           {user?.access_token ? (
             <Button

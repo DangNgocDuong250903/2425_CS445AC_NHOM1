@@ -21,7 +21,6 @@ import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useMutationHook } from "~/hooks/useMutationHook";
-import * as UserService from "~/services/UserService";
 import * as PostService from "~/services/PostService";
 
 const HomePage = () => {
@@ -91,8 +90,8 @@ const HomePage = () => {
           </div>
 
           {/* giua */}
-          <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
-            <div className="flex flex-col gap-6">
+          <div className="flex-1 h-full bg-primary px-3 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+            <div className="flex flex-col gap-6 ">
               <div className="w-full h-24 flex justify-center bg-primary rounded-lg overflow-x-auto overflow-y-hidden">
                 {/* story */}
                 {/* <div className="flex w-full p-3 justify-center items-center">
@@ -115,7 +114,7 @@ const HomePage = () => {
                     ))}
                   </DragToScroll>
                 </div> */}
-                <div className="w-full flex items-center justify-between gap-3 py-4 border-b border-[#66666645]">
+                <div className="w-full flex items-center justify-between gap-3 py-4 px-1 border-b border-[#66666645]">
                   <div className="flex items-center gap-4">
                     <img
                       src={user?.profileUrl ?? BlankAvatar}
@@ -124,15 +123,15 @@ const HomePage = () => {
                     />
                     <span
                       onClick={() => setIsOpenDialogAdd(true)}
-                      className="text-ascent-2 text-sm cursor-pointer  opacity-100 hover:opacity-[0.1]"
+                      className="text-[#B5B5B5] text-base cursor-pointer opacity-100  hover:opacity-[0.1] "
                     >
-                      Có gì mới ?
+                      Có gì mới?
                     </span>
                   </div>
                   <Button
                     title="Post"
                     onClick={() => setIsOpenDialogAdd(true)}
-                    containerStyles="bg-[#0444a4] text-white py-1 px-6 rounded-full font-semibold text-sm  border-borderNewFeed shadow-md"
+                    containerStyles="bg-[#0444a4] text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 transition-transform"
                   />
                 </div>
               </div>
@@ -173,7 +172,7 @@ const HomePage = () => {
               <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
                 <button
                   onClick={() => setIsOpenDialogAdd(false)}
-                  className={`text-base font-medium hover:text-neutral-500 text-primary ${
+                  className={`text-ascent-1 font-medium hover:text-neutral-500 ${
                     theme === "dark" ? "text-white" : "text-black"
                   }`}
                 >
@@ -350,7 +349,9 @@ const HomePage = () => {
                       }}
                     >
                       <MenuItem value={"public"}>
-                        <span className="text-ascent-2">Công khai</span>
+                        <span className="text-ascent-2 opacity-100">
+                          Công khai
+                        </span>
                       </MenuItem>
                       <MenuItem value={"private"}>
                         <span className="text-ascent-2">Riêng tư</span>

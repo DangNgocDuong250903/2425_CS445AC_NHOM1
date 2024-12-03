@@ -112,7 +112,7 @@ const ProfileCard = () => {
         </div>
       </div>
       {/* Chat */}
-      <div className="flex flex-col w-full justify-between items-center py-2">
+      {/* <div className="flex flex-col w-full justify-between items-center py-2">
         <div
           onClick={() => navigate("/chat")}
           className="w-full flex justify-between items-center py-3 rounded-2xl hover:bg-slate-50 cursor-pointer"
@@ -136,7 +136,7 @@ const ProfileCard = () => {
             </div>
           </AccordionDetails>
         </StyledAcordion>
-      </div>
+      </div> */}
       {/* <div className="flex flex-col w-full py-2 gap-y-2">
         <div
           onClick={() => navigate("/chat")}

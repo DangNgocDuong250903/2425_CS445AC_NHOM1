@@ -33,6 +33,7 @@ import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
 import { BlankAvatar } from "~/assets";
+import { ImUserPlus } from "react-icons/im";
 
 const ProfilePage = () => {
   const { t } = useTranslation();
@@ -108,22 +109,53 @@ const ProfilePage = () => {
   };
 
   // edit profile
-  const [name, setName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState("");
   const [avatar, setAvatar] = useState("");
+  const [email, setEmail] = useState("");
+  const [profession, setProfession] = useState("");
+  const [address, setAddress] = useState("");
   const [avatarFile, setAvatarFile] = useState("");
-  const [storie, setStorie] = useState("");
+  const [bio, setBio] = useState("");
 
-  const handleChangeName = (e) => {
-    setName(e.target.value);
+  useEffect(() => {
+    setLastName(user?.lastName);
+    setFirstName(user?.firstName);
+    setAvatar(user?.avatar);
+    setProfession(user?.profession);
+    setAddress(user?.address);
+    setBio(user?.bio);
+    setEmail(user?.email);
+  }, [user]);
+
+  const handleChangeFirstName = (e) => {
+    setFirstName(e.target.value);
   };
+
+  const handleChangeLastName = (e) => {
+    setLastName(e.target.value);
+  };
+
+  const handleChangeEmail = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handleChangeProfession = (e) => {
+    setProfession(e.target.value);
+  };
+
+  const handleChangeAddress = (e) => {
+    setAddress(e.target.value);
+  };
+
   const handleChangeAvatar = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
       setAvatarFile(selectedFile);
     }
   };
-  const handleChangeStorie = (e) => {
-    setStorie(e.target.value);
+  const handleChangeBio = (e) => {
+    setBio(e.target.value);
   };
 
   useEffect(() => {
@@ -149,8 +181,7 @@ const ProfilePage = () => {
                 {/* 1 */}
                 <div className="flex justify-between">
                   <span className="text-2xl font-semibold text-ascent-1">
-                    {/* {name ? name : "No name"} */}
-                    {user?.firstName + user?.lastName || "No name"}
+                    {firstName + lastName || "No name"}
                   </span>
                   <img
                     src={avatar ? avatar : BlankAvatar}
@@ -160,7 +191,7 @@ const ProfilePage = () => {
                 </div>
                 {/* 2 */}
                 <div className="flex items-center">
-                  <p className="text-ascent-1">{storie || "No storie"}</p>
+                  <p className="text-ascent-1">{bio || "No storie"}</p>
                 </div>
                 {/* 3 */}
                 <div className="flex justify-between items-center">
@@ -506,38 +537,50 @@ const ProfilePage = () => {
             >
               <div className="flex w-full flex-col px-8 py-3">
                 <div className="flex items-center justify-between py-3">
+                  {/* name */}
                   <div className="flex flex-col">
-                    <h1 className="text-ascent-2 font-medium">Tên</h1>
-                    <TextInput
-                      onChange={handleChangeName}
-                      value={name}
-                      styles="border-0 bg-transparent px-0 pl-0"
-                      labelStyles="font-medium"
-                    />
+                    <h1 className="text-ascent-2 font-medium">Full name</h1>
+                    <div className="flex">
+                      <TextInput
+                        onChange={handleChangeFirstName}
+                        value={firstName}
+                        styles="border-0 bg-transparent px-0 pl-0 text-ascent-2"
+                        labelStyles="font-medium"
+                      />
+                      <TextInput
+                        onChange={handleChangeLastName}
+                        value={lastName}
+                        styles="border-0 bg-transparent px-0 pl-0 text-ascent-2"
+                        labelStyles="font-medium"
+                      />
+                    </div>
                   </div>
 
                   <div className="relative group w-14 h-14">
-                    <img
-                      src={avatar ? avatar : BlankAvatar}
-                      alt="avatar"
-                      className="rounded-full object-cover bg-no-repeat w-full h-full"
-                    />
-                    <div>
-                      <label
-                        htmlFor="imgUpload"
-                        className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                      >
-                        <input
-                          type="file"
-                          onChange={handleChangeAvatar}
-                          className="hidden"
-                          id="imgUpload"
-                          data-max-size="5120"
-                          accept=".jpg, .png, .jpeg"
-                        />
-                        <FiPlus className="cursor-pointer icon-overlay hidden group-hover:flex absolute inset-0 m-auto text-white w-10 h-10" />
-                      </label>
-                    </div>
+                    {avatar ? (
+                      <img
+                        src={avatar}
+                        alt="avatar"
+                        className="rounded-full object-cover bg-no-repeat w-full h-full"
+                      />
+                    ) : (
+                      <div className="w-14 h-14 rounded-full bg-[#ccc] flex items-center justify-center cursor-pointer">
+                        <label
+                          htmlFor="imgUpload"
+                          className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                        >
+                          <input
+                            type="file"
+                            onChange={handleChangeAvatar}
+                            className="hidden"
+                            id="imgUpload"
+                            data-max-size="5120"
+                            accept=".jpg, .png, .jpeg"
+                          />
+                          <ImUserPlus size={20} />
+                        </label>
+                      </div>
+                    )}
                   </div>
                 </div>
                 <Divider sx={{ borderColor: "#ccc" }} />
@@ -546,9 +589,128 @@ const ProfilePage = () => {
                   <div className="flex flex-col">
                     <h1 className="text-ascent-2 font-medium">Tiểu sử</h1>
                     <TextField
-                      value={storie}
+                      value={bio}
                       placeholder="Viết tiểu sử"
-                      onChange={handleChangeStorie}
+                      onChange={handleChangeBio}
+                      multiline
+                      maxRows={5}
+                      variant="standard"
+                      fullWidth
+                      sx={{
+                        "& .MuiInput-root": {
+                          color: theme === "dark" ? "#fff" : "#000",
+                          "&:before": {
+                            display: "none",
+                          },
+                          "&:after": {
+                            display: "none",
+                          },
+                          ":hover:not(.Mui-focused)": {
+                            color: "",
+                            "&:before": {
+                              display: "none",
+                            },
+                          },
+                        },
+                        "& .MuiInputLabel-standard": {
+                          color: "rgb(89, 91, 100)",
+                          "&.Mui-focused": {
+                            display: "none",
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <Divider sx={{ borderColor: "#ccc" }} />
+
+                <div className="flex items-center w-full justify-between py-3">
+                  <div className="flex w-full flex-col">
+                    <h1 className="text-ascent-2 font-medium">Email</h1>
+                    <TextField
+                      value={email}
+                      onChange={handleChangeEmail}
+                      multiline
+                      maxRows={5}
+                      variant="standard"
+                      fullWidth
+                      sx={{
+                        "& .MuiInput-root": {
+                          color: theme === "dark" ? "#fff" : "#000",
+                          "&:before": {
+                            display: "none",
+                          },
+                          "&:after": {
+                            display: "none",
+                          },
+                          ":hover:not(.Mui-focused)": {
+                            color: "",
+                            "&:before": {
+                              display: "none",
+                            },
+                          },
+                        },
+                        "& .MuiInputLabel-standard": {
+                          color: "rgb(89, 91, 100)",
+                          "&.Mui-focused": {
+                            display: "none",
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <Divider sx={{ borderColor: "#ccc" }} />
+
+                <div className="flex items-center w-full justify-between py-3">
+                  <div className="flex w-full flex-col">
+                    <h1 className="text-ascent-2 font-medium">Address</h1>
+                    <TextField
+                      value={address}
+                      placeholder="Thêm địa chỉ"
+                      onChange={handleChangeAddress}
+                      multiline
+                      maxRows={5}
+                      variant="standard"
+                      fullWidth
+                      sx={{
+                        "& .MuiInput-root": {
+                          color: theme === "dark" ? "#fff" : "#000",
+                          "&:before": {
+                            display: "none",
+                          },
+                          "&:after": {
+                            display: "none",
+                          },
+                          ":hover:not(.Mui-focused)": {
+                            color: "",
+                            "&:before": {
+                              display: "none",
+                            },
+                          },
+                        },
+                        "& .MuiInputLabel-standard": {
+                          color: "rgb(89, 91, 100)",
+                          "&.Mui-focused": {
+                            display: "none",
+                          },
+                        },
+                      }}
+                    />
+                  </div>
+                </div>
+
+                <Divider sx={{ borderColor: "#ccc" }} />
+
+                <div className="flex items-center   w-full justify-between py-3">
+                  <div className="flex w-full flex-col">
+                    <h1 className="text-ascent-2 font-medium">Profession</h1>
+                    <TextField
+                      value={profession}
+                      placeholder="Thêm công việc"
+                      onChange={handleChangeProfession}
                       multiline
                       maxRows={5}
                       variant="standard"
@@ -583,12 +745,13 @@ const ProfilePage = () => {
                 <Button
                   title={"Xong"}
                   onClick={handleSubmitChange}
-                  containerStyles="w-full text-ascent-1 bg-bgColor flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-ascent-1"
+                  containerStyles="w-full bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-ascent-1"
                 />
               </div>
             </div>
           </DialogCustom>
         </div>
+
         <div className="absolute bottom-5 right-5">
           <Fab
             color="primary"

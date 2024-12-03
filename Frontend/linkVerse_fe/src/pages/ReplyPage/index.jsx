@@ -106,44 +106,36 @@ const ReplyPage = () => {
   };
 
   return (
-    <>
-      <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
-        <TopBar title={"Comment"} />
-        <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
-          {/* trai */}
-          <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
-            <ProfileCard />
-            <FriendCard />
-            <GroupCard />
-          </div>
-
-          {/* giua */}
-          <div className="flex-1 h-full bg-primary px-4 mx-2 pt-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+    <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
+      <TopBar title={"Comment"} />
+      <div className="w-full flex justify-center  gap-2 pb-10 lg:gap-4 h-full">
+        {/* giua */}
+        <div className="max-w-[680px] h-full bg-primary px-4 mx-2 pt-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+          <div className="flex flex-col gap-6">
+            {/* Post */}
             <div className="flex flex-col gap-6">
-              {/* Post */}
-              <div className="flex flex-col gap-6">
-                <PostCard
-                  key={0}
-                  post={posts[0]}
-                  user={user}
-                  deletePost={() => {}}
-                  likePost={() => {}}
-                />
-              </div>
-            </div>
-
-            {/* comment */}
-            {posts.map((post, i) => (
               <PostCard
-                isShowImage
-                key={i}
-                post={post}
+                key={0}
+                post={posts[0]}
                 user={user}
                 deletePost={() => {}}
                 likePost={() => {}}
               />
-            ))}
-            {/* <div className="flex gap-3 items-center mb-2">
+            </div>
+          </div>
+
+          {/* comment */}
+          {posts.map((post, i) => (
+            <PostCard
+              isShowImage
+              key={i}
+              post={post}
+              user={user}
+              deletePost={() => {}}
+              likePost={() => {}}
+            />
+          ))}
+          {/* <div className="flex gap-3 items-center mb-2">
               <Link to={"/friend"}>
                 <img
                   src={posts[0]?.userId?.profileUrl ?? BlankAvatar}
@@ -223,16 +215,9 @@ const ReplyPage = () => {
                 </div>
               </div>
             </div> */}
-          </div>
-
-          {/* phai */}
-          <div className="hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto">
-            <FriendRequest />
-            <FriendSuggest />
-          </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
