@@ -6,7 +6,7 @@ import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
 import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Button, CustomizeMenu, CustomizeModal, DialogCustom } from "..";
+import { Button, CustomizeMenu, DialogCustom } from "..";
 import {
   Divider,
   FormControl,
@@ -25,6 +25,8 @@ import { PiGifThin } from "react-icons/pi";
 import { FaPhotoVideo } from "react-icons/fa";
 import { BsImages } from "react-icons/bs";
 import { IoCloseCircle } from "react-icons/io5";
+import { FaRegTrashCan } from "react-icons/fa6";
+import { FaRegEdit } from "react-icons/fa";
 
 const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -136,6 +138,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
               {post?.userId?.location}
             </span>
           </div>
+
           <div
             className="flex justify-center items-center"
             onClick={(e) => e.stopPropagation()}
@@ -151,14 +154,13 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                 aria-haspopup="true"
                 aria-expanded={open ? "true" : undefined}
                 variant="contained"
-                disableElevation
               />
               <CustomizeMenu
                 handleClose={handleClose}
                 anchorEl={anchorEl}
                 open={open}
               >
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleClose}>
                   <div className="flex items-center justify-between w-full">
                     <span className={theme === "light" && "text-black"}>
                       Save
@@ -167,20 +169,40 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                   </div>
                 </MenuItem>
                 <StyledDivider />
-                <MenuItem onClick={handleClose} disableRipple>
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-red-600">Report</span>
-                    <TbMessageReport color="red" />
-                  </div>
-                </MenuItem>
-                <MenuItem onClick={handleClose} disableRipple>
-                  <div className="flex items-center justify-between w-full">
-                    <span className="text-red-600">Block</span>
-                    <ImUserMinus color="red" />
-                  </div>
-                </MenuItem>
+                {user?.id !== post?._id && (
+                  <>
+                    <MenuItem onClick={handleClose} disableRipple>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-red-600">Report</span>
+                        <TbMessageReport color="red" />
+                      </div>
+                    </MenuItem>
+                    <MenuItem onClick={handleClose} disableRipple>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-red-600">Block</span>
+                        <ImUserMinus color="red" />
+                      </div>
+                    </MenuItem>
+                  </>
+                )}
+                {user?.id === post?._id && (
+                  <>
+                    <MenuItem onClick={handleClose} disableRipple>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-red-600">Edit post</span>
+                        <FaRegEdit color="red" />
+                      </div>
+                    </MenuItem>
+                    <MenuItem onClick={handleClose} disableRipple>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-red-600">Delete</span>
+                        <FaRegTrashCan color="red" />
+                      </div>
+                    </MenuItem>
+                  </>
+                )}
                 <StyledDivider />
-                <MenuItem onClick={handleClose} disableRipple>
+                <MenuItem onClick={handleClose}>
                   <div className="flex items-center justify-between w-full">
                     <span className={theme === "light" && "text-black"}>
                       Copy address
@@ -225,11 +247,10 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
               alt="post image"
               className="w-full mt-2 rounded-lg cursor-pointer"
             />
-            <CustomizeModal
+            <DialogCustom
               imageSrc={imagePreview}
-              open={openImagePreview}
-              handleOpen={handleClickImage}
-              handleClose={handleClosePreview}
+              isOpen={openImagePreview}
+              handleCloseDiaLogAdd={handleClosePreview}
             />
           </>
         )}
@@ -375,11 +396,10 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                       alt="post image"
                       className="w-full mt-2 rounded-lg cursor-pointer"
                     />
-                    <CustomizeModal
+                    <DialogCustom
                       imageSrc={imagePreview}
-                      open={openImagePreview}
-                      handleOpen={handleClickImage}
-                      handleClose={handleClosePreview}
+                      isOpen={openImagePreview}
+                      handleCloseDiaLogAdd={handleClosePreview}
                     />
                   </>
                 )}

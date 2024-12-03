@@ -2,9 +2,12 @@ import React from "react";
 import { GoDotFill } from "react-icons/go";
 import { messages } from "~/assets/mockData/data";
 
-const Message = ({ name, status, message, avatar }) => {
+const Message = ({ name, status, message, avatar, onClick }) => {
   return (
-    <div className="w-full p-3 flex justify-between bg-primary border-1 border-borderNewFeed cursor-pointer rounded-3xl">
+    <div
+      onClick={onClick}
+      className=" w-full p-3 flex justify-between bg-primary border-1 border-borderNewFeed cursor-pointer rounded-3xl"
+    >
       <div className="w-full flex items-center gap-x-2">
         <div className="relative">
           <img

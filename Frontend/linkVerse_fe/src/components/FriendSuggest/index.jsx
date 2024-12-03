@@ -9,7 +9,7 @@ const FriendSuggest = () => {
 
   return (
     <div className="w-full bg-primary shadow-newFeed rounded-xl border-x-[0.8px] border-y-[0.8px] border-borderNewFeed px-5 py-5">
-      <div className="flex items-center justify-between text-lg text-ascent-1 border-[#66666645] border-b">
+      <div className="flex items-center justify-between text-lg pb-2 text-ascent-1 border-[#66666645] border-b">
         <span>{t("Bạn bè đề xuất")}</span>
       </div>
       <div className="w-full flex flex-col gap-4 pt-4">

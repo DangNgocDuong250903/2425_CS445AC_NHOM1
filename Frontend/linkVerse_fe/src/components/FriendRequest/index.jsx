@@ -8,7 +8,7 @@ const FriendRequest = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="w-full bg-primary shadow-newFeed rounded-xl px-6 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+    <div className="w-full bg-primary shadow-newFeed rounded-xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]">
         <span>{t("Lời mời kết bạn")}</span>
         <span>{requests?.length}</span>
@@ -42,11 +42,11 @@ const FriendRequest = () => {
             <div className="flex gap-1 w-full h-full items-center justify-end">
               <Button
                 title={t("Chấp nhận")}
-                containerStyles="bg-[#0444A4] text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-2xl"
+                containerStyles="bg-[#0444A4] text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-xl"
               />
               <Button
                 title={t("Từ chối")}
-                containerStyles="bg-bgColor border border-borderNewFeed text-xs text-ascent-1 px-1.5 py-1 rounded-2xl"
+                containerStyles="bg-bgColor border border-borderNewFeed text-xs text-ascent-1 px-1.5 py-1 rounded-xl"
               />
             </div>
           </div>

@@ -111,50 +111,8 @@ const ProfileCard = () => {
           </span>
         </div>
       </div>
-      {/* Chat */}
-      {/* <div className="flex flex-col w-full justify-between items-center py-2">
-        <div
-          onClick={() => navigate("/chat")}
-          className="w-full flex justify-between items-center py-3 rounded-2xl hover:bg-slate-50 cursor-pointer"
-        >
-          <p className="text-lg text-ascent-1 font-semibold">Chat</p>
-          <IoChatboxEllipsesOutline className="text-xl text-ascent-1 cursor-pointer" />
-        </div>
-
-        <StyledAcordion className="hover:bg-slate-50 w-full">
-          <AccordionSummary
-            expandIcon={<FiBookmark />}
-            aria-controls="panel2-content"
-            id="panel2-header"
-          >
-            Save
-          </AccordionSummary>
-          <AccordionDetails>
-            <div className="flex flex-col">
-              <h1>test</h1>
-              <h1>test</h1>
-            </div>
-          </AccordionDetails>
-        </StyledAcordion>
-      </div> */}
-      {/* <div className="flex flex-col w-full py-2 gap-y-2">
-        <div
-          onClick={() => navigate("/chat")}
-          className="w-full flex justify-between items-center p-2 py-3 rounded-2xl hover:bg-slate-50 cursor-pointer"
-        >
-          <p className="text-lg text-ascent-1 font-semibold">Chat</p>
-          <IoChatboxEllipsesOutline className="text-xl text-ascent-1 cursor-pointer" />
-        </div>
-        <div className="w-full flex justify-between items-center p-2 py-3 rounded-2xl hover:bg-slate-50 cursor-pointer">
-          <p className="text-lg text-ascent-1 font-semibold">Save</p>
-          <FiBookmark
-            className="text-xl text-ascent-1 cursor-pointer"
-            onClick={() => navigate("/chat")}
-          />
-        </div>
-      </div> */}
       {/* Social profile */}
-      <div className="w-full flex flex-col gap-4 py-4 pb-6 border-t border-[#66666645]">
+      <div className="w-full flex flex-col gap-4 py-4 pb-6">
         <p className="text-ascent-1 text-lg font-semibold">
           {t("Mạng xã hội")}
         </p>

@@ -11,6 +11,7 @@ const DialogCustom = ({
   children,
   className,
   theme,
+  imageSrc,
   handleCloseDiaLogAdd,
 }) => {
   return (
@@ -27,7 +28,10 @@ const DialogCustom = ({
         },
       }}
     >
-      <div className={className}>{children}</div>
+      <div className={className}>
+        {imageSrc && <img src={imageSrc} />}
+        {children}
+      </div>
     </Dialog>
   );
 };

@@ -6,7 +6,6 @@ import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "./redux/Slices/userSlice";
-import useMediaQuery from "@mui/material/useMediaQuery";
 
 function App() {
   const { theme } = useSelector((state) => state.theme);

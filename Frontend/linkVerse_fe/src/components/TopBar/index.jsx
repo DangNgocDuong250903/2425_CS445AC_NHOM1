@@ -1,7 +1,14 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BsMoon, BsSunFill } from "react-icons/bs";
-import { Button, PopperCustom, TextInput } from "~/components/index";
+import {
+  Apps,
+  Button,
+  Chat,
+  Notifications,
+  PopperCustom,
+  TextInput,
+} from "~/components/index";
 import { useTranslation } from "react-i18next";
 import i18n from "~/utils/i18n/i18n";
 import { Badge, MenuItem, Select, useColorScheme } from "@mui/material";
@@ -15,8 +22,9 @@ import { resetUser } from "~/redux/Slices/userSlice";
 import { IoIosSearch } from "react-icons/io";
 import { MdApps } from "react-icons/md";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { FaArrowLeft } from "react-icons/fa";
 
-const TopBar = ({ title }) => {
+const TopBar = ({ title, iconBack }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const user = useSelector((state) => state.user);
@@ -70,7 +78,7 @@ const TopBar = ({ title }) => {
   return (
     <div className="header w-full flex items-center justify-between pt-2 pb-2 px-1 bg-bgColor ">
       {/* 1 */}
-      <div className=" flex-1 flex w-[400px] justify-start h-full gap-x-5">
+      <div className="w-1/4 flex justify-start h-full gap-x-5">
         <Link to="/" className="flex gap-2 items-center">
           <div className="p-1 md:p-2  rounded text-white">
             <svg
@@ -113,228 +121,28 @@ const TopBar = ({ title }) => {
         </div>
       </div>
       {/* 2 */}
-      <div className="flex  items-center justify-center w-fit h-full my-auto ">
-        <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
-          {t(title)}
-        </h1>
+      <div className="flex flex-1 px-8 items-center justify-center h-full my-auto ">
+        <div className="flex justify-between w-full">
+          {iconBack ? (
+            <div
+              onClick={() => navigate("/")}
+              className="w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:scale-110 cursor-pointer transition-transform border-1 border-borderNewFeed shadow-newFeed"
+            >
+              <FaArrowLeft size={12} />
+            </div>
+          ) : (
+            <div />
+          )}
+          <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
+            {t(title)}
+          </h1>
+          <div />
+        </div>
       </div>
       {/* 3 */}
-      <div className="flex-1 w-full flex gap-4 items-center text-ascent-1 text-base md:text-xl justify-end">
+      <div className="w-1/4 flex gap-4 items-center text-ascent-1 text-base md:text-xl justify-end">
         {/* notification */}
-        <div className="hidden lg:flex p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
-          <Badge variant="dot" color="warning">
-            <svg
-              fill={
-                popoverOpen
-                  ? theme === "dark"
-                    ? "#fff"
-                    : "#000"
-                  : theme === "dark"
-                  ? "#000"
-                  : "#fff"
-              }
-              onClick={handleClick}
-              className="cursor-pointer"
-              aria-describedby={id}
-              width={23}
-              height={23}
-              viewBox="0 0 512 512"
-              xmlns="http://www.w3.org/2000/svg"
-              stroke="#000"
-            >
-              <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
-              <g
-                id="SVGRepo_tracerCarrier"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                stroke={theme === "dark" ? "#fff" : "#000"}
-                strokeWidth="50"
-              >
-                <path d="M256,480a80.09,80.09,0,0,0,73.3-48H182.7A80.09,80.09,0,0,0,256,480Z"></path>
-                <path d="M400,288V227.47C400,157,372.64,95.61,304,80l-8-48H216l-8,48c-68.88,15.61-96,76.76-96,147.47V288L64,352v48H448V352Z"></path>
-              </g>
-              <g id="SVGRepo_iconCarrier">
-                <path d="M256,480a80.09,80.09,0,0,0,73.3-48H182.7A80.09,80.09,0,0,0,256,480Z"></path>
-                <path d="M400,288V227.47C400,157,372.64,95.61,304,80l-8-48H216l-8,48c-68.88,15.61-96,76.76-96,147.47V288L64,352v48H448V352Z"></path>
-              </g>
-            </svg>
-            <PopperCustom open={open} id={id} anchorEl={anchorEl}>
-              <div
-                class={`relative w-[380px] overflow-hidden h-[600px] mt-3 rounded-2xl p-5 border-1 ${
-                  theme === "dark"
-                    ? "border-[rgb(45,45,45)]"
-                    : "border-[rgb(213,213,213)]"
-                }  ${
-                  theme === "dark"
-                    ? "bg-[rgb(24,24,24)]"
-                    : "bg-[rgb(255,255,255)]"
-                }`}
-              >
-                {/* header */}
-                <div
-                  className={`${
-                    theme === "dark" ? "text-white" : "text-black"
-                  } pb-5 text-2xl font-semibold`}
-                >
-                  <h1>Thông báo</h1>
-                </div>
-
-                <div className="flex flex-col w-full h-full gap-4 overflow-y-auto p-2">
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex justify-between items-center gap-2">
-                    <img
-                      src="https://img.a.transfermarkt.technology/portrait/big/148455-1727337594.jpg?lm=1"
-                      alt=""
-                      className="w-14 h-14 rounded-full object-cover bg-no-repeat"
-                    />
-                    <div className="flex-1">
-                      <p className="text-ascent-2">
-                        Lorem ipsum dolor sit amet, consectetur adipisicing
-                        elit.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <span className="text-white">Xem thêm</span>
-                {/* footer */}
-                {/* <div className="py-2">
-                  <span className="text-white">Xem thêm</span>
-                </div> */}
-              </div>
-            </PopperCustom>
-          </Badge>
-        </div>
-
+        <Notifications />
         {/* change language */}
         {/* <div className="w-10 h-10 flex items-center justify-center">
           <Select
@@ -373,30 +181,28 @@ const TopBar = ({ title }) => {
           {theme === "dark" ? <BsMoon /> : <BsSunFill />}
         </button> */}
         {/* chat */}
-        <div
-          onClick={() => navigate("/chat")}
-          className="p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform"
-        >
-          <IoChatboxEllipsesOutline size={25} />
-        </div>
+        <Chat />
         {/* app */}
-        <div className="p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
-          <MdApps size={28} className="cursor-pointer" />
-        </div>
+        <Apps />
         {/* log out + log in */}
         <div>
           {user?.access_token ? (
             <Button
               onClick={handleLogOut}
               title={t("Đăng xuất")}
-              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
+              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-xl border-borderNewFeed"
             />
           ) : (
-            <Button
-              onClick={() => navigate("/login")}
-              title={t("Đăng nhập")}
-              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
-            />
+            <div className="relative inline-flex  group">
+              <div className="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100 group-hover:-inset-1 group-hover:duration-200 animate-tilt"></div>
+              <span
+                onClick={() => navigate("/login")}
+                className="relative inline-flex items-center justify-center px-4 md:px-6 py-1 md:py-2 text-sm text-white transition-all duration-200 bg-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
+                role="button"
+              >
+                {t("Đăng nhập")}
+              </span>
+            </div>
           )}
         </div>
       </div>

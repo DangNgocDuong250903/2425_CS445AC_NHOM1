@@ -9,7 +9,8 @@ import GroupPage from "./GroupPage";
 import FriendPage from "./FriendPage";
 import ChatPage from "./ChatPage"
 import ReplyPage from "./ReplyPage"
+import SettingPage from "./SettingPage";
 
 export {
-    ChatPage, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage, FriendPage
+    ChatPage, SettingPage, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ResetPasswordPage, ProfilePage, FriendPage
 }

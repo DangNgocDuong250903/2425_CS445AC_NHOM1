@@ -22,6 +22,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useSelector } from "react-redux";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
+import { useNavigate } from "react-router-dom";
 
 const HomePage = () => {
   const [file, setFile] = useState(null);
@@ -77,6 +78,21 @@ const HomePage = () => {
     setIsOpenDialogAdd(false);
   };
 
+  //welcome
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem("access_token");
+    if (!isLoggedIn) {
+      setShowModal(true);
+    }
+  }, []);
+
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
   return (
     <>
       <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
@@ -123,7 +139,7 @@ const HomePage = () => {
                     />
                     <span
                       onClick={() => setIsOpenDialogAdd(true)}
-                      className="text-[#B5B5B5] text-base cursor-pointer opacity-100  hover:opacity-[0.1] "
+                      className="text-ascent-2 text-sm cursor-pointer opacity-100  hover:opacity-[0.1] "
                     >
                       Có gì mới?
                     </span>
@@ -367,6 +383,30 @@ const HomePage = () => {
                   />
                 </div>
               </div>
+            </div>
+          </DialogCustom>
+
+          {/* modal welcome */}
+          <DialogCustom
+            isOpen={showModal}
+            handleCloseDiaLogAdd={handleCloseModal}
+          >
+            <div className="w-[520px] h-[370px] p-5 bg-primary gap-y-5 flex-col rounded-2xl flex items-center justify-center">
+              <div className="px-5">
+                <h1 className="text-ascent-1 text-center font-black">
+                  Welcome to LinkVerse - Your Social Universe Awaits!
+                </h1>
+              </div>
+              <p className="text-center">
+                Join LinkVerse today to connect, share, and explore endless
+                possibilities with your friends and the community. Log in now
+                and be part of the conversation!
+              </p>
+              <Button
+                title="Login"
+                onClick={() => navigate("/login")}
+                containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-xl border-borderNewFeed"
+              />
             </div>
           </DialogCustom>
         </div>

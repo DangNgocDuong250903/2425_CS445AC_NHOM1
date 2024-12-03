@@ -107,7 +107,7 @@ const ReplyPage = () => {
 
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
-      <TopBar title={"Comment"} />
+      <TopBar title={"Comment"} iconBack />
       <div className="w-full flex justify-center  gap-2 pb-10 lg:gap-4 h-full">
         {/* giua */}
         <div className="max-w-[680px] h-full bg-primary px-4 mx-2 pt-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
@@ -173,7 +173,6 @@ const ReplyPage = () => {
                       aria-haspopup="true"
                       aria-expanded={open ? "true" : undefined}
                       variant="contained"
-                      disableElevation
                     />
                     <CustomizeMenu
                       handleClose={handleClose}
