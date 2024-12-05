@@ -131,12 +131,12 @@ const TopBar = ({ title, iconBack }) => {
               <FaArrowLeft size={12} />
             </div>
           ) : (
-            <div />
+            <div className="w-6 h-6"></div>
           )}
           <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
             {t(title)}
           </h1>
-          <div />
+          <div className="w-6 h-6" />
         </div>
       </div>
       {/* 3 */}
@@ -190,7 +190,7 @@ const TopBar = ({ title, iconBack }) => {
             <Button
               onClick={handleLogOut}
               title={t("Đăng xuất")}
-              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-xl border-borderNewFeed"
+              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
             />
           ) : (
             <div className="relative inline-flex  group">

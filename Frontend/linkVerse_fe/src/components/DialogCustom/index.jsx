@@ -1,38 +1,46 @@
 import * as React from "react";
 import Dialog from "@mui/material/Dialog";
 import { Fade } from "@mui/material";
+import styled from "@emotion/styled";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Fade direction="up" ref={ref} {...props} />;
 });
 
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+  "& .MuiPaper-root": {
+    backgroundColor: theme.colorSchemes.light.primary.main,
+    ...theme.applyStyles("dark", {
+      backgroundColor: theme.colorSchemes.dark.primary.main,
+    }),
+    "& .MuiDialog-paper": {
+      borderRadius: "13px",
+      borderWidth: "0.1px",
+      borderColor: theme === "dark" ? "rgb(45,45,45)" : "rgb(213,213,213)",
+    },
+  },
+}));
+
 const DialogCustom = ({
   isOpen,
   children,
-  className,
+  classNames,
   theme,
   imageSrc,
   handleCloseDiaLogAdd,
 }) => {
   return (
-    <Dialog
+    <StyledDialog
       TransitionComponent={Transition}
       onClose={handleCloseDiaLogAdd}
       open={isOpen}
       fullWidth
-      sx={{
-        "& .MuiDialog-paper": {
-          borderRadius: "13px",
-          borderWidth: "0.1px",
-          borderColor: theme === "dark" ? "rgb(45,45,45)" : "rgb(213,213,213)",
-        },
-      }}
     >
-      <div className={className}>
-        {imageSrc && <img src={imageSrc} />}
-        {children}
-      </div>
-    </Dialog>
+      {/* <div className={classNames}> */}
+      {imageSrc && <img src={imageSrc} />}
+      {children}
+      {/* </div> */}
+    </StyledDialog>
   );
 };
 

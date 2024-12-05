@@ -71,11 +71,18 @@ const RegisterPage = () => {
                 iconRight={
                   errors.firstName ? <FaCircleExclamation color="red" /> : ""
                 }
-                toolTip={errors.firstName ? errors.firstName?.message : ""}
+                toolTip={errors.firstName ? errors.firstName.message : ""}
                 register={register("firstName", {
-                  required: "First Name is required!",
+                  required: "First name is required!",
+                  minLength: {
+                    value: 1,
+                    message: "First name must be at least 1 character long!",
+                  },
+                  maxLength: {
+                    value: 50,
+                    message: "First name cannot exceed 50 characters",
+                  },
                 })}
-                // error={errors.firstName ? errors.firstName?.message : ""}
               />
 
               <TextInput
@@ -92,6 +99,14 @@ const RegisterPage = () => {
                 toolTip={errors.lastName ? errors.lastName?.message : ""}
                 register={register("lastName", {
                   required: "Last Name is required",
+                  minLength: {
+                    value: 1,
+                    message: "Last name must be at least 1 character long!",
+                  },
+                  maxLength: {
+                    value: 50,
+                    message: "Last name cannot exceed 50 characters",
+                  },
                 })}
                 // error={errors.lastName ? errors.lastName?.message : ""}
               />
@@ -176,6 +191,10 @@ const RegisterPage = () => {
               type="email"
               register={register("email", {
                 required: t("Địa chỉ email là bắt buộc"),
+                validate: {
+                  noSpaces: (value) =>
+                    !/\s/.test(value) || "Email must not contain spaces.",
+                },
               })}
               styles={`w-full h-10 ${errors.email ? "border-red-600" : ""}`}
               iconRight={
@@ -210,6 +229,24 @@ const RegisterPage = () => {
               toolTip={errors.password ? errors.password?.message : ""}
               register={register("password", {
                 required: t("Mật khẩu là bắt buộc"),
+                minLength: {
+                  value: 8,
+                  message: "Password must be at least 8 character long!",
+                },
+                maxLength: {
+                  value: 64,
+                  message: "Password cannot exceed 65 characters",
+                },
+                pattern: {
+                  value:
+                    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,64}$/,
+                  message:
+                    "Password must include uppercase, lowercase, a number, and a special character.",
+                },
+                validate: {
+                  noSpaces: (value) =>
+                    !/\s/.test(value) || "Password must not contain spaces.",
+                },
               })}
             />
 

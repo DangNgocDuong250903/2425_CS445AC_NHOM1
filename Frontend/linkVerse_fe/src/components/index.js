@@ -16,8 +16,10 @@ import CustomizeMenu from "./CustomizeMenu"
 import Apps from "./Apps"
 import Notifications from "./Notifications"
 import Chat from "./Chat"
+import ProtectedRoute from "./ProtectedRoute"
 
 export {
+    ProtectedRoute,
     TopBar,
     Button,
     TextInput,

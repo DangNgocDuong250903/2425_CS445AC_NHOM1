@@ -2,22 +2,22 @@ import React, { useState } from "react";
 import { MdApps } from "react-icons/md";
 import { CustomizeMenu } from "..";
 import { Divider, MenuItem, useColorScheme } from "@mui/material";
-import { GoBellSlash } from "react-icons/go";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
-
-import { FaRegEdit } from "react-icons/fa";
 import { FaRegTrashCan } from "react-icons/fa6";
-import { RiAttachment2 } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { setTheme } from "~/redux/Slices/themeSlice";
+import { FiBookmark } from "react-icons/fi";
 
 const Apps = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
   const StyledDivider = styled(Divider)(({ theme }) => ({
+    width: "220px",
     borderColor: theme.colorSchemes.light.border,
     margin: `${theme.spacing(0.5)} 0`,
+
     ...theme.applyStyles("dark", {
       borderColor: theme.colorSchemes.dark.border,
     }),
@@ -57,18 +57,32 @@ const Apps = () => {
         variant="contained"
       />
       <CustomizeMenu handleClose={handleClose} anchorEl={anchorEl} open={open}>
-        <MenuItem onClick={() => navigate("/settings")}>
-          <div className="flex items-center justify-between w-full">
-            <span className={theme === "light" && "text-black"}>Settings</span>
+        {user?.access_token && (
+          <div>
+            <MenuItem onClick={() => navigate("/settings")}>
+              <div className="flex items-center justify-between w-full">
+                <span className={theme === "light" && "text-black"}>
+                  Settings
+                </span>
+              </div>
+            </MenuItem>
+            <MenuItem onClick={() => navigate("/saveds")}>
+              <div className="flex items-center justify-between w-full">
+                <span className={theme === "light" && "text-black"}>
+                  Saveds
+                </span>
+                <FiBookmark color="black" />
+              </div>
+            </MenuItem>
           </div>
-        </MenuItem>
+        )}
         <MenuItem>
           <div className="flex items-center justify-between w-full">
             <span className={theme === "light" && "text-black"}>Dark mode</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"
-                checked={isChecked}
+                checked={theme === "dark" ? true : false}
                 onChange={handleToggle}
                 className="sr-only peer"
               />
@@ -76,28 +90,18 @@ const Apps = () => {
             </label>
           </div>
         </MenuItem>
-        <StyledDivider />
-        <MenuItem onClick={handleClose} disableRipple>
-          <div className="flex items-center justify-between w-full">
-            <span className="text-red-600">Edit post</span>
-            <FaRegEdit color="red" />
+
+        {user?.access_token && (
+          <div>
+            <StyledDivider />
+            <MenuItem onClick={handleClose} disableRipple>
+              <div className="flex items-center justify-between w-full">
+                <span className="text-red-600">Log out</span>
+                <FaRegTrashCan color="red" />
+              </div>
+            </MenuItem>
           </div>
-        </MenuItem>
-        <MenuItem onClick={handleClose} disableRipple>
-          <div className="flex items-center justify-between w-full">
-            <span className="text-red-600">Delete</span>
-            <FaRegTrashCan color="red" />
-          </div>
-        </MenuItem>
-        <StyledDivider />
-        <MenuItem onClick={handleClose}>
-          <div className="flex items-center justify-between w-full">
-            <span className={theme === "light" && "text-black"}>
-              Copy address
-            </span>
-            <RiAttachment2 color={theme === "light" && "black"} />
-          </div>
-        </MenuItem>
+        )}
       </CustomizeMenu>
     </div>
   );

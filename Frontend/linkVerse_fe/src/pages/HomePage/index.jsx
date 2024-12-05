@@ -100,9 +100,13 @@ const HomePage = () => {
         <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
           {/* trai */}
           <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
-            <ProfileCard />
-            <FriendCard />
-            <GroupCard />
+            {user?.access_token && (
+              <div>
+                <ProfileCard />
+                <FriendCard />
+                <GroupCard />
+              </div>
+            )}
           </div>
 
           {/* giua */}
@@ -133,7 +137,7 @@ const HomePage = () => {
                 <div className="w-full flex items-center justify-between gap-3 py-4 px-1 border-b border-[#66666645]">
                   <div className="flex items-center gap-4">
                     <img
-                      src={user?.profileUrl ?? BlankAvatar}
+                      src={user?.avatar || BlankAvatar}
                       alt="User Image"
                       className="w-14 h-14 rounded-full object-cover"
                     />
@@ -169,8 +173,12 @@ const HomePage = () => {
 
           {/* phai */}
           <div className="hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto">
-            <FriendRequest />
-            <FriendSuggest />
+            {user?.access_token && (
+              <div>
+                <FriendRequest />
+                <FriendSuggest />
+              </div>
+            )}
           </div>
 
           {/* post */}
@@ -391,22 +399,30 @@ const HomePage = () => {
             isOpen={showModal}
             handleCloseDiaLogAdd={handleCloseModal}
           >
-            <div className="w-[520px] h-[370px] p-5 bg-primary gap-y-5 flex-col rounded-2xl flex items-center justify-center">
-              <div className="px-5">
-                <h1 className="text-ascent-1 text-center font-black">
-                  Welcome to LinkVerse - Your Social Universe Awaits!
+            <div className="w-full px-5 py-16 text-center gap-y-7 flex-col rounded-2xl flex items-center justify-center">
+              <div>
+                <h1 className="text-ascent-1 px-3 tracking-tight text-3xl font-extrabold">
+                  Welcome to LinkVerse
+                </h1>
+                <h1 className="text-ascent-1 px-3 tracking-tight text-3xl font-extrabold">
+                  Your Social Universe Awaits!
                 </h1>
               </div>
-              <p className="text-center">
-                Join LinkVerse today to connect, share, and explore endless
-                possibilities with your friends and the community. Log in now
-                and be part of the conversation!
-              </p>
-              <Button
-                title="Login"
+              <div>
+                <p className="text-center px-8">
+                  Join LinkVerse today to connect, share, and explore endless
+                  possibilities with your friends and the community.
+                </p>
+                <span>Log in now and be part of the conversation!</span>
+              </div>
+              <button
+                type="button"
                 onClick={() => navigate("/login")}
-                containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-xl border-borderNewFeed"
-              />
+                class="text-white bg-[#2557D6] hover:bg-[#2557D6]/90 focus:ring-4 focus:ring-[#2557D6]/50 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center gap-x-2 justify-center dark:focus:ring-[#2557D6]/50 me-2 mb-2"
+              >
+                <img src="/logoHeader.svg" alt="logo" width={20} height={20} />
+                Continue with LinkVerse
+              </button>
             </div>
           </DialogCustom>
         </div>

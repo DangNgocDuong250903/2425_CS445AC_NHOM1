@@ -1,7 +1,11 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { TopBar } from "~/components";
+import { Button, DialogCustom, TopBar } from "~/components";
+import { RxLockClosed } from "react-icons/rx";
+import { RiEyeOffLine } from "react-icons/ri";
+import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import { IoIosArrowForward } from "react-icons/io";
 
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -32,6 +36,13 @@ const SettingPage = () => {
       "aria-controls": `simple-tabpanel-${index}`,
     };
   };
+
+  //delete account
+  const [isOpenDelete, setIsOpenDelete] = useState(false);
+  const hanleCloseDelete = () => {
+    setIsOpenDelete(false);
+  };
+
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={"Settings"} iconBack />
@@ -66,12 +77,131 @@ const SettingPage = () => {
             </Box>
             {/* 1 */}
             <CustomTabPanel value={value} index={0}>
-              <div className="w-full h-full"></div>
+              <div className="w-full h-ful gap-y-5 py-5 flex-col flex justify-center items-center">
+                {/* 1 */}
+                <div className="w-full py-3 px-2 h-full flex justify-between items-center">
+                  <div className="flex items-center gap-x-2">
+                    <RxLockClosed size={20} />
+                    <h1 className="text-ascent-1">Trang cá nhân riêng tư</h1>
+                  </div>
+                  <div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        // checked={theme === "dark" ? true : false}
+                        // onChange={handleToggle}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0444A4] hover:peer-checked:bg-[#0444A4]"></div>
+                    </label>
+                  </div>
+                </div>
+
+                {/* 2 */}
+                <div className="w-full py-3 px-2 h-full flex justify-between items-center">
+                  <div className="flex items-center gap-x-2">
+                    <RiEyeOffLine size={20} />
+                    <h1 className="text-ascent-1">Trạng thái hoạt động</h1>
+                  </div>
+                  <div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        // checked={theme === "dark" ? true : false}
+                        // onChange={handleToggle}
+                        className="sr-only peer"
+                      />
+                      <div className="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0444A4] hover:peer-checked:bg-[#0444A4]"></div>
+                    </label>
+                  </div>
+                </div>
+              </div>
             </CustomTabPanel>
             {/* 2 */}
-            <CustomTabPanel value={value} index={1}></CustomTabPanel>
+            <CustomTabPanel value={value} index={1}>
+              <div className="w-full h-ful gap-y-5 py-5 flex-col flex justify-center items-center">
+                {/* 1 */}
+                <div
+                  onClick={() => setIsOpenDelete(true)}
+                  className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer"
+                >
+                  <h1 className="text-ascent-1">
+                    Vô hiệu hóa hoặc xóa tài khoản
+                  </h1>
+                  <IoIosArrowForward size={20} className="cursor-pointer" />
+                </div>
+                <DialogCustom
+                  isOpen={isOpenDelete}
+                  handleCloseDiaLogAdd={hanleCloseDelete}
+                >
+                  <div className="w-full h-full p-3 bg-pink-50 flex flex-col">
+                    {/* header */}
+                    <div className="w-full flex items-center justify-center">
+                      Vô hiệu hóa hoặc xóa
+                    </div>
+                    {/* body */}
+                    <div className="h-32 w-full"></div>
+                    {/* footer */}
+                    <div className="w-full flex flex-col gap-y-2 items-center justify-between">
+                      <Button
+                        title="Vô hiệu hóa tài khoản"
+                        containerStyles="bg-bgColor w-full flex items-center justify-center py-3 rounded-xl font-semibold"
+                      />
+                      <Button
+                        title="Xóa tài khoản"
+                        containerStyles="py-3 rounded-xl font-semibold w-full flex items-center justify-center"
+                      />
+                    </div>
+                  </div>
+                </DialogCustom>
+              </div>
+            </CustomTabPanel>
             {/* 3 */}
-            <CustomTabPanel value={value} index={2}></CustomTabPanel>
+            <CustomTabPanel value={value} index={2}>
+              <div className="w-full h-ful gap-y-5 py-5 flex-col flex justify-center items-center">
+                {/* 1 */}
+                <a
+                  href="https://vietnam.un.org/vi"
+                  target="_blank"
+                  className="w-full py-3 px-2 h-full flex justify-between items-center"
+                >
+                  <h1 className="text-ascent-1">Trung tâm trợ giúp</h1>
+                  <FaArrowUpRightFromSquare size={20} />
+                </a>
+
+                {/* 2 */}
+                <a
+                  href="https://vietnam.un.org/vi"
+                  target="_blank"
+                  className="w-full py-3 px-2 h-full flex justify-between items-center"
+                >
+                  <h1 className="text-ascent-1">
+                    Chính sách và quyền riêng tư của LinkVerse
+                  </h1>
+                  <FaArrowUpRightFromSquare size={20} />
+                </a>
+                {/* 3 */}
+                <a
+                  href="https://vietnam.un.org/vi"
+                  target="_blank"
+                  className="w-full py-3 px-2 h-full flex justify-between items-center"
+                >
+                  <h1 className="text-ascent-1">
+                    Điều khoản sử dụng của LinkVerse
+                  </h1>
+                  <FaArrowUpRightFromSquare size={20} />
+                </a>
+                {/* 4 */}
+                <a
+                  href="https://vietnam.un.org/vi"
+                  target="_blank"
+                  className="w-full py-3 px-2 h-full flex justify-between items-center"
+                >
+                  <h1 className="text-ascent-1">Chính sách cookies</h1>
+                  <FaArrowUpRightFromSquare size={20} />
+                </a>
+              </div>
+            </CustomTabPanel>
           </Box>
         </div>
       </div>

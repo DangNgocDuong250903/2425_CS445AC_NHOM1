@@ -35,6 +35,19 @@ export const logout = async (id, token) => {
     return res.data;
 };
 
+export const update = async (data) => {
+    const { id, token } = data
+    const res = await axiosJWT.patch(`${import.meta.env.VITE_API_URL_BACKEND}/user/${id}`, data, {
+        headers: {
+            "x-api-key": "pass",
+            "x-client-id": id,
+            "authorization": token
+        }
+    })
+
+    return res.data
+}
+
 export const getDetailUser = async (id, token) => {
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/user/get-detail/${id}`, {
         headers: {

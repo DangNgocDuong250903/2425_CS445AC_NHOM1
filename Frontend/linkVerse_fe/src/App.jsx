@@ -6,6 +6,8 @@ import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "./redux/Slices/userSlice";
+import { ProtectedRoute } from "./components";
+import { HomePage, LoginPage, RegisterPage, ResetPasswordPage } from "./pages";
 
 function App() {
   const { theme } = useSelector((state) => state.theme);
@@ -60,19 +62,46 @@ function App() {
     }
   };
 
+  //protected route
+  // const isLoggedIn = !!localStorage.getItem("access_token");
+
   return (
+    // <div>
+    //   <div data-theme={theme} className="w-full min-h-[100vh] antialiased">
+    //     <Routes>
+    //       {route.map((route, i) => {
+    //         const Page = route.element;
+    //         const isCheckAuth =
+    //           !route.isPrivate || user.roles.includes("ADMIN");
+    //         return (
+    //           <Route
+    //             key={i}
+    //             element={<Page />}
+    //             path={isCheckAuth ? route.path : ""}
+    //           />
+    //         );
+    //       })}
+    //     </Routes>
+    //   </div>
+    // </div>
     <div>
       <div data-theme={theme} className="w-full min-h-[100vh] antialiased">
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/" element={<HomePage />} />
           {route.map((route, i) => {
             const Page = route.element;
-            const isCheckAuth =
-              !route.isPrivate || user.roles.includes("ADMIN");
             return (
               <Route
                 key={i}
-                element={<Page />}
-                path={isCheckAuth ? route.path : ""}
+                path={route.path}
+                element={
+                  <ProtectedRoute>
+                    <Page />
+                  </ProtectedRoute>
+                }
               />
             );
           })}

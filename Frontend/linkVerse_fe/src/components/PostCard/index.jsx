@@ -170,7 +170,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                 </MenuItem>
                 <StyledDivider />
                 {user?.id !== post?._id && (
-                  <>
+                  <div>
                     <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
                         <span className="text-red-600">Report</span>
@@ -183,10 +183,10 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                         <ImUserMinus color="red" />
                       </div>
                     </MenuItem>
-                  </>
+                  </div>
                 )}
                 {user?.id === post?._id && (
-                  <>
+                  <div>
                     <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
                         <span className="text-red-600">Edit post</span>
@@ -199,7 +199,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                         <FaRegTrashCan color="red" />
                       </div>
                     </MenuItem>
-                  </>
+                  </div>
                 )}
                 <StyledDivider />
                 <MenuItem onClick={handleClose}>

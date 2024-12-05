@@ -9,38 +9,16 @@ import {
 } from "react-icons/bs";
 import { CiLocationOn } from "react-icons/ci";
 import moment from "moment";
-import { FiBookmark } from "react-icons/fi";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useTranslation } from "react-i18next";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { useSelector } from "react-redux";
-import { Accordion, AccordionDetails, AccordionSummary } from "@mui/material";
-import styled from "@emotion/styled";
 
 const ProfileCard = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const user = useSelector((state) => state?.user);
 
-  //Update profile
-  const handleUpdateProfile = () => {};
-
-  //acordition
-  const StyledAcordion = styled(Accordion)(({ theme }) => ({
-    boxShadow: "none",
-    borderRadius: 20,
-    "& .MuiButtonBase-root": {
-      padding: 0,
-    },
-
-    // ...theme.applyStyles("dark", {
-    //   borderColor: theme.colorSchemes.dark.border,
-    // }),
-  }));
-
   return (
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
-      {/* tren */}
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
         <Link to={"/profile/" + user?.id} className="flex gap-2">
           <img
@@ -57,7 +35,6 @@ const ProfileCard = () => {
             </span>
           </div>
         </Link>
-        {/* update profile */}
         <div className="">
           {user?.id ? (
             <LiaEditSolid
@@ -75,7 +52,6 @@ const ProfileCard = () => {
           )}
         </div>
       </div>
-      {/* Thong tin ca nhan */}
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <div className="flex gap-2 items-center text-ascent-2">
           <CiLocationOn className="text-xl text-ascent-1" />
@@ -87,18 +63,10 @@ const ProfileCard = () => {
           <span>{user?.profession || "Thêm nghề nghiệp"}</span>
         </div>
       </div>
-      {/* Friends */}
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
           {user?.following.length} {t("Bạn bè")}
         </p>
-
-        {/* <div className="flex items-center justify-between">
-          <span className="text-ascent-2">
-            {t("Ai đã xem tài khoản của bạn")}
-          </span>
-          <span className="text-ascent-1 text-lg">{user?.views?.length}</span>
-        </div> */}
 
         <span className="text-base text-blue">
           {user?.isActive ? "Verified account" : "Not verified"}
@@ -111,7 +79,6 @@ const ProfileCard = () => {
           </span>
         </div>
       </div>
-      {/* Social profile */}
       <div className="w-full flex flex-col gap-4 py-4 pb-6">
         <p className="text-ascent-1 text-lg font-semibold">
           {t("Mạng xã hội")}

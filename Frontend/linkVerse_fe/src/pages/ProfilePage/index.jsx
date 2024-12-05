@@ -31,8 +31,10 @@ import { PiGifThin } from "react-icons/pi";
 import { getBase64 } from "~/utils";
 import { IoCloseCircle } from "react-icons/io5";
 import { FiPlus } from "react-icons/fi";
+import * as UserService from "~/services/UserService";
 import { BlankAvatar } from "~/assets";
 import { ImUserPlus } from "react-icons/im";
+import { useMutationHook } from "~/hooks/useMutationHook";
 
 const ProfilePage = () => {
   const { t } = useTranslation();
@@ -165,7 +167,32 @@ const ProfilePage = () => {
     }
   }, [avatarFile]);
 
-  const handleSubmitChange = () => {};
+  const mutation = useMutationHook((data) => UserService.update(data));
+  const { data, isPending, isSuccess, isError } = mutation;
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("success");
+    } else if (isError) {
+      console.log("error");
+    }
+  }, [isSuccess, isError]);
+
+  const handleSubmitChange = () => {
+    const data = {
+      token: user?.access_token,
+      id: user?.id,
+      lastName,
+      firstName,
+      avatar,
+      email,
+      profession,
+      address,
+      avatar,
+      bio,
+    };
+    mutation.mutate(data);
+  };
 
   return (
     <>
@@ -555,11 +582,32 @@ const ProfilePage = () => {
 
                 <div className="relative group w-14 h-14">
                   {avatar ? (
-                    <img
-                      src={avatar}
-                      alt="avatar"
-                      className="rounded-full object-cover bg-no-repeat w-full h-full"
-                    />
+                    <div className="w-full h-full">
+                      <img
+                        src={avatar}
+                        alt="avatar"
+                        className="rounded-full relative object-cover bg-no-repeat w-full h-full"
+                      />
+                      <div className="flex items-center justify-center w-full h-full absolute top-0">
+                        <label
+                          htmlFor="imgUpload"
+                          className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                        >
+                          <input
+                            type="file"
+                            onChange={handleChangeAvatar}
+                            className="hidden"
+                            id="imgUpload"
+                            data-max-size="5120"
+                            accept=".jpg, .png, .jpeg"
+                          />
+                          <ImUserPlus
+                            size={20}
+                            className=" duration-300 transition-opacity opacity-0 hover:opacity-100 cursor-pointer"
+                          />
+                        </label>
+                      </div>
+                    </div>
                   ) : (
                     <div className="w-14 h-14 rounded-full bg-[#ccc] flex items-center justify-center cursor-pointer">
                       <label
@@ -742,7 +790,7 @@ const ProfilePage = () => {
               <Button
                 title={"Xong"}
                 onClick={handleSubmitChange}
-                containerStyles="w-full bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-ascent-1"
+                containerStyles="w-full bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
               />
             </div>
           </div>

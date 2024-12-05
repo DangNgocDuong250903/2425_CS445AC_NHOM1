@@ -104,6 +104,10 @@ const LoginPage = () => {
               type="email"
               register={register("email", {
                 required: t("Địa chỉ email là bắt buộc"),
+                validate: {
+                  noSpaces: (value) =>
+                    !/\s/.test(value) || "Email must not contain spaces.",
+                },
               })}
               styles={`w-full rounded-full ${
                 errors.email ? "border-red-600" : ""
@@ -114,7 +118,6 @@ const LoginPage = () => {
               iconRightStyles="right-5"
               toolTip={errors.email ? errors.email?.message : ""}
               labelStyles="ml-2"
-              // error={errors.email ? errors.email.message : ""}
             />
 
             <TextInput
@@ -145,8 +148,11 @@ const LoginPage = () => {
               iconRightStyles="right-5"
               register={register("password", {
                 required: t("Mật khẩu là bắt buộc"),
+                validate: {
+                  noSpaces: (value) =>
+                    !/\s/.test(value) || "Password must not contain spaces.",
+                },
               })}
-              // error={errors.password ? errors.password?.message : ""}
             />
 
             <div className="flex justify-between items-center">
