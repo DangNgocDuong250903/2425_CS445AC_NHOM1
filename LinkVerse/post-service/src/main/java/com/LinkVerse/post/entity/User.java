@@ -19,4 +19,6 @@ public class User {
 
     @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String username;
+    @Column(name = "avatar_url")
+    String avatarUrl;
 }

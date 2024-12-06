@@ -32,7 +32,7 @@ public class StoryService {
     StoryMapper storyMapper;
     S3ServiceStory s3ServiceStory;
     RekognitionService rekognitionService;
-
+    
     static final int STORY_EXPIRATION_HOURS = 24;
 
     public ApiResponse<StoryResponse> createStory(StoryCreationRequest request, List<MultipartFile> files, String token) {

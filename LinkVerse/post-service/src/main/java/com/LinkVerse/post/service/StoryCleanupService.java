@@ -4,6 +4,7 @@ import com.LinkVerse.post.repository.StoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,6 +16,7 @@ public class StoryCleanupService {
     private final StoryRepository storyRepository;
 
     @Transactional
+    @Scheduled(fixedRate = 3600000)
     public void deleteExpiredStories() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime thresholdTime = now.minusHours(24);
