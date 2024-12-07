@@ -23,8 +23,8 @@
           <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct/1.5.5.Final/mapstruct-1.5.5.Final.jar" />
         </processorPath>
         <module name="post-service" />
-        <module name="MessageRealtime" />
         <module name="profile-service" />
+        <module name="MessageRealtime" />
         <module name="identity-service" />
         <module name="notification-service" />
       </profile>

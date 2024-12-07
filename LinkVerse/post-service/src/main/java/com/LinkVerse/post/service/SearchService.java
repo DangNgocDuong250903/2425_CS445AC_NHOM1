@@ -33,7 +33,6 @@ public class SearchService {
     PostMapper postMapper;
     PostSearchRepository postSearchRepository;
 
-    //public PageResponse<PostResponse> searchPost(String content, int page, int size) -> tương tự controller sẽ d
     public ApiResponse<PageResponse<PostResponse>> searchPost(String content, int page, int size) {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
@@ -54,7 +53,7 @@ public class SearchService {
     }
 
     public ApiResponse<List<PostDocument>> searchPosts(String searchString, Integer year, Integer month, PostVisibility visibility) {
-        Set<PostDocument> postDocumentsSet = new HashSet<>();  // Use a Set to avoid duplicates
+        Set<PostDocument> postDocumentsSet = new HashSet<>();  // tránh lặp -> dùng Set
 
         // Tìm kiếm theo năm và tháng nếu có
         if (year != null && month != null) {

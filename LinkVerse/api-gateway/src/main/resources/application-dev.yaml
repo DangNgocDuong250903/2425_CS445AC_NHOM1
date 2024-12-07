@@ -83,7 +83,5 @@ springdoc:
       - url: /v3/api-docs/friend-service
         name: Friend Service
 
-redis:
-  host: localhost
-  port: 6379
+
 
