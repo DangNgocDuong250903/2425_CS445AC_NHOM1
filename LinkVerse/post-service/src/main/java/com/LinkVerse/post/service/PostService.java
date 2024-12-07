@@ -71,6 +71,14 @@ public class PostService {
     public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        // Check if the content is appropriate
+        if (!contentModerationService.isContentAppropriate(request.getContent())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post content is inappropriate and violates our content policy.")
+                    .build();
+        }
+        try {
         if (!FileUtil.isImageFile(avatarFile)) {
             return ApiResponse.<PostResponse>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
@@ -107,7 +115,19 @@ public class PostService {
                 .comments(List.of())
                 .build();
 
+        String languageCode = keywordService.detectDominantLanguage(request.getContent());
+        post.setLanguage(languageCode);
+
+
+        List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+        List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
+        post.setKeywords(keywordIds);
+
+        sentimentAnalysisService.analyzeAndSaveSentiment(post);
         post = postRepository.save(post);
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
         // Lưu vào Elasticsearch
         if (post.getId() != null) {
@@ -141,6 +161,14 @@ public class PostService {
                 .message("Avatar post created successfully and profile updated")
                 .result(postMapper.toPostResponse(post))
                 .build();
+        } catch (SdkClientException e) {
+            log.error("AWS S3 Exception: ", e);
+
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Failed to upload files due to AWS configuration issues.")
+                    .build();
+        }
     }
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
@@ -195,8 +223,6 @@ public class PostService {
 
 
             post = postRepository.save(post);
-            PostResponse postResponse = postMapper.toPostResponse(post);
-            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
             // lưu vào Elasticsearch
             if (post.getId() != null) {
@@ -212,6 +238,11 @@ public class PostService {
                         .build();
                 postSearchRepository.save(postDocument);
             }
+
+            PostResponse postResponse = postMapper.toPostResponse(post);
+            postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
+
+
 
             return ApiResponse.<PostResponse>builder()
                     .code(200)

@@ -54,8 +54,9 @@ public class SearchService {
     }
 
     public ApiResponse<List<PostDocument>> searchPosts(String searchString, Integer year, Integer month, PostVisibility visibility) {
-        Set<PostDocument> postDocumentsSet = new HashSet<>();  // dùng list bị duplicate -> dùng set
+        Set<PostDocument> postDocumentsSet = new HashSet<>();  // Use a Set to avoid duplicates
 
+        // Tìm kiếm theo năm và tháng nếu có
         if (year != null && month != null) {
             postDocumentsSet.addAll(postSearchRepository.findByCreatedAtInYearAndMonth(year, month));
         } else if (year != null) {
@@ -70,19 +71,19 @@ public class SearchService {
             Set<PostDocument> filteredBySearchString = new HashSet<>();
 
             filteredBySearchString.addAll(postSearchRepository.findByContentContaining(searchString));
-
             filteredBySearchString.addAll(postSearchRepository.findByComments_ContentContaining(searchString));
 
-            postDocumentsSet = filteredBySearchString;
+            postDocumentsSet.retainAll(filteredBySearchString);
         }
 
+        // Tìm kiếm theo visibility nếu có
         if (visibility != null) {
             postDocumentsSet.removeIf(post -> post.getVisibility() != visibility);
         } else {
             postDocumentsSet.removeIf(post -> post.getVisibility() != PostVisibility.PUBLIC);
         }
 
-        // phải chuyển thành list để trả về
+        // Convert Set to List and return
         List<PostDocument> postDocumentsList = new ArrayList<>(postDocumentsSet);
 
         // Trả về kết quả

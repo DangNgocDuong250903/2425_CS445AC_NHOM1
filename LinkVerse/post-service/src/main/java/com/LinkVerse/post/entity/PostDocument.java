@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(indexName = "posts")
+@Document(indexName = "post_document")
 @FieldDefaults(level = AccessLevel.PUBLIC)
 public class PostDocument {
 
