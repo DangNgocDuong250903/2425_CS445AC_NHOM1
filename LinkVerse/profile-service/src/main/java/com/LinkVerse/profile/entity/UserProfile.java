@@ -1,12 +1,15 @@
 package com.LinkVerse.profile.entity;
 
-import java.time.LocalDate;
-
-import org.springframework.data.neo4j.core.schema.*;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.neo4j.core.schema.GeneratedValue;
+import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.Property;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
+
+import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,7 +25,8 @@ public class UserProfile {
 
     @Property("userId")
     String userId;
-
+    @Property("image_urls")
+    List<String> imageUrl;
     String username;
     @Property("status")
     String status;

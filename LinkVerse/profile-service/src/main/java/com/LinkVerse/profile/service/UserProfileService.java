@@ -1,11 +1,5 @@
 package com.LinkVerse.profile.service;
 
-import java.util.List;
-
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-
 import com.LinkVerse.profile.dto.request.ProfileCreationRequest;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.UserProfile;
@@ -13,11 +7,16 @@ import com.LinkVerse.profile.exception.AppException;
 import com.LinkVerse.profile.exception.ErrorCode;
 import com.LinkVerse.profile.mapper.UserProfileMapper;
 import com.LinkVerse.profile.repository.UserProfileRepository;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +25,20 @@ import lombok.extern.slf4j.Slf4j;
 public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
+    S3Service s3Service;
+
+    public void updateImage(String userId, MultipartFile imageFile) {
+        UserProfile userProfile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        String imageUrl = s3Service.uploadFiles(List.of(imageFile)).get(0);
+
+        List<String> imageUrls = userProfile.getImageUrl();
+        imageUrls.add(imageUrl);
+        userProfile.setImageUrl(imageUrls);
+
+        userProfileRepository.save(userProfile);
+    }
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);

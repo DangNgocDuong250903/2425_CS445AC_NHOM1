@@ -1,22 +1,35 @@
 package com.LinkVerse.profile.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.LinkVerse.profile.dto.ApiResponse;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.service.UserProfileService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserProfileController {
     UserProfileService userProfileService;
+
+    @PutMapping("/{profileId}/image")
+    public ResponseEntity<Void> updateImage(@PathVariable("profileId") String profileId, @RequestParam("imageFile") MultipartFile imageFile) {
+        try {
+            userProfileService.updateImage(profileId, imageFile);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @GetMapping("/users/{profileId}")
     ApiResponse<UserProfileResponse> getProfile(@PathVariable String profileId) {

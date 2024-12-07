@@ -1,6 +1,7 @@
 package com.LinkVerse.post.service;
 
 
+import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.dto.ApiResponse;
@@ -11,12 +12,15 @@ import com.LinkVerse.post.entity.*;
 import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
+import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,6 +63,105 @@ public class PostService {
     @Autowired
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
+    ProfileServiceClient profileServiceClient;
+
+    public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        // Check if the content is appropriate
+        if (!contentModerationService.isContentAppropriate(request.getContent())) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post content is inappropriate and violates our content policy.")
+                    .build();
+        }
+
+        try {
+            // Validate if the uploaded file is an image
+            if (avatarFile == null || avatarFile.isEmpty() || !FileUtil.isImageFile(avatarFile)) {
+                return ApiResponse.<PostResponse>builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Only non-empty image files are allowed.")
+                        .build();
+            }
+
+            // Upload the avatar file to S3 and get the URL
+            String avatarUrl = s3Service.uploadFiles(List.of(avatarFile)).get(0);
+
+            // Validate and set visibility
+            PostVisibility visibility = request.getVisibility();
+            if (visibility == null) {
+                visibility = PostVisibility.PUBLIC; // Default visibility
+            } else if (!EnumUtils.isValidEnum(PostVisibility.class, visibility.name())) {
+                return ApiResponse.<PostResponse>builder()
+                        .code(HttpStatus.BAD_REQUEST.value())
+                        .message("Invalid visibility value.")
+                        .build();
+            }
+
+            // Create a new Post entity
+            Post post = Post.builder()
+                    .content(request.getContent())
+                    .userId(currentUserId)
+                    .imageUrl(List.of(avatarUrl))
+                    .visibility(visibility)
+                    .createdDate(Instant.now())
+                    .modifiedDate(Instant.now())
+                    .like(0)
+                    .unlike(0)
+                    .comments(new ArrayList<>())
+                    .build();
+
+            // Detect language of the content
+            String languageCode = keywordService.detectDominantLanguage(request.getContent());
+            post.setLanguage(languageCode);
+
+            // Extract and save keywords
+            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+            List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
+            post.setKeywords(keywordIds);
+
+            // Analyze and save sentiment
+            sentimentAnalysisService.analyzeAndSaveSentiment(post);
+
+            // Save the post in the repository
+            post = postRepository.save(post);
+
+            // Map to PostResponse DTO
+            PostResponse postResponse = postMapper.toPostResponse(post);
+
+            // Update the user's profile avatar
+            try {
+                profileServiceClient.updateImage(currentUserId, avatarFile);
+            } catch (FeignException e) {
+                log.error("Error updating avatar in profile-service: {}", e.getMessage(), e);
+                return ApiResponse.<PostResponse>builder()
+                        .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                        .message("Failed to update avatar in profile-service.")
+                        .build();
+            }
+
+            // Return a successful response
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.OK.value())
+                    .message("Avatar post created successfully and profile updated.")
+                    .result(postResponse)
+                    .build();
+        } catch (SdkClientException e) {
+            log.error("AWS S3 Exception while uploading file: ", e);
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("Failed to upload file due to AWS S3 issues.")
+                    .build();
+        } catch (Exception e) {
+            log.error("Unexpected exception: ", e);
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("An unexpected error occurred.")
+                    .build();
+        }
+    }
 
     public ApiResponse<PostResponse> createPostWithFiles(PostRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
