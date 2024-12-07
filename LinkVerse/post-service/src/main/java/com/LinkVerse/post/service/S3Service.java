@@ -4,7 +4,9 @@ package com.LinkVerse.post.service;
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -133,6 +135,8 @@ public class S3Service {
         }
         return convertedFile;
     }
-
+    public S3Object getObject(String fileName) {
+        return s3Client.getObject(new GetObjectRequest(bucketName, fileName));
+    }
 
 }
