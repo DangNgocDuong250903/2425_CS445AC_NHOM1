@@ -3,6 +3,8 @@ package com.LinkVerse.post.Mapper;
 import com.LinkVerse.post.dto.request.StoryCreationRequest;
 import com.LinkVerse.post.dto.response.StoryResponse;
 import com.LinkVerse.post.entity.Story;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +23,6 @@ public class StoryMapperImpl implements StoryMapper {
 
         Story.StoryBuilder story = Story.builder();
 
-        story.content( request.getContent() );
         story.visibility( request.getVisibility() );
 
         return story.build();
@@ -36,7 +37,10 @@ public class StoryMapperImpl implements StoryMapper {
         StoryResponse storyResponse = new StoryResponse();
 
         storyResponse.setId( story.getId() );
-        storyResponse.setContent( story.getContent() );
+        List<String> list = story.getImageUrl();
+        if ( list != null ) {
+            storyResponse.setImageUrl( new ArrayList<String>( list ) );
+        }
         storyResponse.setPostedAt( story.getPostedAt() );
         storyResponse.setExpiryTime( story.getExpiryTime() );
         storyResponse.setVisibility( story.getVisibility() );

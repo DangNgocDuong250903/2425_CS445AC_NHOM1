@@ -5,6 +5,5 @@ import lombok.Data;
 
 @Data
 public class StoryCreationRequest {
-    String content;
     StoryVisibility visibility;
 }

@@ -100,7 +100,6 @@ public class PostService {
                         .build();
             }
 
-            // Create a new Post entity
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(currentUserId)
@@ -113,25 +112,19 @@ public class PostService {
                     .comments(new ArrayList<>())
                     .build();
 
-            // Detect language of the content
             String languageCode = keywordService.detectDominantLanguage(request.getContent());
             post.setLanguage(languageCode);
 
-            // Extract and save keywords
             List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            // Analyze and save sentiment
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
-            // Save the post in the repository
             post = postRepository.save(post);
 
-            // Map to PostResponse DTO
             PostResponse postResponse = postMapper.toPostResponse(post);
 
-            // Update the user's profile avatar
             try {
                 profileServiceClient.updateImage(currentUserId, avatarFile);
             } catch (FeignException e) {

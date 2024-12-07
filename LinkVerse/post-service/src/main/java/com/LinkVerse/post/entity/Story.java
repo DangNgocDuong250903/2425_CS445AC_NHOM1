@@ -20,8 +20,6 @@ public class Story {
     String id;
     String userId;
 
-    String content;
-
     LocalDateTime postedAt;
 
     // Thời gian hết hạn (24 giờ sau khi đăng)
