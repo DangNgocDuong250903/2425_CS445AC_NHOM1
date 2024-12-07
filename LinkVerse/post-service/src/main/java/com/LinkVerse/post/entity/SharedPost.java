@@ -25,7 +25,7 @@ public class SharedPost {
     String content;
 
     @ElementCollection
-    List<String> fileUrls;
+    List<String> imageUrl;
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;

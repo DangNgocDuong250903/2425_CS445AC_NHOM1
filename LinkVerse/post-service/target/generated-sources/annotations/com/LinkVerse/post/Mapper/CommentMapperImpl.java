@@ -1,7 +1,7 @@
 package com.LinkVerse.post.Mapper;
 
 import com.LinkVerse.post.dto.response.CommentResponse;
-import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.Comment;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
@@ -13,19 +13,19 @@ import org.springframework.stereotype.Component;
 public class CommentMapperImpl implements CommentMapper {
 
     @Override
-    public CommentResponse toPostResponse(Post post) {
-        if ( post == null ) {
+    public CommentResponse toCommentResponse(Comment comment) {
+        if ( comment == null ) {
             return null;
         }
 
         CommentResponse.CommentResponseBuilder commentResponse = CommentResponse.builder();
 
-        commentResponse.id( post.getId() );
-        commentResponse.userId( post.getUserId() );
-        commentResponse.content( post.getContent() );
-        commentResponse.createdDate( post.getCreatedDate() );
-        commentResponse.like( post.getLike() );
-        commentResponse.unlike( post.getUnlike() );
+        commentResponse.id( comment.getId() );
+        commentResponse.userId( comment.getUserId() );
+        commentResponse.content( comment.getContent() );
+        commentResponse.createdDate( comment.getCreatedDate() );
+        commentResponse.like( comment.getLike() );
+        commentResponse.unlike( comment.getUnlike() );
 
         return commentResponse.build();
     }

@@ -8,28 +8,23 @@ import com.LinkVerse.post.entity.PostHistory;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+import org.mapstruct.factory.Mappers;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CommentMapper.class, PostHistoryMapper.class})
 public interface PostMapper {
 
     @Named("toPostResponse")
     @Mapping(target = "sharedPost", source = "sharedPost", qualifiedByName = "toPostResponse")
-    @Mapping(target = "keywords", source = "keywords")
     @Mapping(target = "language", source = "language")
+    @Mapping(target = "imageUrl", source = "imageUrl")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
         return comments.stream()
-                .map(comment -> CommentResponse.builder()
-                        .userId(comment.getUserId())
-                        .CommentId(comment.getCommentID())
-                        .content(comment.getContent())
-                        .createdDate(comment.getCreatedDate())
-                        .build())
+                .map(comment -> Mappers.getMapper(CommentMapper.class).toCommentResponse(comment))
                 .collect(Collectors.toList());
     }
 
@@ -42,16 +37,15 @@ public interface PostMapper {
                 .content(post.getContent())
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
+                .imageUrl(post.getImageUrl())
                 .like(post.getLike())
                 .unlike(post.getUnlike())
                 .comments(toCommentResponses(post.getComments()))
                 .sharedPost(post.getSharedPost() != null ? toPostResponse(post.getSharedPost()) : null)
-                .keywords(post.getKeywords() != null ? post.getKeywords() : new ArrayList<>()) // Map keywords
-                .primarySentiment(post.getPrimarySentiment()) // Map this field
+                .primarySentiment(post.getPrimarySentiment())
                 .language(post.getLanguage())
                 .build();
     }
 
     PostResponse toPostResponse(PostHistory postHistory);
-
 }

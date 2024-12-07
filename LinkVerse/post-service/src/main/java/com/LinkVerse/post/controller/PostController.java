@@ -82,7 +82,6 @@ public class PostController {
 
         ApiResponse<PostResponse> response = postService.sharePost(postId, request.getContent(), request.getVisibility());
 
-        // Trả về ApiResponse bao bọc PostResponse
         return ApiResponse.<PostResponse>builder()
                 .code(response.getCode()) // Mã trạng thái HTTP
                 .message(response.getMessage()) // Thông báo cho người dùng

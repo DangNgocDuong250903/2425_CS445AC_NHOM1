@@ -8,11 +8,11 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 import java.time.Instant;
 
 @EnableMongoRepositories
-public interface SentimentSpikeDetectionRepository extends MongoRepository<Post, String> {
+public interface SentimentSpikeDetectionRepository extends MongoRepository<Post, Long> {
 
-    @Query("{ 'createdDate': { $gte: ?0, $lte: ?1 }, 'primarySentiment': 'NEGATIVE' }")
-    long countNegativePostsInTimeRange(Instant start, Instant end);
+    @Query(value = "{ 'createdDate': { $gte: ?0, $lte: ?1 }, 'sentiment': 'NEGATIVE' }", count = true)
+    Long countNegativePostsInTimeRange(Instant start, Instant end);
 
-    @Query("{ 'createdDate': { $gte: ?0, $lte: ?1 } }")
+    @Query(value = "{ 'createdDate': { $gte: ?0, $lte: ?1 } }", count = true)
     long countTotalPostsInTimeRange(Instant start, Instant end);
 }

@@ -4,23 +4,20 @@ import com.LinkVerse.post.entity.PostVisibility;
 import jakarta.persistence.ElementCollection;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.elasticsearch.annotations.Document;
-
 
 import java.util.List;
 
-import java.util.List;
-
+@Getter
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostRequest {
     String content;
     PostVisibility visibility;
     String language;
     @ElementCollection
-    List<String> fileUrls;
+    List<String> ImageUrl;
+    String PostId;
 }

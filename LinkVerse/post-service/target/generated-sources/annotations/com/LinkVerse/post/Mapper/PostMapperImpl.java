@@ -24,11 +24,11 @@ public class PostMapperImpl implements PostMapper {
         PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
 
         postResponse.sharedPost( toPostResponse( post.getSharedPost() ) );
-        List<String> list = post.getKeywords();
-        if ( list != null ) {
-            postResponse.keywords( new ArrayList<String>( list ) );
-        }
         postResponse.language( post.getLanguage() );
+        List<String> list = post.getImageUrl();
+        if ( list != null ) {
+            postResponse.imageUrl( new ArrayList<String>( list ) );
+        }
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
         postResponse.fileUrl( post.getFileUrl() );
