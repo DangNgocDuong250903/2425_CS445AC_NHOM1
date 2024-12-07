@@ -1,7 +1,7 @@
-package com.LinkVerse.Friend.controller;
+package com.LinkVerse.profile.controller;
 
-import com.LinkVerse.Friend.dto.FriendshipResponse;
-import com.LinkVerse.Friend.service.FriendService;
+import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,5 +23,15 @@ public class FriendController {
     @PostMapping("/accept")
     public ResponseEntity<FriendshipResponse> acceptFriendRequest(@RequestParam String senderUserId) {
         return ResponseEntity.ok(friendService.acceptFriendRequest(senderUserId));
+    }
+
+    @PostMapping("/reject")
+    public ResponseEntity<FriendshipResponse> rejectFriendRequest(@RequestParam String senderUserId) {
+        return ResponseEntity.ok(friendService.rejectFriendRequest(senderUserId));
+    }
+
+    @PostMapping("/unfriend")
+    public ResponseEntity<FriendshipResponse> unFriendRequest(@RequestParam String recipientUserId) {
+        return ResponseEntity.ok(friendService.rejectFriendRequest(recipientUserId));
     }
 }

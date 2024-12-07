@@ -1,4 +1,4 @@
-package com.LinkVerse.Friend.exception;
+package com.LinkVerse.profile.exception;
 
 
 public class FriendRequestNotFoundException extends RuntimeException {

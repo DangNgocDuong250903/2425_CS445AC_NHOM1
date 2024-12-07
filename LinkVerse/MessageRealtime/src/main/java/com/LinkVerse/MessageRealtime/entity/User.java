@@ -31,6 +31,8 @@ public class User {
     @ManyToMany(fetch = FetchType.EAGER)
     Set<Role> roles;
 
+    UserStatus status;
+
     @OneToMany(mappedBy = "sender")
     Set<Message> sentMessages;
 

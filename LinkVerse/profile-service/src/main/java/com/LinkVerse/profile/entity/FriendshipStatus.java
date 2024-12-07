@@ -1,5 +1,4 @@
-package com.LinkVerse.Friend.entity;
-
+package com.LinkVerse.profile.entity;
 
 public enum FriendshipStatus {
     PENDING,       // Lời mời kết bạn đang chờ xác nhận

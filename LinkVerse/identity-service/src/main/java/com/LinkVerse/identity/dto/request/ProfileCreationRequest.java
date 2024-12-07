@@ -18,6 +18,7 @@ public class ProfileCreationRequest {
     String userId;
     String username;
     String email;
+    String imageUrl;
     UserStatus status = UserStatus.ONLINE;
     String firstName;
     String lastName;

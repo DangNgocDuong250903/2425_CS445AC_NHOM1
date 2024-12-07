@@ -15,8 +15,8 @@ import java.util.List;
 public class UserProfileResponse {
     String id;
     String username;
-    @Property("image_urls")
-    List<String> imageUrl;
+    @Property("image_url")
+    String imageUrl;
     String status;
     String email;
     String firstName;

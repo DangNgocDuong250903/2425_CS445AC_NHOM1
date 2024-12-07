@@ -1,7 +1,7 @@
-package com.LinkVerse.Friend.controller;
+package com.LinkVerse.profile.controller;
 
-import com.LinkVerse.Friend.dto.FriendshipResponse;
-import com.LinkVerse.Friend.service.BlockService;
+import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.service.BlockService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

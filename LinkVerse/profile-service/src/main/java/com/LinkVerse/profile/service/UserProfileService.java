@@ -27,16 +27,10 @@ public class UserProfileService {
     UserProfileMapper userProfileMapper;
     S3Service s3Service;
 
-    public void updateImage(String userId, MultipartFile imageFile) {
+    public void updateImage(String userId, String imageUrl) {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-
-        String imageUrl = s3Service.uploadFiles(List.of(imageFile)).get(0);
-
-        List<String> imageUrls = userProfile.getImageUrl();
-        imageUrls.add(imageUrl);
-        userProfile.setImageUrl(imageUrls);
-
+        userProfile.setImageUrl(imageUrl);
         userProfileRepository.save(userProfile);
     }
 
@@ -48,12 +42,21 @@ public class UserProfileService {
     }
 
     public UserProfileResponse getByUserId(String userId) {
-        UserProfile userProfile =
-                userProfileRepository.findByUserId(userId)
-                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String currentUserId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        UserProfile userProfile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        boolean isBlocked = userProfile.getBlockRequests().stream()
+                .anyMatch(friendship -> friendship.getUser1().getId().equals(currentUserId));
+        if (isBlocked) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
+        }
 
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
+
+
 
     public UserProfileResponse getProfile(String id) {
         UserProfile userProfile =
