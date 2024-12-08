@@ -1,13 +1,13 @@
 package com.LinkVerse.identity.configuration;
 
-import java.text.ParseException;
-
+import com.nimbusds.jwt.SignedJWT;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jwt.SignedJWT;
+import java.text.ParseException;
+import java.util.Map;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
@@ -16,13 +16,16 @@ public class CustomJwtDecoder implements JwtDecoder {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
 
-            return new Jwt(
-                    token,
+            Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
+            
+            String userId = signedJWT.getJWTClaimsSet().getStringClaim("sub");
+            claims.put("user_id", userId);
+            return new Jwt(token,
                     signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
                     signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
                     signedJWT.getHeader().toJSONObject(),
-                    signedJWT.getJWTClaimsSet().getClaims());
-
+                    claims
+            );
         } catch (ParseException e) {
             throw new JwtException("Invalid token");
         }

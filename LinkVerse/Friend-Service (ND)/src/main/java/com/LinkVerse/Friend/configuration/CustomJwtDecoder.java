@@ -7,6 +7,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
+import java.util.Map;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
@@ -14,12 +15,14 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-
+            Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
+            String userId = signedJWT.getJWTClaimsSet().getStringClaim("sub");
+            claims.put("user_id", userId);
             return new Jwt(token,
                     signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
                     signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
                     signedJWT.getHeader().toJSONObject(),
-                    signedJWT.getJWTClaimsSet().getClaims()
+                    claims
             );
 
         } catch (ParseException e) {
