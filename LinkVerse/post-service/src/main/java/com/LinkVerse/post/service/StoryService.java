@@ -38,7 +38,6 @@ public class StoryService {
 
     public ApiResponse<StoryResponse> createStory(StoryCreationRequest request, List<MultipartFile> files, String token) {
         String userId = getCurrentUserId();
-
         List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                 ? s3ServiceStory.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
                 : List.of();
