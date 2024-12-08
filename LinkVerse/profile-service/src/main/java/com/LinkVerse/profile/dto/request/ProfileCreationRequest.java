@@ -16,8 +16,8 @@ import java.util.List;
 public class ProfileCreationRequest {
     String userId;
     String username;
-    @Property("image_urls")
-    List<String> imageUrl;
+    @Property("image_url")
+    String imageUrl;
     String email;
     String firstName;
     String lastName;

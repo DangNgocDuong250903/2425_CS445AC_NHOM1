@@ -20,9 +20,9 @@ public class UserProfileController {
     UserProfileService userProfileService;
 
     @PutMapping("/{profileId}/image")
-    public ResponseEntity<Void> updateImage(@PathVariable("profileId") String profileId, @RequestParam("imageFile") MultipartFile imageFile) {
+    public ResponseEntity<Void> updateImage(@PathVariable("profileId") String profileId, @RequestBody String imageUrl) {
         try {
-            userProfileService.updateImage(profileId, imageFile);
+            userProfileService.updateImage(profileId, imageUrl);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

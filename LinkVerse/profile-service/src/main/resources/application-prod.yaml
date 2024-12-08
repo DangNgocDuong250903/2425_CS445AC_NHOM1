@@ -1,0 +1,43 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+  elasticsearch:
+    uris: http://localhost:9200
+  neo4j:
+    uri: bolt://localhost:7687
+    authentication:
+      username: neo4j
+      password: 12345678
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 200MB
+      max-request-size: 215MB
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+cloud:
+  aws:
+    credentials:
+      access-key: AKIATCKANL35JUXP2NFF
+      secret-key: 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
+    region:
+      static: ap-southeast-2
+    stack:
+      auto: false
+
+
+application:
+  bucket:
+    name: image-0
+
+springdoc:
+  api-docs:
+    enabled: false
+  swagger-ui:
+    enabled: false

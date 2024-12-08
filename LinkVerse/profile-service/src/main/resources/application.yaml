@@ -2,21 +2,11 @@ server:
   port: 8081
   servlet:
     context-path: /profile
+
 spring:
   application:
     name: profile-service
-  neo4j:
-    uri: bolt://localhost:7687
-    authentication:
-      username: ${USERNAME_NEO4J}
-      password: ${PASSWORD_NEO4J}
-  servlet:
-    multipart:
-      enabled: true
-      file-size-threshold: 2KB
-      max-file-size: 200MB
-      max-request-size: 215MB
-#Cloudinary:
-#  cloud_name: dkeyerq4g
-#  api_key: 459476596648974
-#  api_secret: ex_KAk4H4glXgYObhHvORS1ueQ0
+  profiles:
+    active: @spring.profiles.active@
+
+
