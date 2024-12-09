@@ -12,6 +12,7 @@ import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.repository.InvalidatedTokenRepository;
 import com.LinkVerse.identity.repository.UserRepository;
+import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
@@ -50,6 +51,7 @@ import java.util.stream.Collectors;
 public class AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    ProfileClient profileClient;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -63,24 +65,6 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
-    public String getUserIdFromToken(String token) {
-        try {
-            // Parse the token to retrieve the signed JWT
-            SignedJWT signedJWT = SignedJWT.parse(token);
-
-            // Verify the token using the same verifier logic as other methods
-            JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-            if (!signedJWT.verify(verifier)) {
-                throw new AppException(ErrorCode.UNAUTHENTICATED);
-            }
-            // Extract the "subject" claim, which represents the user ID
-            return signedJWT.getJWTClaimsSet().getSubject();
-
-        } catch (JOSEException | ParseException e) {
-            log.error("Error parsing or verifying token", e);
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-    }
 
     public IntrospectResponse introspect(IntrospectRequest request) {
         var token = request.getToken();
@@ -182,6 +166,7 @@ public class AuthenticationService {
     }
 
     private String generateToken(User user) {
+
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
@@ -192,6 +177,9 @@ public class AuthenticationService {
                         Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", buildScope(user))
+                .claim("username", user.getUsername())
+                .claim("userId", user.getId()) // Thêm userId
+                .claim("profileId", user.getProfileId()) // Thêm profileId
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());

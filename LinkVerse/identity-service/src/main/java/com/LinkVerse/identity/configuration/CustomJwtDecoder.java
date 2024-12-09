@@ -15,17 +15,16 @@ public class CustomJwtDecoder implements JwtDecoder {
     public Jwt decode(String token) throws JwtException {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-
             Map<String, Object> claims = signedJWT.getJWTClaimsSet().getClaims();
-            
-            String userId = signedJWT.getJWTClaimsSet().getStringClaim("sub");
-            claims.put("user_id", userId);
-            return new Jwt(token,
+            claims.put("profileId", claims.get("profileId").toString());
+            claims.put("userId", claims.get("userId").toString());
+            return new Jwt(
+                    token,
                     signedJWT.getJWTClaimsSet().getIssueTime().toInstant(),
                     signedJWT.getJWTClaimsSet().getExpirationTime().toInstant(),
                     signedJWT.getHeader().toJSONObject(),
-                    claims
-            );
+                    claims);
+
         } catch (ParseException e) {
             throw new JwtException("Invalid token");
         }
