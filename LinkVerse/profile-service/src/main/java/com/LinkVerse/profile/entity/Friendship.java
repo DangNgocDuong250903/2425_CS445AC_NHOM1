@@ -5,7 +5,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.neo4j.core.schema.*;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,8 +18,7 @@ public class Friendship {
     @Id
     @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     String id;
-
-
+    
     @Relationship(type = "USER1")
     UserProfile user1;
 

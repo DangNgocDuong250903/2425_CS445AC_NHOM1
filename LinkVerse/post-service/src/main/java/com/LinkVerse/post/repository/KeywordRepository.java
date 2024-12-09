@@ -9,4 +9,5 @@ import java.util.List;
 @EnableMongoRepositories
 public interface KeywordRepository extends MongoRepository<Keyword, String> {
     List<Keyword> findByPhraseIn(List<String> phrases);
+
 }

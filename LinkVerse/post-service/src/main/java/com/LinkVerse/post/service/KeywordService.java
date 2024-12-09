@@ -28,7 +28,7 @@ public class KeywordService {
             "hi", "de", "zh-TW", "ko", "pt", "en", "it", "fr", "zh", "es", "ar", "ja"
     ));
 
-    public List<Keyword> extractAndSaveKeywords(String content) {
+    public List<Keyword> extractAndSaveKeyPhrases(String content, String contentId) {
         try {
             String languageCode = detectDominantLanguage(content);
             log.info("Detected language code: {}", languageCode);
@@ -44,28 +44,32 @@ public class KeywordService {
                     .build();
 
             DetectKeyPhrasesResponse response = comprehendClient.detectKeyPhrases(request);
-            log.info("Key phrases response: {}", response);
+//            log.info("Key phrases response: {}", response);
 
             List<String> phrases = response.keyPhrases().stream()
                     .map(keyPhrase -> keyPhrase.text())
                     .collect(Collectors.toList());
-            log.info("Extracted phrases: {}", phrases);
+//            log.info("Extracted phrases: {}", phrases);
 
-            List<Keyword> savedKeywords = new ArrayList<>();
+            List<Keyword> keyPhraseKeywords = new ArrayList<>();
             for (String phrase : phrases) {
                 Keyword keyword = keywordRepository.findByPhraseIn(List.of(phrase)).stream().findFirst()
                         .orElseGet(() -> Keyword.builder()
                                 .phrase(phrase)
                                 .usageCount(0)
+                                .type("KEYPHRASE")
+                                .linkedContentIds(new ArrayList<>())
                                 .build());
 
                 log.info("Saving keyword: {}", keyword);
 
                 keyword.setUsageCount(keyword.getUsageCount() + 1);
-                savedKeywords.add(keywordRepository.save(keyword));
+                keyword.getLinkedContentIds().add(contentId);
+                keyPhraseKeywords.add(keywordRepository.save(keyword));
+
             }
 
-            return savedKeywords;
+            return keyPhraseKeywords;
         } catch (Exception e) {
             log.error("Error extracting keywords: ", e);
             return List.of();

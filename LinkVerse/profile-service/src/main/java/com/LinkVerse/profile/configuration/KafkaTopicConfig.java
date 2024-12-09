@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.core.KafkaAdmin;
 
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 @Configuration
@@ -25,16 +26,25 @@ public class KafkaTopicConfig {
         short replicationFactor = 1;
 
         try (AdminClient adminClient = AdminClient.create(kafkaAdmin.getConfigurationProperties())) {
-            if (!adminClient.listTopics().names().get().contains(topicName)) {
-                return new NewTopic(topicName, partitions, replicationFactor);
+            if (adminClient.listTopics().names().get().contains(topicName)) {
+                // Topic đã tồn tại, không cần tạo
+                return null;
             }
-        } catch (InterruptedException | ExecutionException e) {
+            // Tạo topic nếu chưa tồn tại
+            adminClient.createTopics(
+                    List.of(new NewTopic(topicName, partitions, replicationFactor))
+            ).all().get();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt(); // Đặt lại trạng thái bị ngắt
+            throw new RuntimeException("Thread was interrupted while creating Kafka topic", e);
+        } catch (ExecutionException e) {
             if (e.getCause() instanceof TopicExistsException) {
-                // Topic already exists, no need to create it
-            } else {
-                throw new RuntimeException("Error while checking/creating topic", e);
+                // Topic đã tồn tại
+                return null;
             }
+            throw new RuntimeException("Error while checking/creating Kafka topic", e);
         }
-        return null; // Topic already exists, return null or handle accordingly
+        return new NewTopic(topicName, partitions, replicationFactor);
     }
+
 }

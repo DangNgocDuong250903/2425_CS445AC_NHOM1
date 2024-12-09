@@ -60,7 +60,6 @@ public class FriendService {
         kafkaTemplate.send("friendship-requests", "Friend request sent from " + userSend.getUsername() + " to " + userReceive.getUsername());
 
 
-
         return FriendshipResponse.builder()
                 .senderUsername(userSend.getUsername())
                 .recipientUsername(userReceive.getUsername())
