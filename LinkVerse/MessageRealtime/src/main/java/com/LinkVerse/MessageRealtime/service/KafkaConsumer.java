@@ -15,7 +15,7 @@ public class KafkaConsumer {
 
     @KafkaListener(topics = "chat-topic", groupId = "message-group")
     public void listen(String message, String recipient) {
-        // Gửi tin nhắn tới client qua WebSocket
+        // Gửi tin nhắn tới client qua WebSocket /queue/private
         messagingTemplate.convertAndSendToUser(recipient, "/queue/private", message);
     }
 }

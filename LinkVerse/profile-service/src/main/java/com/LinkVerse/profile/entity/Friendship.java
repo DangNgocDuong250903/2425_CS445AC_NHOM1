@@ -1,11 +1,9 @@
 package com.LinkVerse.profile.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.*;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Getter
@@ -14,23 +12,25 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Node("Friendship")
+@Entity
+@Table(name = "friendship")
 public class Friendship {
     @Id
-    @GeneratedValue(generatorClass = UUIDStringGenerator.class)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
+    @ManyToOne
+    @JoinColumn(name = "user_profile_id_1", nullable = false)
+    UserProfile userProfile1;
 
-    @Relationship(type = "USER1")
-    UserProfile user1;
+    @ManyToOne
+    @JoinColumn(name = "user_profile_id_2", nullable = false)
+    UserProfile userProfile2;
 
-    @Relationship(type = "USER2")
-    UserProfile user2;
-
-    @Property("status")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
     FriendshipStatus status;
 
-    @Property("blocked_at")
-    LocalDateTime blockedAt; // thời gian block nếu status là BLOCKED
-
+    @Column(name = "blocked_at")
+    LocalDateTime blockedAt; // Thời gian block nếu status là BLOCKED
 }

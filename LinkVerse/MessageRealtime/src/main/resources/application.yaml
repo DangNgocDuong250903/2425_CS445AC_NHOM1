@@ -7,6 +7,12 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:root@localhost:27017/chat-service?authSource=admin
+  datasource:
+    url: jdbc:mysql://localhost:3306/chat
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: root
+
     servlet:
       multipart:
         max-file-size: 10MB  # Giới hạn kích thước file tối đa là 10MB

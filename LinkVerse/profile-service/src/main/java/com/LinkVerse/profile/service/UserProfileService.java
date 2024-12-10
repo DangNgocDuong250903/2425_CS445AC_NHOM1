@@ -47,12 +47,6 @@ public class UserProfileService {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean isBlocked = userProfile.getBlockRequests().stream()
-                .anyMatch(friendship -> friendship.getUser1().getId().equals(currentUserId));
-        if (isBlocked) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
-        }
-
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
 

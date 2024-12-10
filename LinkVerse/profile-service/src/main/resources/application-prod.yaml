@@ -4,11 +4,15 @@ spring:
       on-profile: prod
   elasticsearch:
     uris: http://localhost:9200
-  neo4j:
-    uri: bolt://localhost:7687
-    authentication:
-      username: neo4j
-      password: 12345678
+  datasource:
+    url: jdbc:mysql://localhost:3306/profile
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
   servlet:
     multipart:
       enabled: true

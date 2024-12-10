@@ -27,7 +27,8 @@ public class ChatController {
     private UserRepository userRepository;
 
     @MessageMapping("/chat.sendMessage")
-    @SendTo("/topic/public")
+//    @SendTo("/topic/public")
+    @SendTo("/queue/private")
     public ChatMessage sendMessage(@Payload ChatMessage chatMessage) {
         User sender = userRepository.findById(chatMessage.getSender())
                 .orElseThrow(() -> new RuntimeException("Sender not found"));
@@ -47,7 +48,7 @@ public class ChatController {
 
         messageRepository.save(message);
 
-        kafkaTemplate.send("chat_topic", chatMessage);
+        kafkaTemplate.send("chat_topic", chatMessage); // gửi message tới Kafka
 
         return chatMessage;
     }

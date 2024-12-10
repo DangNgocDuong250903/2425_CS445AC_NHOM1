@@ -1,13 +1,14 @@
 package com.LinkVerse.profile.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.*;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,34 +16,46 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Node("user_profile")
+@Entity
+@Table(name = "user_profile")
 public class UserProfile {
     @Id
-    @GeneratedValue(generatorClass = UUIDStringGenerator.class)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Property("userId")
+    @Column(name = "user_id", nullable = false, unique = true)
     String userId;
-    @Property("image_url")
+
+    @Column(name = "image_url")
     String imageUrl;
+
+    @Column(name = "username", nullable = false, unique = true)
     String username;
-    @Property("status")
+
+    @Column(name = "status")
     String status;
+
+    @Column(name = "email", nullable = false, unique = true)
     String email;
+
+    @Column(name = "first_name")
     String firstName;
+
+    @Column(name = "last_name")
     String lastName;
+
+    @Column(name = "dob")
     LocalDate dob;
+
+    @Column(name = "city")
     String city;
 
-    @Relationship(type = "BLOCK_REQUESTS")
-    List<Friendship> blockRequests = new ArrayList<>(); // ds user bị block
+    @OneToMany(mappedBy = "userProfile1", cascade = CascadeType.ALL, orphanRemoval = true)
+    Set<Friendship> friends;
 
-    @Relationship(type = "SENDING_REQUESTS")
-    List<Friendship> sendingRequests = new ArrayList<>(); // ds user gửi kb = follow
+    @ElementCollection
+    Set<String> followers = new HashSet<>();
 
-    @Relationship(type = "PENDING_REQUESTS")
-    List<Friendship> pendingRequests = new ArrayList<>(); // ds lời mời kết bạn
-
-    @Relationship(type = "FRIENDSHIP", direction = Relationship.Direction.OUTGOING)
-    List<Friendship> friends; // ds bạn bè
+    @ElementCollection
+    Set<String> followings = new HashSet<>();
 }
