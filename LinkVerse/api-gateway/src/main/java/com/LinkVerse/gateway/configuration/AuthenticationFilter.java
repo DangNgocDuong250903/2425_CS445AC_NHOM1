@@ -42,8 +42,10 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/notification/email/forgot-password",
             "/email/reset-password",
             "/email/send-forget-pass",
+            "/email/reset-password",
 
-
+            "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
+            "/internal/users", "/internal/users/**"
     };
     @Value("${app.api-prefix}")
     @NonFinal
@@ -56,7 +58,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         if (isPublicEndpoint(exchange.getRequest()))
             return chain.filter(exchange);
 
-        // Get token from authorization header
         List<String> authHeader = exchange.getRequest().getHeaders().get(HttpHeaders.AUTHORIZATION);
         if (CollectionUtils.isEmpty(authHeader))
             return unauthenticated(exchange.getResponse());
@@ -77,12 +78,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         return -1;
     }
 
-    private boolean isPublicEndpoint(ServerHttpRequest request){
+    private boolean isPublicEndpoint(ServerHttpRequest request) {
         return Arrays.stream(publicEndpoints)
                 .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
     }
 
-    Mono<Void> unauthenticated(ServerHttpResponse response){
+    Mono<Void> unauthenticated(ServerHttpResponse response) {
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(1401)
                 .message("Unauthenticated")

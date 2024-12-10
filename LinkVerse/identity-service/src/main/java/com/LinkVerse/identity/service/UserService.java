@@ -96,9 +96,18 @@ public class UserService {
 
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        if (context == null || context.getAuthentication() == null) {
+            log.error("Security context or authentication is null");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String name = context.getAuthentication().getName();
+        log.info("Authenticated user: {}", name);
+
+        User user = userRepository.findByUsername(name).orElseThrow(() -> {
+            log.error("User not found: {}", name);
+            return new AppException(ErrorCode.USER_NOT_EXISTED);
+        });
 
         return userMapper.toUserResponse(user);
     }
