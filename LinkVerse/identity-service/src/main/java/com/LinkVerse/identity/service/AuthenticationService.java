@@ -106,6 +106,7 @@ public class AuthenticationService {
         var user =
                 userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
+
         var token = generateToken(user);
 
         return AuthenticationResponse.builder()
@@ -131,6 +132,7 @@ public class AuthenticationService {
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
                 .claim("ProfileID", user.getProfileId())
+                .claim("Users Create: ", user.getCreatedAt())
                 .build();
 
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
