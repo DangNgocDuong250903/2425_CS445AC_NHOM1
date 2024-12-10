@@ -1,14 +1,13 @@
 package com.LinkVerse.profile.entity;
 
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.neo4j.core.schema.*;
+import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Getter
 @Setter
@@ -16,46 +15,34 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-@Table(name = "user_profile")
+@Node("user_profile")
 public class UserProfile {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generatorClass = UUIDStringGenerator.class)
     String id;
 
-    @Column(name = "user_id", nullable = false, unique = true)
+    @Property("userId")
     String userId;
-
-    @Column(name = "image_url")
+    @Property("image_url")
     String imageUrl;
-
-    @Column(name = "username", nullable = false, unique = true)
     String username;
-
-    @Column(name = "status")
+    @Property("status")
     String status;
-
-    @Column(name = "email", nullable = false, unique = true)
     String email;
-
-    @Column(name = "first_name")
     String firstName;
-
-    @Column(name = "last_name")
     String lastName;
-
-    @Column(name = "dob")
     LocalDate dob;
-
-    @Column(name = "city")
     String city;
 
-    @OneToMany(mappedBy = "userProfile1", cascade = CascadeType.ALL, orphanRemoval = true)
-    Set<Friendship> friends;
+    @Relationship(type = "BLOCK_REQUESTS")
+    List<Friendship> blockRequests = new ArrayList<>(); // ds user bị block
 
-    @ElementCollection
-    Set<String> followers = new HashSet<>();
+    @Relationship(type = "SENDING_REQUESTS")
+    List<Friendship> sendingRequests = new ArrayList<>(); // ds user gửi kb = follow
 
-    @ElementCollection
-    Set<String> followings = new HashSet<>();
+    @Relationship(type = "PENDING_REQUESTS")
+    List<Friendship> pendingRequests = new ArrayList<>(); // ds lời mời kết bạn
+
+    @Relationship(type = "FRIENDSHIP", direction = Relationship.Direction.OUTGOING)
+    List<Friendship> friends; // ds bạn bè
 }

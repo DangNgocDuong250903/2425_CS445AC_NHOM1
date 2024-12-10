@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,17 +33,31 @@ public class StoryService {
     StoryMapper storyMapper;
     S3ServiceStory s3ServiceStory;
     RekognitionService rekognitionService;
-    
+
     static final int STORY_EXPIRATION_HOURS = 24;
 
     public ApiResponse<StoryResponse> createStory(StoryCreationRequest request, List<MultipartFile> files, String token) {
         String userId = getCurrentUserId();
+        List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
+                ? s3ServiceStory.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
+                : List.of();
 
-        List<String> uploadedUrls = uploadAndValidateFiles(files);
+        List<String> safeFileUrls = new ArrayList<>();
+        for (String fileUrl : fileUrls) {
+            String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
+            S3Object s3Object = s3ServiceStory.getObject(fileName);
+            log.info("Checking image safety for file: {}", fileName);
+            if (rekognitionService.isImageSafe(s3Object)) {
+                safeFileUrls.add(fileUrl);
+            } else {
+                log.warn("Unsafe content detected in file: {}", fileName);
+                s3ServiceStory.deleteFile(fileName);
+            }
+        }
 
         Story story = storyMapper.toEntity(request);
         story.setUserId(userId);
-        story.setImageUrl(uploadedUrls);
+        story.setImageUrl(safeFileUrls);
         story.setPostedAt(LocalDateTime.now());
         story.setExpiryTime(story.getPostedAt().plusHours(STORY_EXPIRATION_HOURS));
 

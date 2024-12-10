@@ -1,9 +1,8 @@
 package com.LinkVerse.profile.dto.response;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.neo4j.core.schema.Property;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -12,13 +11,11 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserProfileResponse {
-    @Id
     String id;
-    String userId;
     String username;
+    @Property("image_url")
     String imageUrl;
     String status;
     String email;

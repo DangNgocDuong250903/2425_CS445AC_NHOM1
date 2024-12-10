@@ -5,6 +5,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,4 +19,6 @@ public class Keyword {
     String id;
     String phrase; // này là key
     int usageCount; // Số lần từ khóa được sử dụng
+    String type;
+    List<String> linkedContentIds; //bai viet chua khoa
 }

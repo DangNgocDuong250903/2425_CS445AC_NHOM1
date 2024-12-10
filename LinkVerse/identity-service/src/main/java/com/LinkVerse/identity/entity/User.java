@@ -1,11 +1,10 @@
 package com.LinkVerse.identity.entity;
 
-import java.util.Set;
-
 import jakarta.persistence.*;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,7 +18,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
     String userId;
-
+    String profileId;
     @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String username;
 
@@ -41,4 +40,5 @@ public class User {
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
+
 }

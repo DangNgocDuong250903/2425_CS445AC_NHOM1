@@ -25,13 +25,13 @@ public class FriendController {
         return ResponseEntity.ok(friendService.acceptFriendRequest(senderUserId));
     }
 
-//    @PostMapping("/reject")
-//    public ResponseEntity<FriendshipResponse> rejectFriendRequest(@RequestParam String senderUserId) {
-//        return ResponseEntity.ok(friendService.rejectFriendRequest(senderUserId));
-//    }
-//
-//    @PostMapping("/unfriend")
-//    public ResponseEntity<FriendshipResponse> unFriendRequest(@RequestParam String recipientUserId) {
-//        return ResponseEntity.ok(friendService.rejectFriendRequest(recipientUserId));
-//    }
+    @PostMapping("/reject")
+    public ResponseEntity<FriendshipResponse> rejectFriendRequest(@RequestParam String senderUserId) {
+        return ResponseEntity.ok(friendService.rejectFriendRequest(senderUserId));
+    }
+
+    @PostMapping("/unfriend")
+    public ResponseEntity<FriendshipResponse> unFriendRequest(@RequestParam String recipientUserId) {
+        return ResponseEntity.ok(friendService.rejectFriendRequest(recipientUserId));
+    }
 }

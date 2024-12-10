@@ -9,7 +9,6 @@ import java.util.List;
 @Data
 public class StoryResponse {
     String id;
-    String content;
     List<String> imageUrl;
     LocalDateTime postedAt;
     LocalDateTime expiryTime;

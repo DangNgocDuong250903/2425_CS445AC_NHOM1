@@ -1,11 +1,10 @@
 package com.LinkVerse.identity.dto.response;
 
-import java.util.Set;
-
 import com.LinkVerse.identity.entity.UserStatus;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Set;
 
 @Data
 @NoArgsConstructor
@@ -13,10 +12,11 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
-    String id;
+    String id; //users id
     String username;
     UserStatus status = UserStatus.ONLINE;
     String email;
+    String profileId;
     boolean emailVerified;
     Set<RoleResponse> roles;
 }

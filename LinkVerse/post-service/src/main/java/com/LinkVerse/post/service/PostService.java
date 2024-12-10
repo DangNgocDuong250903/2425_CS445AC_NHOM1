@@ -64,6 +64,8 @@ public class PostService {
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     ProfileServiceClient profileServiceClient;
+    @Autowired
+    HashtagService hashtagService;
 
     public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -100,7 +102,6 @@ public class PostService {
                         .build();
             }
 
-            // Create a new Post entity
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(currentUserId)
@@ -113,25 +114,23 @@ public class PostService {
                     .comments(new ArrayList<>())
                     .build();
 
-            // Detect language of the content
             String languageCode = keywordService.detectDominantLanguage(request.getContent());
             post.setLanguage(languageCode);
 
-            // Extract and save keywords
-            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeyPhrases(request.getContent(), post.getId());
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            // Analyze and save sentiment
+            List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
+            List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+            post.getKeywords().addAll(hashtagIds);
+
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
-            // Save the post in the repository
             post = postRepository.save(post);
 
-            // Map to PostResponse DTO
             PostResponse postResponse = postMapper.toPostResponse(post);
 
-            // Update the user's profile avatar
             try {
                 profileServiceClient.updateImage(currentUserId, avatarFile);
             } catch (FeignException e) {
@@ -206,9 +205,13 @@ public class PostService {
             String languageCode = keywordService.detectDominantLanguage(request.getContent());
             post.setLanguage(languageCode);
 
-            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(request.getContent());
+            List<Keyword> extractedKeywords = keywordService.extractAndSaveKeyPhrases(request.getContent(), post.getId());
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
+
+            List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
+            List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+            post.getKeywords().addAll(hashtagIds);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
@@ -390,16 +393,19 @@ public class PostService {
                 .build();
 
         // Extract and save keywords for the shared post
-        List<Keyword> extractedKeywords = keywordService.extractAndSaveKeywords(content);
+        List<Keyword> extractedKeywords = keywordService.extractAndSaveKeyPhrases(content, sharedPost.getId());
         List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
         sharedPost.setKeywords(keywordIds);
+
+        List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(content, sharedPost.getId());
+        List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+        sharedPost.getKeywords().addAll(hashtagIds);
 
         // Lưu bài viết chia sẻ mới vào SharedPostRepository
         sharedPost = sharedPostRepository.save(sharedPost);
 
         // Sử dụng ShareMapper để ánh xạ SharedPost sang PostResponse
         PostResponse postResponse = shareMapper.toPostResponse(sharedPost);
-//        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
         return ApiResponse.<PostResponse>builder()
                 .code(200)

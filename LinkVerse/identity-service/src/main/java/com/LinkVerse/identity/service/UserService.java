@@ -1,15 +1,5 @@
 package com.LinkVerse.identity.service;
 
-import java.util.HashSet;
-import java.util.List;
-
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-
 import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
@@ -25,11 +15,19 @@ import com.LinkVerse.identity.mapper.UserMapper;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.util.HashSet;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,6 +42,7 @@ public class UserService {
     ProfileClient profileClient;
     AuthenticationService authenticationService;
     KafkaTemplate<String, Object> kafkaTemplate;
+
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
@@ -72,6 +71,9 @@ public class UserService {
 
         var profile = profileClient.createProfile(profileRequest);
 
+        user.setProfileId(profile.getResult().getId());
+        user = userRepository.save(user);
+
         NotificationEvent notificationEvent = NotificationEvent.builder()
                 .channel("EMAIL")
                 .recipient(request.getEmail())
@@ -82,11 +84,10 @@ public class UserService {
         // Publish message to kafka
         kafkaTemplate.send("notification-delivery", notificationEvent);
 
-        var userCreationReponse = userMapper.toUserResponse(user);
-        userCreationReponse.setId(profile.getResult().getId());
 
-        return userCreationReponse;
+        return userMapper.toUserResponse(user);
     }
+
 
     public UserResponse updateStatus(String userId, String status) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -96,9 +97,18 @@ public class UserService {
 
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
-        String name = context.getAuthentication().getName();
+        if (context == null || context.getAuthentication() == null) {
+            log.error("Security context or authentication is null");
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        String name = context.getAuthentication().getName();
+        log.info("Authenticated user: {}", name);
+
+        User user = userRepository.findByUsername(name).orElseThrow(() -> {
+            log.error("User not found: {}", name);
+            return new AppException(ErrorCode.USER_NOT_EXISTED);
+        });
 
         return userMapper.toUserResponse(user);
     }
