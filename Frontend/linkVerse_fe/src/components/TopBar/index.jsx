@@ -1,18 +1,15 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { BsMoon, BsSunFill } from "react-icons/bs";
 import {
   Apps,
   Button,
   Chat,
   Notifications,
-  PopperCustom,
   TextInput,
 } from "~/components/index";
 import { useTranslation } from "react-i18next";
 import i18n from "~/utils/i18n/i18n";
-import { Badge, MenuItem, Select, useColorScheme } from "@mui/material";
-import { VieIcon, EnIcon } from "~/assets";
+import { MenuItem, Select, useColorScheme } from "@mui/material";
 import { setLanguage } from "~/redux/Slices/languageSlice";
 import { setTheme } from "~/redux/Slices/themeSlice";
 import { useState } from "react";
@@ -20,8 +17,6 @@ import { useForm } from "react-hook-form";
 import * as UserService from "~/services/UserService";
 import { resetUser } from "~/redux/Slices/userSlice";
 import { IoIosSearch } from "react-icons/io";
-import { MdApps } from "react-icons/md";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { FaArrowLeft } from "react-icons/fa";
 
 const TopBar = ({ title, iconBack }) => {
@@ -49,9 +44,9 @@ const TopBar = ({ title, iconBack }) => {
 
   //logout
   const handleLogOut = async () => {
-    await UserService.logout(user?.id, user?.access_token);
+    await UserService.logout(user?.token);
     dispatch(resetUser());
-    localStorage.removeItem("access_token");
+    localStorage.removeItem("token");
     navigate("/login");
   };
 
@@ -144,7 +139,7 @@ const TopBar = ({ title, iconBack }) => {
         {/* notification */}
         <Notifications />
         {/* change language */}
-        {/* <div className="w-10 h-10 flex items-center justify-center">
+        <div className="w-10 h-10 flex items-center justify-center">
           <Select
             IconComponent={() => {}}
             sx={{
@@ -169,24 +164,19 @@ const TopBar = ({ title, iconBack }) => {
             onChange={handleChangeLanguage}
           >
             <MenuItem value={"vie"}>
-              <img src={VieIcon} alt="icon" />
+              <span className="">VIE</span>
             </MenuItem>
             <MenuItem value={"en"}>
-              <img src={EnIcon} alt="icon" />
+              <span>EN</span>
             </MenuItem>
           </Select>
-        </div> */}
-        {/* change theme */}
-        {/* <button onClick={handleTheme}>
-          {theme === "dark" ? <BsMoon /> : <BsSunFill />}
-        </button> */}
-        {/* chat */}
+        </div>
         <Chat />
         {/* app */}
         <Apps />
         {/* log out + log in */}
         <div>
-          {user?.access_token ? (
+          {user?.token ? (
             <Button
               onClick={handleLogOut}
               title={t("Đăng xuất")}

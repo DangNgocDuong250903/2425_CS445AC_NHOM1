@@ -1,9 +1,8 @@
-import { Loading, Button as CustomButton, TextInput } from "~/components";
+import { Button as CustomButton, TextInput } from "~/components";
 import { useForm } from "react-hook-form";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { BgImage } from "~/assets/index";
 import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
 import { AiOutlineInteraction } from "react-icons/ai";
@@ -14,10 +13,10 @@ import * as UserService from "~/services/UserService";
 import { updateUser } from "~/redux/Slices/userSlice";
 import { jwtDecode } from "jwt-decode";
 import { FaCircleExclamation } from "react-icons/fa6";
+import { CircularProgress } from "@mui/material";
 
 const LoginPage = () => {
   const { t } = useTranslation();
-  const { state } = useLocation();
   const navigate = useNavigate();
   const [hide, setHide] = useState("hide");
   const [errMsg, setErrMsg] = useState("");
@@ -41,28 +40,22 @@ const LoginPage = () => {
         console.log("Login successful");
         navigate("/");
       }
-      localStorage.setItem(
-        "access_token",
-        JSON.stringify(data?.message?.metaData?.tokens?.accessToken)
-      );
-      if (data?.message?.metaData?.tokens) {
-        const decoded = jwtDecode(data?.message?.metaData?.tokens?.accessToken);
-        if (decoded?.userId) {
-          handleGetDetailUser(
-            decoded?.userId,
-            data?.message?.metaData?.tokens?.accessToken
-          );
+      localStorage.setItem("token", JSON.stringify(data?.result?.token));
+      if (data?.result?.token) {
+        const decoded = jwtDecode(data?.result?.token);
+        if (decoded?.ProfileID) {
+          handleGetDetailUser(decoded?.ProfileID, data?.result?.token);
         }
       }
     } else if (isError) {
-      setErrMsg("Something went wrong!");
+      setErrMsg("Username or password incorrect");
     }
   }, [isSuccess, isError]);
 
   const handleGetDetailUser = async (id, token) => {
     try {
       const res = await UserService.getDetailUser(id, token);
-      dispatch(updateUser({ ...res?.message?.metaData, access_token: token }));
+      dispatch(updateUser({ ...res?.result, token }));
     } catch (error) {
       console.log(error);
     }
@@ -98,25 +91,25 @@ const LoginPage = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <TextInput
-              name="email"
-              placeholder="email@example.com"
-              label={t("Địa chỉ email")}
-              type="email"
-              register={register("email", {
-                required: t("Địa chỉ email là bắt buộc"),
+              name="username"
+              placeholder="User Name"
+              label={t("User Name")}
+              type="username"
+              register={register("username", {
+                required: t("User name là bắt buộc"),
                 validate: {
                   noSpaces: (value) =>
-                    !/\s/.test(value) || "Email must not contain spaces.",
+                    !/\s/.test(value) || "User name must not contain spaces.",
                 },
               })}
-              styles={`w-full rounded-full ${
-                errors.email ? "border-red-600" : ""
+              styles={`w-full rounded-md ${
+                errors.username ? "border-red-600" : ""
               }`}
               iconRight={
-                errors.email ? <FaCircleExclamation color="red" /> : ""
+                errors.username ? <FaCircleExclamation color="red" /> : ""
               }
               iconRightStyles="right-5"
-              toolTip={errors.email ? errors.email?.message : ""}
+              toolTip={errors.username ? errors.username?.message : ""}
               labelStyles="ml-2"
             />
 
@@ -125,7 +118,7 @@ const LoginPage = () => {
               label="Password"
               placeholder={t("Mật khẩu")}
               type={hide === "hide" ? "password" : "text"}
-              styles={`w-full rounded-full  ${
+              styles={`w-full rounded-md  ${
                 errors.password ? "border-red-600" : ""
               }`}
               labelStyles="ml-2"
@@ -162,38 +155,27 @@ const LoginPage = () => {
                 <span className="flex-1" />
               )}
               <Link
-                to="/reset-password"
+                to="/forgot-password"
                 className="text-sm text-right text-blue font-semibold my-1 py-1 ml-auto hover:text-[#065ad898]"
               >
                 {t("Quên mật khẩu")} ?
               </Link>
             </div>
 
-            {/* {errMsg?.message && (
-              <span
-                className={`text-sm ${
-                  errMsg?.status == "failed"
-                    ? "text-[#f64949fe]"
-                    : "text-[#2ba150fe]"
-                } mt-0.5`}
-              >
-                {errMsg?.message}
-              </span>
-            )} */}
-
-            {isPending ? (
-              <div className="h-10 ">
-                <Loading />
-              </div>
-            ) : (
+            <div className="relative">
               <CustomButton
+                disable={isPending || !isValid}
                 type="submit"
-                containerStyles={`inline-flex text-white justify-center rounded-md bg-blue px-8 py-3 text-sm font-medium outline-none hover:bg-[#065ad898] hover:text-black ${
-                  !isValid && "cursor-not-allowed"
-                }`}
+                containerStyles="w-full mt-3 inline-flex justify-center rounded-md bg-[#065ad8] px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#065ad898] hover:text-black"
                 title={t("Đăng nhập")}
               />
-            )}
+              {isPending && (
+                <CircularProgress
+                  className="absolute top-1/2 left-1/2"
+                  size={20}
+                />
+              )}
+            </div>
           </form>
 
           <p className="text-ascent-2 text-sm text-center">
@@ -210,8 +192,8 @@ const LoginPage = () => {
         <div className="hidden w-1/2 h-full lg:flex flex-col items-center justify-center bg-blue">
           <div className="relative w-full flex items-center justify-center">
             <img
-              src={BgImage}
-              alt="Bg Image"
+              src="/register.jpeg"
+              alt="bg"
               className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-xl"
             />
 

@@ -1,8 +1,7 @@
-import { TextInput, Loading, Button as CustomButton } from "~/components";
+import { TextInput, Button as CustomButton } from "~/components";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { BgImage } from "~/assets";
 import { BsShare } from "react-icons/bs";
 import { ImConnection } from "react-icons/im";
 import { AiOutlineInteraction } from "react-icons/ai";
@@ -11,6 +10,7 @@ import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 import { FaCircleExclamation } from "react-icons/fa6";
+import { CircularProgress } from "@mui/material";
 
 const RegisterPage = () => {
   const { t } = useTranslation();
@@ -21,7 +21,6 @@ const RegisterPage = () => {
   const {
     register,
     handleSubmit,
-    getValues,
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
 
@@ -32,7 +31,7 @@ const RegisterPage = () => {
     if (isSuccess) {
       navigate("/login", { state: data?.message?.metaData?.metadata });
     } else if (isError) {
-      setErrMsg("Email is already registered");
+      setErrMsg("Email or username is already registered");
     }
   }, [isSuccess, isError]);
 
@@ -41,9 +40,10 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="bg-bgColor w-full h-[100vh] flex items-center justify-center p-6">
+    <div className="bg-bgColor  w-full h-[100vh] flex items-center justify-center p-6">
       <div className="w-full md:w-2/3 h-fit lg:h-full 2xl:h-5/6 py-8 lg:py-0 flex flex-row-reverse bg-primary rounded-xl overflow-hidden shadow-2xl border-1 border-borderNewFeed">
         {/* phai */}
+
         <div className="w-full lg:w-1/2 h-full p-10 2xl:px-20 flex flex-col justify-center shadow-xl">
           {/* header */}
           <div className="w-full flex flex-col gap-2 mb-2">
@@ -108,23 +108,53 @@ const RegisterPage = () => {
                     message: "Last name cannot exceed 50 characters",
                   },
                 })}
-                // error={errors.lastName ? errors.lastName?.message : ""}
               />
             </div>
 
-            <TextInput
-              name="birthday"
-              type="date"
-              label="Ngày sinh"
-              styles={`w-full h-10 ${errors.birthday ? "border-red-600" : ""}`}
-              register={register("birthday", {
-                required: "Birthday is required",
-              })}
-              toolTipInput={errors.birthday ? errors.birthday?.message : ""}
-              // error={errors.birthday ? errors.birthday?.message : ""}
-            />
+            <div className="w-full flex flex-col  lg:flex-row gap-1 md:gap-2">
+              <TextInput
+                name="username"
+                label="User Name"
+                placeholder="User Name"
+                type="text"
+                styles={`w-full h-10 ${
+                  errors.username ? "border-red-600" : ""
+                }`}
+                iconRight={
+                  errors.username ? <FaCircleExclamation color="red" /> : ""
+                }
+                toolTip={errors.username ? errors.username.message : ""}
+                register={register("username", {
+                  required: "User name is required!",
+                  minLength: {
+                    value: 1,
+                    message: "User name must be at least 4 character long!",
+                  },
+                  maxLength: {
+                    value: 50,
+                    message: "User name cannot exceed 20 characters",
+                  },
+                  validate: {
+                    noSpaces: (value) =>
+                      !/\s/.test(value) || "User name must not contain spaces.",
+                  },
+                })}
+              />
 
-            <div className="w-full flex flex-col mt-2">
+              <TextInput
+                name="dbo"
+                type="date"
+                label="Ngày sinh"
+                styles={`w-full h-10 ${errors.dbo ? "border-red-600" : ""}`}
+                register={register("dbo", {
+                  required: "Birthday is required",
+                })}
+                toolTipInput={errors.dbo ? errors.dbo?.message : ""}
+              />
+            </div>
+
+            {/* sex */}
+            {/* <div className="w-full flex flex-col mt-2">
               <p className="text-ascent-2 text-sm mb-2">Sex</p>
 
               <div className="w-full h-10 flex flex-col lg:flex-row gap-1 md:gap-2">
@@ -176,13 +206,7 @@ const RegisterPage = () => {
                   />
                 </div>
               </div>
-
-              {/* {errors.sex && (
-                <span className="text-xs text-[#f64949fe] mt-0.5">
-                  {errors.sex.message}
-                </span>
-              )} */}
-            </div>
+            </div> */}
 
             <TextInput
               name="email"
@@ -201,7 +225,6 @@ const RegisterPage = () => {
                 errors.email ? <FaCircleExclamation color="red" /> : ""
               }
               toolTip={errors.email ? errors.email?.message : ""}
-              // error={errors.email ? errors.email.message : ""}
             />
 
             <TextInput
@@ -250,37 +273,24 @@ const RegisterPage = () => {
               })}
             />
 
-            {/* {errMsg?.message && (
-              <span
-                className={`text-sm ${
-                  errMsg?.status == "failed"
-                    ? "text-[#f64949fe]"
-                    : "text-[#2ba150fe]"
-                } mt-0.5`}
-              >
-                {errMsg?.message}
-              </span>
-            )} */}
-
             {errMsg && (
               <span className={`text-sm mt-0.5 text-red-600`}>{errMsg}</span>
             )}
 
-            {isPending ? (
-              <div className="h-10 ">
-                <Loading />
-              </div>
-            ) : (
-              <>
-                <CustomButton
-                  type="submit"
-                  containerStyles={`mt-5 inline-flex justify-center rounded-md bg-[#065ad8] px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#065ad898] hover:text-black ${
-                    !isValid && "cursor-not-allowed"
-                  }`}
-                  title={t("Đăng ký")}
+            <div className="relative">
+              <CustomButton
+                disable={isPending || !isValid}
+                type="submit"
+                containerStyles="w-full mt-3 inline-flex justify-center rounded-md bg-[#065ad8] px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#065ad898] hover:text-black"
+                title={t("Đăng ký")}
+              />
+              {isPending && (
+                <CircularProgress
+                  className="absolute top-1/2 left-1/2"
+                  size={20}
                 />
-              </>
-            )}
+              )}
+            </div>
           </form>
 
           <p className="text-ascent-2 text-sm text-center">
@@ -293,12 +303,11 @@ const RegisterPage = () => {
             </Link>
           </p>
         </div>
-        {/* trai */}
         <div className="hidden w-1/2 h-full lg:flex flex-col items-center justify-center bg-blue shadow-xl">
           <div className="relative w-full flex items-center justify-center">
             <img
-              src={BgImage}
-              alt="Bg Image"
+              src="/register.jpeg"
+              alt="bg"
               className="w-48 2xl:w-64 h-48 2xl:h-64 rounded-full object-cover shadow-xl"
             />
 

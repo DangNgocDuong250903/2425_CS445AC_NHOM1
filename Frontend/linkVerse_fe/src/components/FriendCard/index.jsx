@@ -11,7 +11,7 @@ const FriendCard = () => {
       </div>
 
       <div className="flex w-full flex-col gap-4 pt-4">
-        {friends?.map((friend) => (
+        {/* {friends?.map((friend) => (
           <Link
             key={friend._id}
             to={"/friend/" + friend?._id}
@@ -31,7 +31,7 @@ const FriendCard = () => {
               </span>
             </div>
           </Link>
-        ))}
+        ))} */}
       </div>
     </div>
   );

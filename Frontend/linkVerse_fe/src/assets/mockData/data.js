@@ -165,6 +165,7 @@ export const suggests = [
 export const posts = [
   {
     _id: "67498e87a2974bd5a3db536b",
+    postedBy: "64df39704180b81adfe41d0b",
     userId: {
       _id: "64df39704180b81adfe41d0b",
       firstName: "Ha",
@@ -184,6 +185,7 @@ export const posts = [
   },
   {
     _id: "64df3ed06c2bd953c7b43172",
+    postedBy: "64df39704180b81adfe41d0b",
     userId: {
       _id: "64df39704180b81adfe41d0b",
       firstName: "Cristiano ",

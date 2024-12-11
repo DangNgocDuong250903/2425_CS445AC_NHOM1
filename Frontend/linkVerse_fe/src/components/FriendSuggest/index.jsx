@@ -13,7 +13,7 @@ const FriendSuggest = () => {
         <span>{t("Bạn bè đề xuất")}</span>
       </div>
       <div className="w-full flex flex-col gap-4 pt-4">
-        {suggests?.map((friend) => (
+        {/* {suggests?.map((friend) => (
           <div key={friend?._id} className="flex items-center justify-between">
             <Link
               to={"/profile/" + friend?._id}
@@ -43,7 +43,7 @@ const FriendSuggest = () => {
               </button>
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );

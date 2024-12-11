@@ -11,11 +11,11 @@ const FriendRequest = () => {
     <div className="w-full bg-primary shadow-newFeed rounded-xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]">
         <span>{t("Lời mời kết bạn")}</span>
-        <span>{requests?.length}</span>
+        {/* <span>{requests?.length || ""} </span> */}
       </div>
 
       <div className="w-full flex flex-col gap-4 pt-4">
-        {requests?.map(({ _id, requestFrom: from }) => (
+        {/* {requests?.map(({ _id, requestFrom: from }) => (
           <div key={_id} className="flex items-center justify-between">
             <Link
               to={"/profile"}
@@ -50,7 +50,7 @@ const FriendRequest = () => {
               />
             </div>
           </div>
-        ))}
+        ))} */}
       </div>
     </div>
   );

@@ -111,10 +111,13 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
   return (
     <div className="bg-primary p-2 rounded-xl">
       <div
-        onClick={() => navigate(`/post/${post.id}`)}
+        onClick={() => navigate(`/post/${post._id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
       >
-        <Link to={"/friend"} onClick={(e) => e.stopPropagation()}>
+        <Link
+          to={`/profile/${post?.postedBy}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           <img
             src={post?.userId?.profileUrl ?? BlankAvatar}
             alt={post?.userId?.firstName}
@@ -125,7 +128,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
         <div className="w-full flex justify-between">
           <div onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 ">
-              <Link to={"/friend"}>
+              <Link to={`/profile/${post?.postedBy}`}>
                 <p className="font-medium text-lg text-ascent-1">
                   {post?.userId?.firstName} {post?.userId?.lastName}
                 </p>

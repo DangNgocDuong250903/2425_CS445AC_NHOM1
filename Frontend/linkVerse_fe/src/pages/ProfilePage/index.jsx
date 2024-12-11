@@ -180,7 +180,7 @@ const ProfilePage = () => {
 
   const handleSubmitChange = () => {
     const data = {
-      token: user?.access_token,
+      token: user?.token,
       id: user?.id,
       lastName,
       firstName,
@@ -193,6 +193,9 @@ const ProfilePage = () => {
     };
     mutation.mutate(data);
   };
+
+  //get detail user
+  // const mutation = useMutationHook(data => ) 
 
   return (
     <>
@@ -219,7 +222,7 @@ const ProfilePage = () => {
                 <p className="text-ascent-1">{bio || "No storie"}</p>
               </div>
               {/* 3 */}
-              <div className="flex justify-between items-center">
+              {/* <div className="flex justify-between items-center">
                 {user?.following.length > 0 ? (
                   <AvatarGroup total={user?.following.length}>
                     {user.following.map((item, i) => (
@@ -242,7 +245,7 @@ const ProfilePage = () => {
                     size="30px"
                   />
                 </div>
-              </div>
+              </div> */}
               {/* 4 */}
               <div className="w-full text-center items-center justify-center flex ">
                 <Button
@@ -253,6 +256,23 @@ const ProfilePage = () => {
                   }
                 />
               </div>
+
+              {/* <div className="w-full text-center items-center justify-center flex gap-x-2">
+                <Button
+                  onClick={() => setIsOpenDialogEdit(true)}
+                  title="Bạn bè"
+                  containerStyles={
+                    "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                  }
+                />
+                <Button
+                  onClick={() => setIsOpenDialogEdit(true)}
+                  title="Nhắn tin"
+                  containerStyles={
+                    "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                  }
+                />
+              </div> */}
             </div>
             {/* 2 */}
             <div className="flex w-full h-auto items-center justify-center">

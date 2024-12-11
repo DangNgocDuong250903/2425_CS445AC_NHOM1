@@ -4,20 +4,12 @@ const initialState = {
     id: "",
     firstName: "",
     lastName: "",
+    username: "",
     email: "",
-    bio: "",
-    avatar: "",
-    password: "",
-    sex: "",
-    address: "",
-    access_token: "",
-    profession: "",
-    birthday: "",
-    roles: [],
-    followers: [],
-    following: [],
-    isActive: false,
-    createdAt: ""
+    city: null,
+    token: "",
+    dob: "",
+    status: null
 };
 
 const userSlice = createSlice({
@@ -25,57 +17,36 @@ const userSlice = createSlice({
     initialState,
     reducers: {
         updateUser(state, action) {
-            const { _id = "",
+            const {
+                id = "",
                 firstName = "",
                 lastName = "",
                 email = "",
-                password = "",
-                sex = "",
-                address = "",
-                avatar = "",
-                profession = "",
-                access_token = "",
-                birthday = "",
-                roles = [],
-                isActive = false,
-                following = [],
-                followers = [],
-                createdAt = ""
+                username = "",
+                city = null,
+                token = "",
+                dob = "",
+                status = null,
             } = action.payload
 
             state.lastName = lastName
             state.firstName = firstName
-            state.id = _id
+            state.id = id
             state.email = email
-            state.birthday = birthday
-            state.sex = sex
-            state.avatar = avatar
-            state.roles = roles
-            state.profession = profession
-            state.address = address
-            state.isActive = isActive
-            state.access_token = access_token
-            state.password = password
-            state.followers = followers
-            state.following = following
-            state.createdAt = createdAt
+            state.dob = dob
+            state.username = username
+            state.city = city
+            state.token = token
+            state.status = status
         },
         resetUser(state, action) {
             state.lastName = ""
             state.firstName = ""
             state.id = ""
-            state.email = ""
-            state.birthday = ""
-            state.sex = ""
-            state.address = ""
-            state.avatar = ""
-            state.roles = []
-            state.isActive = false
-            state.access_token = ""
-            state.password = ""
-            state.followers = []
-            state.following = []
-            state.createdAt = ""
+            state.dob = ""
+            state.city = null
+            state.token = ""
+            state.username = ""
         }
     },
 });

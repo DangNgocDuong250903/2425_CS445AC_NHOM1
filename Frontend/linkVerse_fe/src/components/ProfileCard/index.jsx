@@ -23,12 +23,12 @@ const ProfileCard = () => {
         <Link to={"/profile/" + user?.id} className="flex gap-2">
           <img
             src={user?.avatar || BlankAvatar}
-            alt={user?.email}
+            alt={"avatar"}
             className="w-14 h-14 object-cover rounded-full"
           />
           <div className="flex flex-col justify-center">
             <p className="text-lg font-medium text-ascent-1">
-              {user?.firstName} {user?.lastName}
+              {user?.username || "No name"}
             </p>
             <span className="text-ascent-1">
               {user?.profession || "No profession"}
@@ -65,7 +65,7 @@ const ProfileCard = () => {
       </div>
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
-          {user?.following.length} {t("Bạn bè")}
+          {"0"} {t("Bạn bè")}
         </p>
 
         <span className="text-base text-blue">

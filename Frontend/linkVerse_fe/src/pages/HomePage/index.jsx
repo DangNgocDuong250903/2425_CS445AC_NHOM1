@@ -83,7 +83,7 @@ const HomePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const isLoggedIn = localStorage.getItem("access_token");
+    const isLoggedIn = localStorage.getItem("token");
     if (!isLoggedIn) {
       setShowModal(true);
     }
@@ -100,12 +100,12 @@ const HomePage = () => {
         <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
           {/* trai */}
           <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
-            {user?.access_token && (
-              <div>
+            {user?.token && (
+              <>
                 <ProfileCard />
                 <FriendCard />
                 <GroupCard />
-              </div>
+              </>
             )}
           </div>
 
@@ -173,11 +173,11 @@ const HomePage = () => {
 
           {/* phai */}
           <div className="hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto">
-            {user?.access_token && (
-              <div>
+            {user?.token && (
+              <>
                 <FriendRequest />
                 <FriendSuggest />
-              </div>
+              </>
             )}
           </div>
 

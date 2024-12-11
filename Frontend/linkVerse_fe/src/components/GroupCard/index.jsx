@@ -10,7 +10,7 @@ const GroupCard = () => {
       </div>
 
       <div className="flex w-full flex-col gap-4 pt-4">
-        {groups?.map((group, i) => (
+        {/* {groups?.map((group, i) => (
           <Link
             key={i}
             to={"/group/" + group?._id}
@@ -27,7 +27,7 @@ const GroupCard = () => {
               </p>
             </div>
           </Link>
-        ))}
+        ))} */}
       </div>
     </div>
   );

@@ -57,7 +57,7 @@ const Apps = () => {
         variant="contained"
       />
       <CustomizeMenu handleClose={handleClose} anchorEl={anchorEl} open={open}>
-        {user?.access_token && (
+        {user?.token && (
           <div>
             <MenuItem onClick={() => navigate("/settings")}>
               <div className="flex items-center justify-between w-full">
@@ -91,7 +91,7 @@ const Apps = () => {
           </div>
         </MenuItem>
 
-        {user?.access_token && (
+        {user?.token && (
           <div>
             <StyledDivider />
             <MenuItem onClick={handleClose} disableRipple>
