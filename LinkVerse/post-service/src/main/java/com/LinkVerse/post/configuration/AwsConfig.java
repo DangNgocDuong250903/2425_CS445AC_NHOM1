@@ -20,7 +20,7 @@ public class AwsConfig {
     private static final Logger logger = LoggerFactory.getLogger(AwsConfig.class);
     private static final String AWS_ACCESS_KEY = "AKIAVPEYWJ4WSCSAXBHV";
     private static final String AWS_SECRET_KEY = "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";
-    private static final String REGION = "us-east-1";
+    private static final String REGION = "us-east-2";
 
     @Bean
     public AmazonS3 amazonS3() {

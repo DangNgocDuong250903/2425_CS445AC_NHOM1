@@ -11,13 +11,13 @@ import software.amazon.awssdk.services.comprehend.ComprehendClient;
 public class AwsComprehendConfig {
     private static final String AWS_ACCESS_KEY = "AKIAVPEYWJ4WSCSAXBHV";
     private static final String AWS_SECRET_KEY = "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";
-    private static final String REGION = "us-east-1";
+    private static final String REGION = "us-east-2";
 
     @Bean
     public ComprehendClient amazonComprehend() {
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(AWS_ACCESS_KEY, AWS_SECRET_KEY);
         return ComprehendClient.builder()
-                .region(Region.US_EAST_1) // specify the region
+                .region(Region.US_EAST_2) // specify the region
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }
