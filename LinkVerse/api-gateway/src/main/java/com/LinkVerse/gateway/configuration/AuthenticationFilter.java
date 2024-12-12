@@ -45,7 +45,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/email/reset-password",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/**"
+            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*",
     };
     @Value("${app.api-prefix}")
     @NonFinal

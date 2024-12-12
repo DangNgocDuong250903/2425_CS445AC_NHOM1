@@ -1,8 +1,8 @@
 package com.LinkVerse.post.service;
 
 import com.LinkVerse.post.configuration.TagProcessor;
-import com.LinkVerse.post.entity.Keyword;
-import com.LinkVerse.post.repository.KeywordRepository;
+import com.LinkVerse.post.entity.Hashtag;
+import com.LinkVerse.post.repository.HashtagRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -16,31 +16,30 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class HashtagService {
-    private final KeywordRepository keywordRepository;
+    private final HashtagRepository hashtagRepository;
     private final TagProcessor tagProcessor;
 
-    public List<Keyword> extractAndSaveHashtags(String content, String contentId) {
+    public List<Hashtag> extractAndSaveHashtags(String content, String contentId) {
         try {
             // Extract hashtags
             Set<String> hashtags = tagProcessor.extractHashtags(content);
 
             // Process hashtags
-            List<Keyword> hashtagKeywords = hashtags.stream()
-                    .map(tag -> keywordRepository.findByPhraseIn(List.of(tag)).stream().findFirst()
-                            .orElseGet(() -> Keyword.builder()
+            List<Hashtag> hashtagEntities = hashtags.stream()
+                    .map(tag -> hashtagRepository.findByPhraseIn(List.of(tag)).stream().findFirst()
+                            .orElseGet(() -> Hashtag.builder()
                                     .phrase(tag)
                                     .usageCount(0)
-                                    .type("HASHTAG") // Assign type HASHTAG
                                     .linkedContentIds(new ArrayList<>())
                                     .build()))
-                    .peek(keyword -> {
-                        keyword.setUsageCount(keyword.getUsageCount() + 1);
-                        keyword.getLinkedContentIds().add(contentId);
+                    .peek(hashtag -> {
+                        hashtag.setUsageCount(hashtag.getUsageCount() + 1);
+                        hashtag.getLinkedContentIds().add(contentId);
                     })
-                    .map(keywordRepository::save)
+                    .map(hashtagRepository::save)
                     .collect(Collectors.toList());
 
-            return hashtagKeywords;
+            return hashtagEntities;
         } catch (Exception e) {
             log.error("Error extracting hashtags: ", e);
             return List.of();

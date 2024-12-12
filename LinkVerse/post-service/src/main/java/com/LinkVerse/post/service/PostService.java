@@ -121,8 +121,8 @@ public class PostService {
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
-            List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+            List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
+            List<String> hashtagIds = extractedHashtags.stream().map(Hashtag::getId).collect(Collectors.toList());
             post.getKeywords().addAll(hashtagIds);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
@@ -209,15 +209,14 @@ public class PostService {
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
-            List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+            List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
+            List<String> hashtagIds = extractedHashtags.stream().map(Hashtag::getId).collect(Collectors.toList());
             post.getKeywords().addAll(hashtagIds);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
             post = postRepository.save(post);
             PostResponse postResponse = postMapper.toPostResponse(post);
-//        postResponse.setKeywords(extractedKeywords.stream().map(Keyword::getPhrase).collect(Collectors.toList()));
 
             return ApiResponse.<PostResponse>builder()
                     .code(200)

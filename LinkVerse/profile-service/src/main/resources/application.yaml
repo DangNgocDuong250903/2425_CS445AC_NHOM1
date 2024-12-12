@@ -31,4 +31,4 @@ cloud:
       auto: false
 aws:
   s3:
-    bucket-name: imgpost-0
+    bucket-name: imgpost-1

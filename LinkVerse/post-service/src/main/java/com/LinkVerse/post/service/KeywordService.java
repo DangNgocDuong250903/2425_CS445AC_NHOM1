@@ -1,5 +1,6 @@
 package com.LinkVerse.post.service;
 
+import com.LinkVerse.post.entity.Hashtag;
 import com.LinkVerse.post.entity.Keyword;
 import com.LinkVerse.post.repository.KeywordRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,10 +24,31 @@ import java.util.stream.Collectors;
 public class KeywordService {
     private final ComprehendClient comprehendClient;
     private final KeywordRepository keywordRepository;
+    private final HashtagService hashtagService;
 
     private static final Set<String> SUPPORTED_LANGUAGES = new HashSet<>(List.of(
             "hi", "de", "zh-TW", "ko", "pt", "en", "it", "fr", "zh", "es", "ar", "ja"
     ));
+
+    public List<Keyword> extractAndSaveKeyPhrasesAndHashtags(String content, String contentId) {
+        List<Keyword> combinedKeywords = new ArrayList<>();
+
+        // Extract and save key phrases
+        List<Keyword> keyPhrases = extractAndSaveKeyPhrases(content, contentId);
+        combinedKeywords.addAll(keyPhrases);
+
+        // Extract and save hashtags
+        List<Hashtag> hashtags = hashtagService.extractAndSaveHashtags(content, contentId);
+        combinedKeywords.addAll(hashtags.stream()
+                .map(hashtag -> Keyword.builder()
+                        .phrase(hashtag.getPhrase())
+                        .usageCount(hashtag.getUsageCount())
+                        .linkedContentIds(hashtag.getLinkedContentIds())
+                        .build())
+                .collect(Collectors.toList()));
+
+        return combinedKeywords;
+    }
 
     public List<Keyword> extractAndSaveKeyPhrases(String content, String contentId) {
         try {
@@ -44,12 +66,10 @@ public class KeywordService {
                     .build();
 
             DetectKeyPhrasesResponse response = comprehendClient.detectKeyPhrases(request);
-//            log.info("Key phrases response: {}", response);
 
             List<String> phrases = response.keyPhrases().stream()
                     .map(keyPhrase -> keyPhrase.text())
                     .collect(Collectors.toList());
-//            log.info("Extracted phrases: {}", phrases);
 
             List<Keyword> keyPhraseKeywords = new ArrayList<>();
             for (String phrase : phrases) {
@@ -57,7 +77,6 @@ public class KeywordService {
                         .orElseGet(() -> Keyword.builder()
                                 .phrase(phrase)
                                 .usageCount(0)
-                                .type("KEYPHRASE")
                                 .linkedContentIds(new ArrayList<>())
                                 .build());
 
@@ -66,7 +85,6 @@ public class KeywordService {
                 keyword.setUsageCount(keyword.getUsageCount() + 1);
                 keyword.getLinkedContentIds().add(contentId);
                 keyPhraseKeywords.add(keywordRepository.save(keyword));
-
             }
 
             return keyPhraseKeywords;
