@@ -464,8 +464,16 @@ public class PostService {
         List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
         sharedPost.setKeywords(keywordIds);
 
-        List<Keyword> extractedHashtags = hashtagService.extractAndSaveHashtags(content, sharedPost.getId());
-        List<String> hashtagIds = extractedHashtags.stream().map(Keyword::getId).collect(Collectors.toList());
+        // Extract and save hashtags for the shared post
+        List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(content, sharedPost.getId());
+        List<Keyword> hashtagKeywords = extractedHashtags.stream()
+                .map(hashtag -> Keyword.builder()
+                        .phrase(hashtag.getPhrase())
+                        .usageCount(hashtag.getUsageCount())
+                        .linkedContentIds(hashtag.getLinkedContentIds())
+                        .build())
+                .collect(Collectors.toList());
+        List<String> hashtagIds = hashtagKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
         sharedPost.getKeywords().addAll(hashtagIds);
 
         // Lưu bài viết chia sẻ mới vào SharedPostRepository
