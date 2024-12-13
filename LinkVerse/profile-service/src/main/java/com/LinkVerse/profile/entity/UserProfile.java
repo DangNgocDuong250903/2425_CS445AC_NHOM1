@@ -6,7 +6,8 @@ import org.springframework.data.neo4j.core.schema.*;
 import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,16 +27,22 @@ public class UserProfile {
     String imageUrl;
     String username;
     @Property("status")
-    UserStatus status = UserStatus.ONLINE;
+    String status;
     String email;
     String firstName;
     String lastName;
     LocalDate dob;
     String city;
 
-    @Relationship(type = "HAS_ROLE", direction = Relationship.Direction.OUTGOING)
-    Set<Role> roles;
+    @Relationship(type = "BLOCK_REQUESTS")
+    List<Friendship> blockRequests = new ArrayList<>(); // ds user bị block
 
-    @Property("email_verified")
-    boolean emailVerified;
+    @Relationship(type = "SENDING_REQUESTS")
+    List<Friendship> sendingRequests = new ArrayList<>(); // ds user gửi kb = follow
+
+    @Relationship(type = "PENDING_REQUESTS")
+    List<Friendship> pendingRequests = new ArrayList<>(); // ds lời mời kết bạn
+
+    @Relationship(type = "FRIENDSHIP", direction = Relationship.Direction.OUTGOING)
+    List<Friendship> friends; // ds bạn bè
 }
