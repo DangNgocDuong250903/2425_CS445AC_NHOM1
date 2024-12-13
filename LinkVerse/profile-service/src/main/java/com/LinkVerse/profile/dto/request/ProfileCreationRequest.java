@@ -2,7 +2,6 @@ package com.LinkVerse.profile.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.Property;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,7 +15,6 @@ import java.util.List;
 public class ProfileCreationRequest {
     String userId;
     String username;
-    @Property("image_url")
     String imageUrl;
     String email;
     String firstName;

@@ -1,13 +1,16 @@
 package com.LinkVerse.profile.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.*;
-import org.springframework.data.neo4j.core.support.UUIDStringGenerator;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -15,34 +18,28 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Node("user_profile")
+@Entity
 public class UserProfile {
     @Id
-    @GeneratedValue(generatorClass = UUIDStringGenerator.class)
+    @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @Property("userId")
     String userId;
-    @Property("image_url")
     String imageUrl;
     String username;
-    @Property("status")
-    String status;
     String email;
     String firstName;
     String lastName;
     LocalDate dob;
     String city;
 
-    @Relationship(type = "BLOCK_REQUESTS")
-    List<Friendship> blockRequests = new ArrayList<>(); // ds user bị block
+    @OneToMany(mappedBy = "userProfile1", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    Set<Friendship> friends;
 
-    @Relationship(type = "SENDING_REQUESTS")
-    List<Friendship> sendingRequests = new ArrayList<>(); // ds user gửi kb = follow
+    @ElementCollection
+    Set<String> followers = new HashSet<>();
 
-    @Relationship(type = "PENDING_REQUESTS")
-    List<Friendship> pendingRequests = new ArrayList<>(); // ds lời mời kết bạn
-
-    @Relationship(type = "FRIENDSHIP", direction = Relationship.Direction.OUTGOING)
-    List<Friendship> friends; // ds bạn bè
+    @ElementCollection
+    Set<String> followings = new HashSet<>();
 }

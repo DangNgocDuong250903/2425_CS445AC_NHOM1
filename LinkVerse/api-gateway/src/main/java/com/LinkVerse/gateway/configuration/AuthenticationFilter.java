@@ -38,18 +38,24 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonFinal
     private String[] publicEndpoints = {
+            "/v3/.*",
+            "/profile/.*",
+            "/email/reset-password",
+            "/email/send-forget-pass",
+            "/email/reset-password",
+
+            "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
+            "/internal/users", "/internal/users/.*",
             "/identity/auth/.*",
             "/identity/users/registration",
             "/notification/email/send",
-            "/v3/.*",
-            "/profile/.*",
             "/notification/email/forgot-password",
             "/email/reset-password",
             "/email/send-forget-pass",
             "/email/reset-password",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/**"
+            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*",
     };
 
 

@@ -43,8 +43,8 @@ notification:
 mail:
   host: smtp.gmail.com
   port: 587
-  username: ${MAIL_USERNAME}
-  password: ${MAIL_PASSWORD}
+  username: dangngocduong2509@gmail.com
+  password: qenz zvxi qzdy lupo
   properties:
     mail:
       smtp:

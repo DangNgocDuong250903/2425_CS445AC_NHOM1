@@ -57,6 +57,9 @@ public class SecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
+        // chỉnh principal thành userId (trước đây là sub)
+        jwtAuthenticationConverter.setPrincipalClaimName("userId");
+
         return jwtAuthenticationConverter;
     }
 

@@ -26,7 +26,7 @@ import java.util.UUID;
 public class S3ServiceStory {
 
     @Value("${aws.s3.bucket-name}")
-    String bucketName = "imgpost-0";
+    String bucketName = "imgpost-2";
 
     AmazonS3 s3Client;
     RekognitionService rekognitionService;

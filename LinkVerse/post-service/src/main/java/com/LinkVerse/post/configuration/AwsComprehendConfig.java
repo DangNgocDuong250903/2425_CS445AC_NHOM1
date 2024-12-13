@@ -9,9 +9,9 @@ import software.amazon.awssdk.services.comprehend.ComprehendClient;
 
 @Configuration
 public class AwsComprehendConfig {
-    private static final String AWS_ACCESS_KEY = "AKIAS6J7QIGOAHPPSVWK";
-    private static final String AWS_SECRET_KEY = "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";
-    private static final String REGION = "us-east-1";
+    private static final String AWS_ACCESS_KEY = "AKIAVPEYWJ4WSCSAXBHV";
+    private static final String AWS_SECRET_KEY = "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";
+    private static final String REGION = "us-east-2";
 
     @Bean
     public ComprehendClient amazonComprehend() {

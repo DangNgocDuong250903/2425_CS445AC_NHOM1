@@ -2,7 +2,6 @@ package com.LinkVerse.profile.dto.response;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.Property;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +14,6 @@ import java.util.List;
 public class UserProfileResponse {
     String id;
     String username;
-    @Property("image_url")
     String imageUrl;
     String status;
     String email;
