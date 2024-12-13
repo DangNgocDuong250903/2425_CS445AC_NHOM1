@@ -47,7 +47,7 @@ const ResetPassword = () => {
     <div className="w-full h-[100vh] flex bg-bgColor items-center justify-center p-6 ">
       <div className="bg-primary w-full md:w-1/3 2xl:w-1/4 px-6 pb-8 pt-6 shadow-newFeed rounded-xl border-x-[0.8px] border-y-[0.8px] border-solid border-borderNewFeed">
         <div
-          className="w-8 h-8 mb-5 rounded-lg bg-blue flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
+          className="w-8 h-8 mb-4 rounded-lg bg-blue flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
           onClick={() => navigate("/forgot-password")}
         >
           <FaArrowLeft color="#fff" />
@@ -55,7 +55,7 @@ const ResetPassword = () => {
         <p className="text-ascent-1 text-lg font-semibold">Reset password</p>
         <span className="text-sm text-ascent-2">Type new password</span>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="py-4 flex flex-col">
+        <form onSubmit={handleSubmit(onSubmit)} className="py-2 flex flex-col">
           <TextInput
             name="password"
             placeholder="New Password"

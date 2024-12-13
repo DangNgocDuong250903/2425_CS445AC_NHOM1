@@ -20,7 +20,7 @@ const ProfileCard = () => {
   return (
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
-        <Link to={"/profile/" + user?.id} className="flex gap-2">
+        <Link to={`/${user?.username}`} className="flex gap-2">
           <img
             src={user?.avatar || BlankAvatar}
             alt={"avatar"}
@@ -40,7 +40,7 @@ const ProfileCard = () => {
             <LiaEditSolid
               size={22}
               className="text-blue cursor-pointer"
-              onClick={() => navigate(`/profile/${user?.id}`)}
+              onClick={() => navigate(`/${user?.username}`)}
             />
           ) : (
             <button

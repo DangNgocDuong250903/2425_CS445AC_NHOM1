@@ -1,7 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, DialogCustom, TopBar } from "~/components";
+import { Button, CreatePost, DialogCustom, TopBar } from "~/components";
 import { RxLockClosed } from "react-icons/rx";
 import { RiEyeOffLine } from "react-icons/ri";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
@@ -10,6 +10,7 @@ import { IoIosArrowForward } from "react-icons/io";
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
+  const user = useSelector((state) => state.user);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -46,6 +47,7 @@ const SettingPage = () => {
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={"Settings"} iconBack />
+      <CreatePost />
       <div className="w-full h-full flex justify-center">
         <div className="w-[680px] flex flex-col h-full bg-primary p-5 rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
           <Box sx={{ width: "100%" }}>
@@ -107,7 +109,7 @@ const SettingPage = () => {
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
-                        // checked={theme === "dark" ? true : false}
+                        // checked={user?.}
                         // onChange={handleToggle}
                         className="sr-only peer"
                       />
@@ -134,22 +136,44 @@ const SettingPage = () => {
                   isOpen={isOpenDelete}
                   handleCloseDiaLogAdd={hanleCloseDelete}
                 >
-                  <div className="w-full h-full p-3 bg-pink-50 flex flex-col">
+                  <div className="w-full h-auto p-5 bg-primary flex flex-col">
                     {/* header */}
-                    <div className="w-full flex items-center justify-center">
+                    <div className="w-full flex font-bold items-center py-3 justify-center">
                       Vô hiệu hóa hoặc xóa
                     </div>
                     {/* body */}
-                    <div className="h-32 w-full"></div>
+                    <div className="h-full flex flex-col gap-5 w-full py-2">
+                      <div className="w-full flex flex-col gap-2">
+                        <h2 className="font-bold text-base">
+                          Vô hiệu hóa trang cá nhân chỉ mang tính tạm thời
+                        </h2>
+                        <p className="text-sm text-ascent-2">
+                          Trang cá nhân, nội dung, lượt thích và người theo dõi
+                          trên LinkVerse của bạn sẽ không hiển thị với bất kỳ ai
+                          cho đến khi bạn đăng nhập lại để kích hoạt trang cá
+                          nhân
+                        </p>
+                      </div>
+                      <div className="w-full flex flex-col gap-2">
+                        <h2 className="font-bold text-base">
+                          Xóa trang cá nhân là mang tính vĩnh viễn
+                        </h2>
+                        <p className="text-sm text-ascent-2">
+                          Trước khi bị gỡ vĩnh viễn, trang cá nhân, nội dung,
+                          lượt thích và người theo dõi trên LinkVerse của bạn sẽ
+                          ẩn trong 30 ngày.
+                        </p>
+                      </div>
+                    </div>
                     {/* footer */}
-                    <div className="w-full flex flex-col gap-y-2 items-center justify-between">
+                    <div className="w-full flex flex-col gap-y-2  items-center justify-between">
                       <Button
                         title="Vô hiệu hóa tài khoản"
-                        containerStyles="bg-bgColor w-full flex items-center justify-center py-3 rounded-xl font-semibold"
+                        containerStyles="w-full text-white bg-bgStandard flex items-center justify-center py-3 rounded-2xl"
                       />
                       <Button
                         title="Xóa tài khoản"
-                        containerStyles="py-3 rounded-xl font-semibold w-full flex items-center justify-center"
+                        containerStyles="py-3 rounded-2xl text-red-600  bg-slate-200 w-full flex items-center justify-center"
                       />
                     </div>
                   </div>

@@ -18,7 +18,6 @@ const Button = ({
       }`}
     >
       {title}
-
       {iconRight && <div className="ml-2">{iconRight}</div>}
     </button>
   );

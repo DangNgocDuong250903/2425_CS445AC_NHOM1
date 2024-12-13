@@ -14,7 +14,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
       backgroundColor: theme.colorSchemes.dark.primary.main,
     }),
     "& .MuiDialog-paper": {
-      borderRadius: "13px",
+      borderRadius: "20px",
       borderWidth: "0.1px",
       borderColor: theme === "dark" ? "rgb(45,45,45)" : "rgb(213,213,213)",
     },
@@ -36,10 +36,8 @@ const DialogCustom = ({
       open={isOpen}
       fullWidth
     >
-      {/* <div className={classNames}> */}
       {imageSrc && <img src={imageSrc} />}
       {children}
-      {/* </div> */}
     </StyledDialog>
   );
 };

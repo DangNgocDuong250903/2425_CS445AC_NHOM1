@@ -18,6 +18,7 @@ import {
 
 function App() {
   const { theme } = useSelector((state) => state.theme);
+  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -41,10 +42,11 @@ function App() {
     async function (config) {
       try {
         const { decoded, token } = handleDecoded();
-        const currentTime = new Date();
-        if (decoded?.exp < currentTime.getTime() / 1000) {
+        const currentTimeInSeconds = Math.floor(Date.now() / 1000);
+        if (decoded?.exp - currentTimeInSeconds <= 1000) {
           const data = await UserService.handleRefreshToken(token);
           config.headers["Authorization"] = `Bearer ${data?.result?.token}`;
+          localStorage.setItem("token", JSON.stringify(data?.result?.token));
         }
         return config;
       } catch (error) {
@@ -66,7 +68,7 @@ function App() {
   };
 
   //protected route
-  const isLoggedIn = !!localStorage.getItem("token");
+  const isLoggedIn = !!user?.token;
 
   return (
     // <div>

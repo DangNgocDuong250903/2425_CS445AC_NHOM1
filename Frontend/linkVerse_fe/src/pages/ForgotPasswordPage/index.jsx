@@ -93,7 +93,7 @@ const ForgotPasswordPage = () => {
               />
               {isPending && (
                 <CircularProgress
-                  className="absolute top-1/2 left-1/2"
+                  className="absolute top-4 left-1/2"
                   size={20}
                 />
               )}

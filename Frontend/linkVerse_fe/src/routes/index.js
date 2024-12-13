@@ -2,7 +2,7 @@ import { Admin, ChatPage, FriendPage, GroupPage, HomePage, LoginPage, NotFoundPa
 
 export const route = [
     {
-        path: '/profile/:id',
+        path: '/:username',
         element: ProfilePage,
     },
     {

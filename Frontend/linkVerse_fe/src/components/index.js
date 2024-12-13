@@ -1,7 +1,6 @@
 import TopBar from "./TopBar"
 import Button from "./Button"
 import TextInput from "./TextInput"
-import Loading from "./Loading"
 import FriendCard from "./FriendCard"
 import ProfileCard from "./ProfileCard"
 import PostCard from "./PostCard"
@@ -17,17 +16,20 @@ import Apps from "./Apps"
 import Notifications from "./Notifications"
 import Chat from "./Chat"
 import ProtectedRoute from "./ProtectedRoute"
+import CreatePost from "./CreatePost"
+import Welcome from "./Welcome"
 
 export {
+    Welcome,
     ProtectedRoute,
     TopBar,
     Button,
+    CreatePost,
     TextInput,
     Chat,
     Notifications,
     Apps,
     CustomizeMenu,
-    Loading,
     FriendCard,
     ProfileCard,
     PostCard,

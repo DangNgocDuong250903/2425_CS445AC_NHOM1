@@ -34,10 +34,8 @@ const LoginPage = () => {
   useEffect(() => {
     if (isSuccess) {
       if (location?.state) {
-        console.log("Login successful");
         navigate(location?.state);
       } else {
-        console.log("Login successful");
         navigate("/");
       }
       localStorage.setItem("token", JSON.stringify(data?.result?.token));
@@ -93,7 +91,7 @@ const LoginPage = () => {
             <TextInput
               name="username"
               placeholder="User Name"
-              label={t("User Name")}
+              label={t("User Name or Email")}
               type="username"
               register={register("username", {
                 required: t("User name là bắt buộc"),
@@ -102,7 +100,7 @@ const LoginPage = () => {
                     !/\s/.test(value) || "User name must not contain spaces.",
                 },
               })}
-              styles={`w-full rounded-md ${
+              styles={`w-full rounded-xl ${
                 errors.username ? "border-red-600" : ""
               }`}
               iconRight={
@@ -118,7 +116,7 @@ const LoginPage = () => {
               label="Password"
               placeholder={t("Mật khẩu")}
               type={hide === "hide" ? "password" : "text"}
-              styles={`w-full rounded-md  ${
+              styles={`w-full rounded-xl  ${
                 errors.password ? "border-red-600" : ""
               }`}
               labelStyles="ml-2"
