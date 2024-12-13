@@ -2,7 +2,6 @@ package com.LinkVerse.MessageRealtime.controller;
 
 import com.LinkVerse.MessageRealtime.dto.response.ChatMessage;
 import com.LinkVerse.MessageRealtime.entity.Message;
-import com.LinkVerse.MessageRealtime.entity.User;
 import com.LinkVerse.MessageRealtime.repository.MessageRepository;
 import com.LinkVerse.MessageRealtime.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

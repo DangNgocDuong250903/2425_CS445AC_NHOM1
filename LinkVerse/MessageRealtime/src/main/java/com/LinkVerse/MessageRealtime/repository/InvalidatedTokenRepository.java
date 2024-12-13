@@ -1,6 +1,5 @@
 package com.LinkVerse.MessageRealtime.repository;
 
-import com.LinkVerse.MessageRealtime.entity.InvalidatedToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

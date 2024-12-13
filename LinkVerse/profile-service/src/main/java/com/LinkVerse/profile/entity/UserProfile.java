@@ -33,6 +33,13 @@ public class UserProfile {
     LocalDate dob;
     String city;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    UserStatus status = UserStatus.ONLINE;
+
+    @Column(name = "email_verified", nullable = false)
+    boolean emailVerified;
+
     @OneToMany(mappedBy = "userProfile1", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     Set<Friendship> friends;

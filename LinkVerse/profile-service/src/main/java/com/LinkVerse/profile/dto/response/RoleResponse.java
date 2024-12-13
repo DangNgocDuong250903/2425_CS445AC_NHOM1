@@ -1,20 +1,17 @@
-package com.LinkVerse.MessageRealtime.entity;
+package com.LinkVerse.profile.dto.response;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
-@Builder
+import java.util.Set;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Permission {
-    @Id
+public class RoleResponse {
     String name;
-
     String description;
+    Set<PermissionResponse> permissions;
 }
