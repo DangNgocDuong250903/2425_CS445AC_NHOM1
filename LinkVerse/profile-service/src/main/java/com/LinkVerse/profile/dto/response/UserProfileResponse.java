@@ -5,7 +5,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.neo4j.core.schema.Property;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.time.LocalDateTime;
+import java.util.Set;
 
 @Data
 @Builder
@@ -23,4 +24,7 @@ public class UserProfileResponse {
     String lastName;
     LocalDate dob;
     String city;
+    boolean emailVerified;
+    Set<RoleResponse> roles;
+    LocalDateTime createdAt;
 }

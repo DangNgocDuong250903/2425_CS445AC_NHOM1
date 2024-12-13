@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -47,15 +46,9 @@ public class UserProfileService {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        boolean isBlocked = userProfile.getBlockRequests().stream()
-                .anyMatch(friendship -> friendship.getUser1().getId().equals(currentUserId));
-        if (isBlocked) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
-        }
 
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
-
 
 
     public UserProfileResponse getProfile(String id) {

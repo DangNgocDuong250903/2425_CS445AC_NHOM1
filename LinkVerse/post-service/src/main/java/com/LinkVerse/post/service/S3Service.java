@@ -5,7 +5,6 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
-import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -34,97 +33,42 @@ public class S3Service {
 
     public List<String> uploadFiles(List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
-            return List.of(); // Trả về danh sách rỗng nếu không có file nào
+            return List.of(); // Return empty list if no files
         }
 
         List<String> fileUrls = new ArrayList<>();
         for (MultipartFile file : files) {
-            // Bỏ qua các file rỗng
+            // Skip empty files
             if (file == null || file.isEmpty()) {
                 log.warn("Skipped empty or null file");
                 continue;
             }
-            File fileObj = convertMultiPartFileToFile(file);
-            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
+            File fileObj = null;
             try {
+                MultipartFile resizedFile = resizeImage(file, 1080, 1920); // Resize image
+                fileObj = convertMultiPartFileToFile(resizedFile);
+                String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+
                 s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
                 fileUrls.add(s3Client.getUrl(bucketName, fileName).toString());
             } catch (SdkClientException e) {
                 log.error("Failed to upload file to S3: {}", e.getMessage());
             } finally {
-                // Xóa file tạm sau khi upload
-                fileObj.delete();
+                // Delete temporary file after upload
+                if (fileObj != null) {
+                    fileObj.delete();
+                }
             }
         }
         return fileUrls;
     }
 
-//    public List<String> uploadFiles(List<MultipartFile> files) {
-//        if (files == null || files.isEmpty()) {
-//            return List.of(); // Trả về danh sách rỗng nếu không có file nào
-//        }
-//
-//        List<String> fileUrls = new ArrayList<>();
-//        for (MultipartFile file : files) {
-//            // Bỏ qua các file rỗng
-//            if (file == null || file.isEmpty()) {
-//                log.warn("Skipped empty or null file");
-//                continue;
-//            }
-//            File fileObj = convertMultiPartFileToFile(file);
-//            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-//
-//            try {
-//                s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-//                S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//
-//                if (!rekognitionService.isImageSafe(s3Object)) {
-//                    s3Client.deleteObject(bucketName, fileName);
-//                    log.warn("Deleted unsafe image: {}", fileName);
-//                    continue;
-//                }
-//
-//                fileUrls.add(s3Client.getUrl(bucketName, fileName).toString());
-//            } catch (SdkClientException e) {
-//                log.error("Failed to upload file to S3: {}", e.getMessage());
-//            } finally {
-//                // Xóa file tạm sau khi upload
-//                fileObj.delete();
-//            }
-//        }
-//        return fileUrls;
-//    }
-
-//    public String uploadFile(MultipartFile file) {
-//        String contentType = file.getContentType();
-//        if (contentType == null || !contentType.startsWith("image/")) {
-//            throw new IllegalArgumentException("Only image files are allowed.");
-//        }
-//        File fileObj = convertMultiPartFileToFile(file);
-//        String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
-//
-//        try {
-//            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-//            S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//
-//            if (!rekognitionService.isImageSafe(s3Object)) {
-//                s3Client.deleteObject(bucketName, fileName);
-//                log.warn("Deleted unsafe image: {}", fileName);
-//                throw new IllegalArgumentException("Uploaded image contains unsafe content.");
-//            }
-//
-//            return s3Client.getUrl(bucketName, fileName).toString();
-//        } finally {
-//            fileObj.delete();
-//        }
-//    }
-
     private MultipartFile resizeImage(MultipartFile originalFile, int width, int height) {
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             Thumbnails.of(originalFile.getInputStream())
                     .size(width, height)
-                    .outputFormat("jpg") // Đảm bảo định dạng ảnh (nếu cần)
+                    .outputFormat("jpg") // Ensure image format (if needed)
                     .toOutputStream(outputStream);
 
             return new MultipartFile() {
@@ -176,22 +120,6 @@ public class S3Service {
         }
     }
 
-    public String deleteFile(String fileName) {
-        try {
-            boolean exists = s3Client.doesObjectExist(bucketName, fileName);
-            if (exists) {
-                s3Client.deleteObject(bucketName, fileName);
-                return fileName + " removed from S3 successfully.";
-            } else {
-                log.error("File does not exist: {}", fileName);
-                return "File does not exist on S3.";
-            }
-        } catch (SdkClientException e) {
-            log.error("Error occurred while deleting file from S3: {}", e.getMessage());
-            return "Error occurred while deleting file from S3.";
-        }
-    }
-
     private File convertMultiPartFileToFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Cannot convert an empty or null file");
@@ -209,12 +137,27 @@ public class S3Service {
 
     public byte[] downloadFile(String fileName) {
         try {
-            S3Object s3Object = s3Client.getObject(bucketName, fileName); // Lấy object từ S3
-            S3ObjectInputStream inputStream = s3Object.getObjectContent(); // Lấy stream dữ liệu
-            return IOUtils.toByteArray(inputStream); // Chuyển thành mảng byte
+            S3Object s3Object = s3Client.getObject(bucketName, fileName); // Get object from S3
+            return IOUtils.toByteArray(s3Object.getObjectContent()); // Convert to byte array
         } catch (IOException e) {
             log.error("Error occurred while downloading file from S3: {}", e.getMessage());
             throw new RuntimeException("Failed to download file from S3", e);
+        }
+    }
+
+    public String deleteFile(String fileName) {
+        try {
+            boolean exists = s3Client.doesObjectExist(bucketName, fileName);
+            if (exists) {
+                s3Client.deleteObject(bucketName, fileName);
+                return fileName + " removed from S3 successfully.";
+            } else {
+                log.error("File does not exist: {}", fileName);
+                return "File does not exist on S3.";
+            }
+        } catch (SdkClientException e) {
+            log.error("Error occurred while deleting file from S3: {}", e.getMessage());
+            return "Error occurred while deleting file from S3.";
         }
     }
 
