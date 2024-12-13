@@ -1,11 +1,13 @@
 package com.LinkVerse.post.controller;
 
 import com.LinkVerse.post.FileUtil;
+import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
+import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.TranslationService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -32,6 +35,21 @@ public class PostController {
 
     final PostService postService;
     TranslationService translationService;
+    PostMapper postMapper;
+
+    @GetMapping("/hashtags/{hashtagName}/posts")
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByHashtag(@PathVariable String hashtagName) {
+        List<Post> posts = postService.getPostsByHashtag(hashtagName);
+        List<PostResponse> postResponses = posts.stream()
+                .map(postMapper::toPostResponse)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(ApiResponse.<List<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Posts retrieved successfully")
+                .result(postResponses)
+                .build());
+    }
 
     // Create a new post
     @PostMapping("/post-file")

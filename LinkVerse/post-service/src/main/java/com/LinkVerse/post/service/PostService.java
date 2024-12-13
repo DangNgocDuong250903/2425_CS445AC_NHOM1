@@ -4,11 +4,13 @@ package com.LinkVerse.post.service;
 import com.LinkVerse.post.FileUtil;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
+import com.LinkVerse.post.configuration.TagProcessor;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.*;
+import com.LinkVerse.post.repository.HashtagRepository;
 import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
@@ -38,6 +40,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -64,8 +67,20 @@ public class PostService {
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     ProfileServiceClient profileServiceClient;
+
     @Autowired
-    HashtagService hashtagService;
+    private TagProcessor tagProcessor;
+
+    @Autowired
+    private HashtagRepository hashtagRepository;
+
+    public List<Post> getPostsByHashtag(String hashtagName) {
+        Hashtag hashtag = hashtagRepository.findByName(hashtagName);
+        if (hashtag == null) {
+            throw new RuntimeException("Hashtag not found");
+        }
+        return hashtag.getPosts();
+    }
 
     public ApiResponse<PostResponse> postImageAvatar(PostRequest request, MultipartFile avatarFile) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -121,9 +136,24 @@ public class PostService {
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
-            List<String> hashtagIds = extractedHashtags.stream().map(Hashtag::getId).collect(Collectors.toList());
-            post.getKeywords().addAll(hashtagIds);
+            // Save the post first to generate the ID
+            post = postRepository.save(post);
+
+            Set<String> hashtags = tagProcessor.extractHashtags(request.getContent());
+            List<Hashtag> hashtagEntities = new ArrayList<>();
+            for (String hashtag : hashtags) {
+                Hashtag existingHashtag = hashtagRepository.findByName(hashtag);
+                if (existingHashtag == null) {
+                    Hashtag newHashtag = new Hashtag();
+                    newHashtag.setName(hashtag);
+                    newHashtag.addPost(post);
+                    hashtagEntities.add(hashtagRepository.save(newHashtag));
+                } else {
+                    existingHashtag.addPost(post);
+                    hashtagEntities.add(hashtagRepository.save(existingHashtag));
+                }
+            }
+            post.setHashtags(hashtagEntities);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
@@ -209,9 +239,25 @@ public class PostService {
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(request.getContent(), post.getId());
-            List<String> hashtagIds = extractedHashtags.stream().map(Hashtag::getId).collect(Collectors.toList());
-            post.getKeywords().addAll(hashtagIds);
+            // Save the post first to generate the ID
+            post = postRepository.save(post);
+
+            // Extract and save hashtags
+            Set<String> hashtags = tagProcessor.extractHashtags(request.getContent());
+            List<Hashtag> hashtagEntities = new ArrayList<>();
+            for (String hashtag : hashtags) {
+                Hashtag existingHashtag = hashtagRepository.findByName(hashtag);
+                if (existingHashtag == null) {
+                    Hashtag newHashtag = new Hashtag();
+                    newHashtag.setName(hashtag);
+                    newHashtag.addPost(post);
+                    hashtagEntities.add(hashtagRepository.save(newHashtag));
+                } else {
+                    existingHashtag.addPost(post);
+                    hashtagEntities.add(hashtagRepository.save(existingHashtag));
+                }
+            }
+            post.setHashtags(hashtagEntities);
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
@@ -464,17 +510,6 @@ public class PostService {
         List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
         sharedPost.setKeywords(keywordIds);
 
-        // Extract and save hashtags for the shared post
-        List<Hashtag> extractedHashtags = hashtagService.extractAndSaveHashtags(content, sharedPost.getId());
-        List<Keyword> hashtagKeywords = extractedHashtags.stream()
-                .map(hashtag -> Keyword.builder()
-                        .phrase(hashtag.getPhrase())
-                        .usageCount(hashtag.getUsageCount())
-                        .linkedContentIds(hashtag.getLinkedContentIds())
-                        .build())
-                .collect(Collectors.toList());
-        List<String> hashtagIds = hashtagKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
-        sharedPost.getKeywords().addAll(hashtagIds);
 
         // Lưu bài viết chia sẻ mới vào SharedPostRepository
         sharedPost = sharedPostRepository.save(sharedPost);

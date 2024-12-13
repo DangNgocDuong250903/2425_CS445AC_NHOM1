@@ -3,6 +3,7 @@ package com.LinkVerse.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
@@ -44,6 +45,8 @@ public class Post {
     @ElementCollection
     List<String> keywords = new ArrayList<>(); // Ensure this property is named 'keywords'
 
+    @DBRef
+    List<Hashtag> hashtags = new ArrayList<>();
     //Phantich cam xuc
     String primarySentiment;
     double positiveScore;
@@ -51,8 +54,6 @@ public class Post {
     double neutralScore;
     double mixedScore;
 
-
     boolean hasViolation = false;
     boolean violationResolved = false;
-
 }

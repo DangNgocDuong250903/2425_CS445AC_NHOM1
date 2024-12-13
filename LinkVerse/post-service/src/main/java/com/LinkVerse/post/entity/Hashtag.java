@@ -1,23 +1,26 @@
 package com.LinkVerse.post.entity;
 
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.Getter;
+import lombok.Setter;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import java.util.ArrayList;
 import java.util.List;
 
-@Getter
 @Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
-@Document(value = "hashtag")
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Getter
+@Document(collection = "hashtags")
 public class Hashtag {
-    @MongoId
-    String id;
-    String phrase;
-    int usageCount;
-    List<String> linkedContentIds;
+    @Id
+    private String id;
+    private String name;
+    private List<String> postIds;
+    @DBRef
+    private List<Post> posts = new ArrayList<>(); // Initialize the posts list
+
+    public void addPost(Post post) {
+        this.posts.add(post);
+    }
 }

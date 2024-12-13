@@ -14,14 +14,16 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     Page<Post> findAllByContent(String content, Pageable pageable);
 
-    Page<Post> findAllByUserIdAndLanguage(String userId, String language, Pageable pageable);
 
     Page<Post> findAllByLanguage(String language, Pageable pageable);
 
     List<Post> findByKeywordsIn(List<String> keywordIds); // Use 'keywords' instead of 'keywordIds'
 
-    List<Post> findAllByKeywordsContains(String keywordId); // Use 'keywords' instead of 'keywordIds'
 
     Page<Post> findAllByPrimarySentiment(String primarySentiment, Pageable pageable);
+
+    Page<Post> findAllByHashtagsContaining(String hashtag, Pageable pageable);
+
+    Page<Post> findAllByHashtags_Name(String hashtag, Pageable pageable);
 
 }
