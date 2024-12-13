@@ -1,9 +1,11 @@
 package com.LinkVerse.profile.service;
 
 import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.Friendship;
 import com.LinkVerse.profile.entity.FriendshipStatus;
 import com.LinkVerse.profile.entity.UserProfile;
+import com.LinkVerse.profile.mapper.UserProfileMapper;
 import com.LinkVerse.profile.repository.FriendshipRepository;
 import com.LinkVerse.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
@@ -15,7 +17,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ import java.util.Optional;
 public class BlockService {
     FriendshipRepository friendshipRepository;
     UserProfileRepository userRepository;
+    UserProfileMapper userProfileMapper;
 
     public FriendshipResponse blockUser(String targetUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -87,6 +93,20 @@ public class BlockService {
                 .recipientUsername(targetUser.getUsername())
                 .status(FriendshipStatus.NONE)
                 .build();
+    }
+
+    public Set<UserProfileResponse> getBlockedUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        UserProfile currentUser = userRepository.findByUserId(currentUserId)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+
+        List<Friendship> blockedFriendships = friendshipRepository.findByUserProfile1AndStatus(currentUser, FriendshipStatus.BLOCKED);
+        return blockedFriendships.stream()
+                .map(Friendship::getUserProfile2)
+                .map(userProfileMapper::toUserProfileReponse)
+                .collect(Collectors.toSet());
     }
 
     public boolean isBlocked(String userIdSend, String userIdReceive) {

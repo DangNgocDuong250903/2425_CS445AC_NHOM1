@@ -1,6 +1,7 @@
 package com.LinkVerse.profile.controller;
 
 import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.service.FriendService;
 import lombok.RequiredArgsConstructor;
@@ -37,17 +38,17 @@ public class FriendController {
     }
 
     @GetMapping("/friend")
-    public ResponseEntity<Set<UserProfile>> getFriendOfUser(@RequestParam String userId) {
+    public ResponseEntity<Set<UserProfileResponse>> getFriendOfUser(@RequestParam String userId) {
         return ResponseEntity.ok(friendService.getAllFriends(userId));
     }
 
     @GetMapping("/my-friend-request")
-    public ResponseEntity<Set<UserProfile>> getFriendRequest() {
+    public ResponseEntity<Set<UserProfileResponse>> getFriendRequest() {
         return ResponseEntity.ok(friendService.getAllFriendsRequest());
     }
 
     @GetMapping("/my-friends")
-    public ResponseEntity<Set<UserProfile>> getMyFriend() {
+    public ResponseEntity<Set<UserProfileResponse>> getMyFriend() {
         return ResponseEntity.ok(friendService.getAllFriendsOfCurrentUser());
     }
 

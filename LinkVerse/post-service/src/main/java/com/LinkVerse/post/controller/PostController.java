@@ -105,25 +105,6 @@ public class PostController {
         return postService.getHistoryPosts(page, size);
     }
 
-    @GetMapping("/download-image")
-    public ResponseEntity<byte[]> downloadImage(
-            @RequestParam String postId,
-            @RequestParam String fileName) {
-        try {
-            // Tải hình ảnh từ bài viết
-            ApiResponse<byte[]> response = postService.downloadImageFromPost(postId, fileName);
-
-            String contentType = FileUtil.getContentTypeFromFileName(fileName);
-
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType(contentType)); // Xác định Content-Type tự động
-            headers.setContentDispositionFormData("attachment", fileName);
-
-            return new ResponseEntity<>(response.getResult(), headers, HttpStatus.OK);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
-        }
-    }
 
 
     @PostMapping("/{postId}/translate")

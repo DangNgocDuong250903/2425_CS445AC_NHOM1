@@ -1,10 +1,12 @@
 package com.LinkVerse.profile.service;
 
 import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.Friendship;
 import com.LinkVerse.profile.entity.FriendshipStatus;
 import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.exception.FriendRequestNotFoundException;
+import com.LinkVerse.profile.mapper.UserProfileMapper;
 import com.LinkVerse.profile.repository.FriendshipRepository;
 import com.LinkVerse.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
@@ -29,6 +31,7 @@ public class FriendService {
     FriendshipRepository friendshipRepository;
     UserProfileRepository userRepository;
     KafkaTemplate<String, String> kafkaTemplate;
+    UserProfileMapper userProfileMapper;
 
     public FriendshipResponse sendFriendRequest(String recipientUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -146,17 +149,18 @@ public class FriendService {
                 .build();
     }
 
-    public Set<UserProfile> getAllFriends(String userId) {
+    public Set<UserProfileResponse> getAllFriends(String userId) {
         UserProfile user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         List<Friendship> friendships = friendshipRepository.findByUserProfile1OrUserProfile2AndStatus(user, user, FriendshipStatus.ACCEPTED);
         return friendships.stream()
                 .map(friendship -> friendship.getUserProfile1().equals(user) ? friendship.getUserProfile2() : friendship.getUserProfile1())
+                .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
     }
 
-    public Set<UserProfile> getAllFriendsOfCurrentUser() {
+    public Set<UserProfileResponse> getAllFriendsOfCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
@@ -166,19 +170,21 @@ public class FriendService {
         List<Friendship> friendships = friendshipRepository.findByUserProfile1OrUserProfile2AndStatus(user, user, FriendshipStatus.ACCEPTED);
         return friendships.stream()
                 .map(friendship -> friendship.getUserProfile1().equals(user) ? friendship.getUserProfile2() : friendship.getUserProfile1())
+                .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
     }
 
-    public Set<UserProfile> getAllFriendsRequest() {
+    public Set<UserProfileResponse> getAllFriendsRequest() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
         UserProfile currentUser = userRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new RuntimeException("Current user not found"));
 
-        List<Friendship> pendingFriendships = friendshipRepository.findByUserProfile1AndStatus(currentUser, FriendshipStatus.PENDING);
+        List<Friendship> pendingFriendships = friendshipRepository.findByUserProfile2AndStatus(currentUser, FriendshipStatus.PENDING);
         return pendingFriendships.stream()
                 .map(Friendship::getUserProfile1)
+                .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
     }
 
