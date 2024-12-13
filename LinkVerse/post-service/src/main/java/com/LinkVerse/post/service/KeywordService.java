@@ -44,12 +44,10 @@ public class KeywordService {
                     .build();
 
             DetectKeyPhrasesResponse response = comprehendClient.detectKeyPhrases(request);
-//            log.info("Key phrases response: {}", response);
 
             List<String> phrases = response.keyPhrases().stream()
                     .map(keyPhrase -> keyPhrase.text())
                     .collect(Collectors.toList());
-//            log.info("Extracted phrases: {}", phrases);
 
             List<Keyword> keyPhraseKeywords = new ArrayList<>();
             for (String phrase : phrases) {
@@ -57,7 +55,6 @@ public class KeywordService {
                         .orElseGet(() -> Keyword.builder()
                                 .phrase(phrase)
                                 .usageCount(0)
-                                .type("KEYPHRASE")
                                 .linkedContentIds(new ArrayList<>())
                                 .build());
 
@@ -66,7 +63,6 @@ public class KeywordService {
                 keyword.setUsageCount(keyword.getUsageCount() + 1);
                 keyword.getLinkedContentIds().add(contentId);
                 keyPhraseKeywords.add(keywordRepository.save(keyword));
-
             }
 
             return keyPhraseKeywords;

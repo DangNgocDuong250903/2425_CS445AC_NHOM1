@@ -4,6 +4,7 @@ import com.LinkVerse.identity.entity.UserStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Data
@@ -19,4 +20,5 @@ public class UserResponse {
     String profileId;
     boolean emailVerified;
     Set<RoleResponse> roles;
+    LocalDateTime createdAt;
 }

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Getter
@@ -36,9 +37,15 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
     UserStatus status = UserStatus.ONLINE;
-
+    @Column(name = "created_at", nullable = false, updatable = false)
+    LocalDateTime createdAt;
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 
 }

@@ -17,7 +17,7 @@ public class AwsComprehendConfig {
     public ComprehendClient amazonComprehend() {
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(AWS_ACCESS_KEY, AWS_SECRET_KEY);
         return ComprehendClient.builder()
-                .region(Region.US_EAST_1) // specify the region
+                .region(Region.US_EAST_2) // specify the region
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
     }

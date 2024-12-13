@@ -1,19 +1,16 @@
 package com.LinkVerse.post.controller;
 
 import com.LinkVerse.post.FileUtil;
+import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.PostDocument;
-import com.LinkVerse.post.entity.PostVisibility;
+import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.service.PostService;
-import com.LinkVerse.post.service.SearchService;
 import com.LinkVerse.post.service.TranslationService;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.Parameter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,30 +33,22 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PostController {
 
-    PostService postService;
+    final PostService postService;
     TranslationService translationService;
-    SearchService searchService;
+    PostMapper postMapper;
 
-    @PostMapping("/set-avatar")
-    public ResponseEntity<String> updateImage(
-            @Parameter(description = "User ID for setting avatar", required = true)
-            @RequestParam("userId") String userId,
+    @GetMapping("/hashtags/{hashtagName}/posts")
+    public ResponseEntity<ApiResponse<List<PostResponse>>> getPostsByHashtag(@PathVariable String hashtagName) {
+        List<Post> posts = postService.getPostsByHashtag(hashtagName);
+        List<PostResponse> postResponses = posts.stream()
+                .map(postMapper::toPostResponse)
+                .collect(Collectors.toList());
 
-            @Parameter(description = "Post request in JSON format", required = true)
-            @RequestParam("request") String requestJson,
-
-            @Parameter(description = "Avatar image file", required = true)
-            @RequestParam("avatar") MultipartFile avatar) throws JsonProcessingException {
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
-
-        if (!FileUtil.isImageFile(avatar)) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only image files are allowed.");
-        }
-
-        postService.postImageAvatar(request, avatar);
-        return ResponseEntity.ok("Avatar updated successfully.");
+        return ResponseEntity.ok(ApiResponse.<List<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Posts retrieved successfully")
+                .result(postResponses)
+                .build());
     }
 
     // Create a new post
@@ -90,7 +80,6 @@ public class PostController {
     }
 
 
-
     // Delete a post
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> deletePost(@PathVariable String id) {
@@ -114,6 +103,26 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return postService.getHistoryPosts(page, size);
+    }
+
+    @GetMapping("/download-image")
+    public ResponseEntity<byte[]> downloadImage(
+            @RequestParam String postId,
+            @RequestParam String fileName) {
+        try {
+            // Tải hình ảnh từ bài viết
+            ApiResponse<byte[]> response = postService.downloadImageFromPost(postId, fileName);
+
+            String contentType = FileUtil.getContentTypeFromFileName(fileName);
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(contentType)); // Xác định Content-Type tự động
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            return new ResponseEntity<>(response.getResult(), headers, HttpStatus.OK);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
     }
 
 
