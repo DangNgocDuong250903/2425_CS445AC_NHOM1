@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,7 +24,6 @@ import java.util.List;
 public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
-    S3Service s3Service;
 
     public void updateImage(String userId, String imageUrl) {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
@@ -55,7 +53,6 @@ public class UserProfileService {
 
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
-
 
 
     public UserProfileResponse getProfile(String id) {
