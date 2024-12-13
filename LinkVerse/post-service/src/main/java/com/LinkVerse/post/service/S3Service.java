@@ -1,6 +1,4 @@
-
 package com.LinkVerse.post.service;
-
 
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
@@ -11,13 +9,13 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -35,62 +33,115 @@ public class S3Service {
 
     public List<String> uploadFiles(List<MultipartFile> files) {
         if (files == null || files.isEmpty()) {
-            return List.of(); // Trả về danh sách rỗng nếu không có file nào
+            return List.of(); // Return empty list if no files
         }
 
         List<String> fileUrls = new ArrayList<>();
         for (MultipartFile file : files) {
-            // Bỏ qua các file rỗng
+            // Skip empty files
             if (file == null || file.isEmpty()) {
                 log.warn("Skipped empty or null file");
                 continue;
             }
-            File fileObj = convertMultiPartFileToFile(file);
-            String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
+            File fileObj = null;
             try {
+                MultipartFile resizedFile = resizeImage(file, 1080, 1920); // Resize image
+                fileObj = convertMultiPartFileToFile(resizedFile);
+                String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+
                 s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
                 fileUrls.add(s3Client.getUrl(bucketName, fileName).toString());
             } catch (SdkClientException e) {
                 log.error("Failed to upload file to S3: {}", e.getMessage());
             } finally {
-                // Xóa file tạm sau khi upload
-                fileObj.delete();
+                // Delete temporary file after upload
+                if (fileObj != null) {
+                    fileObj.delete();
+                }
             }
         }
         return fileUrls;
     }
 
+    private MultipartFile resizeImage(MultipartFile originalFile, int width, int height) {
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
+            Thumbnails.of(originalFile.getInputStream())
+                    .size(width, height)
+                    .outputFormat("jpg") // Ensure image format (if needed)
+                    .toOutputStream(outputStream);
 
-    public String deleteFiles(String fileName) {
-        try {
-            boolean exists = s3Client.doesObjectExist(bucketName, fileName);
-            if (exists) {
-                s3Client.deleteObject(bucketName, fileName);
-                return fileName + " removed from S3 successfully.";
-            } else {
-                log.error("File does not exist: {}", fileName);
-                return "File does not exist on S3.";
-            }
-        } catch (SdkClientException e) {
-            log.error("Error occurred while deleting file from S3: {}", e.getMessage());
-            return "Error occurred while deleting file from S3.";
+            return new MultipartFile() {
+                @Override
+                public String getName() {
+                    return originalFile.getName();
+                }
+
+                @Override
+                public String getOriginalFilename() {
+                    return originalFile.getOriginalFilename();
+                }
+
+                @Override
+                public String getContentType() {
+                    return "image/jpeg";
+                }
+
+                @Override
+                public boolean isEmpty() {
+                    return outputStream.size() == 0;
+                }
+
+                @Override
+                public long getSize() {
+                    return outputStream.size();
+                }
+
+                @Override
+                public byte[] getBytes() throws IOException {
+                    return outputStream.toByteArray();
+                }
+
+                @Override
+                public InputStream getInputStream() {
+                    return new ByteArrayInputStream(outputStream.toByteArray());
+                }
+
+                @Override
+                public void transferTo(File dest) throws IOException, IllegalStateException {
+                    try (FileOutputStream fos = new FileOutputStream(dest)) {
+                        fos.write(outputStream.toByteArray());
+                    }
+                }
+            };
+        } catch (IOException e) {
+            log.error("Error resizing image: ", e);
+            throw new RuntimeException("Failed to resize image.", e);
         }
     }
 
-    public String uploadFile(MultipartFile file) {
-        String contentType = file.getContentType();
-        if (contentType == null || !contentType.startsWith("image/")) {
-            throw new IllegalArgumentException("Only image files are allowed.");
+    private File convertMultiPartFileToFile(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            throw new IllegalArgumentException("Cannot convert an empty or null file");
         }
-        File fileObj = convertMultiPartFileToFile(file);
-        String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
 
+        File convertedFile = new File(file.getOriginalFilename());
+        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+            fos.write(file.getBytes());
+        } catch (IOException e) {
+            log.error("Error converting multipartFile to file", e);
+            throw new RuntimeException("Failed to convert file", e);
+        }
+        return convertedFile;
+    }
+
+    public byte[] downloadFile(String fileName) {
         try {
-            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
-            return s3Client.getUrl(bucketName, fileName).toString();
-        } finally {
-            fileObj.delete();
+            S3Object s3Object = s3Client.getObject(bucketName, fileName); // Get object from S3
+            return IOUtils.toByteArray(s3Object.getObjectContent()); // Convert to byte array
+        } catch (IOException e) {
+            log.error("Error occurred while downloading file from S3: {}", e.getMessage());
+            throw new RuntimeException("Failed to download file from S3", e);
         }
     }
 
@@ -109,34 +160,8 @@ public class S3Service {
             return "Error occurred while deleting file from S3.";
         }
     }
-//    public byte[] downloadFile(String fileName) {
-//        S3Object s3Object = s3Client.getObject(bucketName, fileName);
-//        S3ObjectInputStream inputStream = s3Object.getObjectContent();
-//        try {
-//            byte[] content = IOUtils.toByteArray(inputStream);
-//            return content;
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 
-    private File convertMultiPartFileToFile(MultipartFile file) {
-        if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("Cannot convert an empty or null file");
-        }
-
-        File convertedFile = new File(file.getOriginalFilename());
-        try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-            fos.write(file.getBytes());
-        } catch (IOException e) {
-            log.error("Error converting multipartFile to file", e);
-            throw new RuntimeException("Failed to convert file", e);
-        }
-        return convertedFile;
-    }
     public S3Object getObject(String fileName) {
         return s3Client.getObject(new GetObjectRequest(bucketName, fileName));
     }
-
 }

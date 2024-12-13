@@ -73,10 +73,10 @@ public class PostController {
         ApiResponse<PostResponse> response = postService.sharePost(postId, request.getContent(), request.getVisibility());
 
         return ApiResponse.<PostResponse>builder()
-                .code(response.getCode()) // Mã trạng thái HTTP
-                .message(response.getMessage()) // Thông báo cho người dùng
-                .result(response.getResult()) // Kết quả bài viết chia sẻ
-                .build(); // Xây dựng ApiResponse
+                .code(response.getCode())
+                .message(response.getMessage())
+                .result(response.getResult())
+                .build();
     }
 
 
