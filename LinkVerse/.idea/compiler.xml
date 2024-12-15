@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
       </profile>
-      <profile name="Annotation profile for profile-service" enabled="true">
+      <profile name="Annotation profile for MessageRealtime" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -24,14 +24,15 @@
         </processorPath>
         <module name="profile-service" />
         <module name="post-service" />
-        <module name="MessageRealtime" />
         <module name="Friend" />
         <module name="identity-service" />
         <module name="notification-service" />
+        <module name="whatsapp_clone" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="Friend-Service" target="21" />
+      <module name="MessageRealtime" target="21" />
       <module name="profile-service (1)" target="21" />
     </bytecodeTargetLevel>
   </component>
@@ -46,6 +47,7 @@
       <module name="post-service" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
       <module name="profile-service" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
       <module name="profile-service (1)" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
+      <module name="whatsapp_clone" options="-parameters -Amapstruct.suppressGeneratorTimestamp=true -Amapstruct.defaultComponentModel=spring -Amapstruct.verbose=true" />
     </option>
   </component>
 </project>

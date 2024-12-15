@@ -13,6 +13,9 @@ public interface UserMapper {
     User toUser(UserCreationRequest request);
 
     @Mapping(source = "createdAt", target = "createdAt")
+    @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "phoneNumber", target = "phoneNumber")
+    @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)

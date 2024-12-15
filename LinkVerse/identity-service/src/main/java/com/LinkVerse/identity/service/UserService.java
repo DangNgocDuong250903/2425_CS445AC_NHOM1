@@ -40,7 +40,6 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
-    AuthenticationService authenticationService;
     KafkaTemplate<String, Object> kafkaTemplate;
 
 
