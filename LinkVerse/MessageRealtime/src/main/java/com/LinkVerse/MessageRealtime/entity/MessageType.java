@@ -1,8 +1,10 @@
 package com.LinkVerse.MessageRealtime.entity;
 
 public enum MessageType {
-    LEAVE,
-    CHAT,
-    JOIN
-    
+    TEXT,
+    IMAGE,
+    VIDEO,
+    FILE,
+    SYSTEM,
+    TYPING
 }

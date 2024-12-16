@@ -17,7 +17,7 @@ import org.springframework.data.neo4j.core.schema.Property;
 public class Permission {
     @Id
     @GeneratedValue
-    Long id;
+    String id;
 
     @Property("name")
     String name;

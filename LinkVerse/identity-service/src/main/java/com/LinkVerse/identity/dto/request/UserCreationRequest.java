@@ -3,9 +3,9 @@ package com.LinkVerse.identity.dto.request;
 import com.LinkVerse.identity.entity.Gender;
 import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.validator.DobValidator.DobConstraint;
-import com.LinkVerse.identity.validator.GenderValidator.GenderConstraint;
 import com.LinkVerse.identity.validator.PhoneValidator.PhoneConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.PrePersist;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -13,6 +13,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data
@@ -30,9 +31,6 @@ public class UserCreationRequest {
     String firstName;
     String lastName;
 
-    @GenderConstraint(anyOf = {Gender.MALE, Gender.FEMALE, Gender.OTHER}, message = "INVALID_GENDER")
-    Gender gender;
-
     @PhoneConstraint(message = "Phone number invalid format")
     String phoneNumber = "";
 
@@ -47,4 +45,11 @@ public class UserCreationRequest {
     Date dateOfBirth;
 
     String city;
+    Gender gender;
+    LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

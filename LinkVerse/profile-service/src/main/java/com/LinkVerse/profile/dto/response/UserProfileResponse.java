@@ -1,11 +1,10 @@
 package com.LinkVerse.profile.dto.response;
 
-import com.LinkVerse.profile.enums.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Data
@@ -21,11 +20,10 @@ public class UserProfileResponse {
     String email;
     String firstName;
     String lastName;
-    LocalDate dob;
     String city;
     boolean emailVerified;
     Set<RoleResponse> roles;
     LocalDateTime createdAt;
-    Gender gender;
+    Date dateOfBirth;
     String phoneNumber;
 }

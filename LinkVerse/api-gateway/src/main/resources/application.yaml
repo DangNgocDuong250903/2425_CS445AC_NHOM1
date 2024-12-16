@@ -32,14 +32,14 @@ spring:
             - Path=${app.api-prefix}/post/**
           filters:
             - StripPrefix=2
-        - id: MessageRealtime
-          uri: http://localhost:8084
-          predicates:
-            - Path=${app.api-prefix}/message/**
-          filters:
-            - StripPrefix=2
-          metadata:
-            websocket: true
+        #        - id: MessageRealtime
+        #          uri: http://localhost:8084
+        #          predicates:
+        #            - Path=${app.api-prefix}/message/**
+        #          filters:
+        #            - StripPrefix=2
+        #          metadata:
+        #            websocket: true
         - id: Friend-Service
           uri: http://localhost:8085
           predicates:

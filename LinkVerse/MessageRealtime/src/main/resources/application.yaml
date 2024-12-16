@@ -1,7 +1,6 @@
 server:
   port: 8084  # Cổng
-  servlet:
-    context-path: /message  # Cấu hình context path cho message
+
 
 spring:
   application:

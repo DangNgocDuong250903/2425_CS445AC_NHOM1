@@ -32,8 +32,6 @@ public class User {
     @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
     boolean emailVerified;
 
-    Gender gender;
-
     String phoneNumber = "";
 
     @ManyToMany
@@ -45,16 +43,19 @@ public class User {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     LocalDateTime createdAt;
+
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
 
     Date dateOfBirth;
 
+    Gender gender;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
 
 }

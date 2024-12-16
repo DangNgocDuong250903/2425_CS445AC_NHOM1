@@ -1,9 +1,10 @@
 package com.LinkVerse.identity.dto.response;
 
-import java.time.LocalDate;
-
+import com.LinkVerse.identity.entity.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Data
 @Builder
@@ -17,6 +18,7 @@ public class UserProfileResponse {
     String email;
     String firstName;
     String lastName;
-    LocalDate dob;
+    LocalDate dateOfBirth;
     String city;
+    Gender gender;
 }

@@ -1,39 +1,25 @@
 package com.LinkVerse.MessageRealtime.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+    private String id;
 
-    @Column(unique = true, nullable = false)
-    String username;
+    private String username;
 
-    @Column(nullable = false)
-    String password;
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> sentMessages;
 
-    @Column(unique = true, nullable = false)
-    String email;
-
-    @ManyToMany(fetch = FetchType.EAGER)
-    Set<Role> roles;
-
-    @OneToMany(mappedBy = "sender")
-    Set<Message> sentMessages;
-
-    @OneToMany(mappedBy = "recipient")
-    Set<Message> receivedMessages;
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Message> receivedMessages;
 }

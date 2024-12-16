@@ -34,7 +34,7 @@ public class FriendService {
         UserProfile userReceive = userRepository.findByUserId(friendId)
                 .orElseThrow(() -> new RuntimeException("Recipient user not found"));
 
-        if (isBlocked(userSend.getId(), userReceive.getId())) {
+        if (isBlocked(userSend.getUserId(), userReceive.getUserId())) {
             throw new RuntimeException("Cannot send friend request to a blocked user");
         }
 
@@ -58,7 +58,6 @@ public class FriendService {
         userRepository.save(userReceive);
 
         kafkaTemplate.send("friendship-requests", "Friend request sent from " + userSend.getUsername() + " to " + userReceive.getUsername());
-
 
 
         return FriendshipResponse.builder()

@@ -58,6 +58,7 @@ public class UserService {
         } else {
             user.setStatus(request.getStatus());
         }
+        user.setGender(request.getGender());
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {

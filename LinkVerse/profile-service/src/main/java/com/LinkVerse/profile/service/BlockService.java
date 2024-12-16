@@ -34,7 +34,7 @@ public class BlockService {
         UserProfile targetUser = userRepository.findById(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-        if (isBlocked(targetUser.getId(), currentUser.getId())) {
+        if (isBlocked(targetUser.getUserId(), currentUser.getUserId())) {
             throw new RuntimeException("Cannot block a user who has already blocked you");
         }
 
