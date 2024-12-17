@@ -10,6 +10,7 @@ import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.TranslationService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -63,6 +64,18 @@ public class PostController {
 
         ApiResponse<PostResponse> response = postService.createPostWithFiles(request, files);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/set-avatar")
+    public ResponseEntity<String> updateImage(@RequestParam("request") String requestJson,
+                                              @RequestParam("avatar") MultipartFile avatar) throws JsonProcessingException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
+        if (!FileUtil.isImageFile(avatar)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Only image files are allowed.");
+        }
+        postService.postImageAvatar(request, avatar);
+        return ResponseEntity.ok("Avatar updated successfully.");
     }
 
     @PostMapping("/{postId}/share")
@@ -121,5 +134,17 @@ public class PostController {
             @RequestParam(defaultValue = "10") int size,
             @RequestParam String language) {
         return postService.getPostsByLanguage(page, size, language);
+    }
+
+    @GetMapping("/{postId}")
+    public ApiResponse<PostResponse> getPostById(@PathVariable String postId) {
+        return postService.getPostById(postId);
+    }
+
+    @GetMapping("/posts-random")
+    public ApiResponse<PageResponse<PostResponse>> getAllPost(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return postService.getAllPost(page, size);
     }
 }

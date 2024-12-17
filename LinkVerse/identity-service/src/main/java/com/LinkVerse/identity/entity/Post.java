@@ -33,7 +33,7 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "shared_post_id")
     Post sharedPost;
-     @ManyToOne
+    @ManyToOne
     @JoinColumn(name = "group_id")
     Group group; // Thêm tham chiếu đến Group
 }

@@ -7,10 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Getter
 @Setter
@@ -30,8 +27,10 @@ public class UserProfile {
     String email;
     String firstName;
     String lastName;
-    LocalDate dob;
+    Date dateOfBirth;
     String city;
+    String phoneNumber ;
+    Gender gender;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
@@ -44,9 +43,4 @@ public class UserProfile {
     @JsonManagedReference
     Set<Friendship> friends;
 
-    @ElementCollection
-    Set<String> followers = new HashSet<>();
-
-    @ElementCollection
-    Set<String> followings = new HashSet<>();
 }

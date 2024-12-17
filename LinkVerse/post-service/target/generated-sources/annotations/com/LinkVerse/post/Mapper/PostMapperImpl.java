@@ -29,6 +29,7 @@ public class PostMapperImpl implements PostMapper {
         if ( list != null ) {
             postResponse.imageUrl( new ArrayList<String>( list ) );
         }
+        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
         postResponse.visibility( post.getVisibility() );

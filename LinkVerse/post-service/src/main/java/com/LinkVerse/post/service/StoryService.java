@@ -36,7 +36,7 @@ public class StoryService {
 
     static final int STORY_EXPIRATION_HOURS = 24;
 
-    public ApiResponse<StoryResponse> createStory(StoryCreationRequest request, List<MultipartFile> files, String token) {
+    public ApiResponse<StoryResponse> createStory(StoryCreationRequest request, List<MultipartFile> files) {
         String userId = getCurrentUserId();
         List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                 ? s3ServiceStory.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))

@@ -26,6 +26,7 @@ public class Post {
 
     @ElementCollection
     List<String> imageUrl;
+    String imgAvatarUrl;
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;

@@ -5,6 +5,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.Set;
 
 @Getter
@@ -31,21 +32,30 @@ public class User {
     @Column(name = "email_verified", nullable = false, columnDefinition = "boolean default false")
     boolean emailVerified;
 
+    String phoneNumber = "";
+
     @ManyToMany
     Set<Role> roles;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(10) DEFAULT 'ONLINE'")
     UserStatus status = UserStatus.ONLINE;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     LocalDateTime createdAt;
+
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
+
+    Date dateOfBirth;
+
+    Gender gender;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
     }
+
 
 }

@@ -188,6 +188,13 @@ public class FriendService {
                 .collect(Collectors.toSet());
     }
 
+    public boolean areFriends(String userId1, String userId2) {
+        UserProfile user1 = userRepository.findByUserId(userId1).orElseThrow(() -> new RuntimeException("User not found"));
+        UserProfile user2 = userRepository.findByUserId(userId2).orElseThrow(() -> new RuntimeException("User not found"));
+        Optional<Friendship> friendship = friendshipRepository.findByUserProfile1AndUserProfile2AndStatus(user1, user2, FriendshipStatus.ACCEPTED);
+        return friendship.isPresent();
+    }
+
     public boolean isBlocked(String userId1, String userId2) {
         UserProfile user1 = userRepository.findByUserId(userId1).orElseThrow(() -> new RuntimeException("User not found"));
         UserProfile user2 = userRepository.findByUserId(userId2).orElseThrow(() -> new RuntimeException("User not found"));

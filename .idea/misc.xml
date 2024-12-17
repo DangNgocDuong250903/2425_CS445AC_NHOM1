@@ -17,6 +17,7 @@
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/LinkVerse/Friend-Service (ND)/pom.xml" />
+        <option value="$PROJECT_DIR$/LinkVerse/MessageRealtime/pom.xml" />
       </set>
     </option>
   </component>

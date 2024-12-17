@@ -16,6 +16,8 @@ public class WebSecurityConfig {
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
+        jwtAuthenticationConverter.setPrincipalClaimName("userId");
+
         return jwtAuthenticationConverter;
     }
 }

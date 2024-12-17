@@ -1,3 +1,4 @@
+
 package com.LinkVerse.gateway.configuration;
 
 import com.LinkVerse.gateway.dto.ApiResponse;
@@ -25,8 +26,6 @@ import reactor.core.publisher.Mono;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.*;
-import java.util.regex.Pattern;
 
 @Component
 @Slf4j
@@ -38,14 +37,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     @NonFinal
     private String[] publicEndpoints = {
-            "/v3/.*",
-            "/profile/.*",
-            "/email/reset-password",
-            "/email/send-forget-pass",
-            "/email/reset-password",
-
-            "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/.*",
             "/identity/auth/.*",
             "/identity/users/registration",
             "/notification/email/send",
@@ -55,9 +46,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/email/reset-password",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*",
+            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*","/posts-random", "/post/posts-random"
     };
-
+    @Value("${app.api-prefix}")
+    @NonFinal
+    private String apiPrefix;
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -88,7 +81,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
 
     private boolean isPublicEndpoint(ServerHttpRequest request) {
         return Arrays.stream(publicEndpoints)
-                .anyMatch(s -> request.getURI().getPath().matches(s));
+                .anyMatch(s -> request.getURI().getPath().matches(apiPrefix + s));
     }
 
     Mono<Void> unauthenticated(ServerHttpResponse response) {
@@ -108,7 +101,6 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
         response.getHeaders().add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 
         return response.writeWith(
-                Mono.just(response
-                        .bufferFactory().wrap(body.getBytes())));
+                Mono.just(response.bufferFactory().wrap(body.getBytes())));
     }
 }

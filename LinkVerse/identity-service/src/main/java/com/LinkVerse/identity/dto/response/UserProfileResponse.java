@@ -1,7 +1,9 @@
 package com.LinkVerse.identity.dto.response;
 
 import java.time.LocalDate;
+import java.util.Date;
 
+import com.LinkVerse.identity.entity.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,6 +16,11 @@ public class UserProfileResponse {
     String id;
     String userId;
     String username;
-    String profilePicUrl;
-    String backgroundImageUrl;
+    String email;
+    String firstName;
+    String lastName;
+    String phoneNumber;
+    Date dateOfBirth;
+    String city;
+    Gender gender;
 }

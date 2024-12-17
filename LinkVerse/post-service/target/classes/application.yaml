@@ -1,9 +1,55 @@
 server:
   port: 8083
+  servlet:
+    context-path: /post
 
 spring:
-  application:
-    name: post-service
-  profiles:
-    active: dev
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
+  datasource:
+    url: jdbc:mysql://localhost:3306/post
+    driverClassName: "com.mysql.cj.jdbc.Driver"
+    username: root
+    password: root
+  jpa:
+    hibernate:
+      ddl-auto: update  # Cập nhật schema JPA tự động
+    show-sql: true  # Hiển thị SQL khi thực hiện các query
+  servlet:
+    multipart:
+      enabled: true
+      file-size-threshold: 2KB
+      max-file-size: 10MB
+      max-request-size: 200MB
+  kafka:
+    bootstrap-servers: localhost:9094
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  elasticsearch:
+    uris: http://localhost:9200
 
+cloud:
+  aws:
+    credentials:
+      access-key: AKIAVPEYWJ4WSCSAXBHV
+      secret-key: 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
+    region:
+      static: us-east-2
+    stack:
+      auto: false
+
+application:
+  bucket:
+    name: imgpost-2
+
+feign:
+  client:
+    config:
+      profile-service:
+        load-balancer:
+          enabled: true
+
+profile-service:
+  url: http://localhost:8081

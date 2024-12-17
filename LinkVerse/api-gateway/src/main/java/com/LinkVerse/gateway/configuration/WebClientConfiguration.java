@@ -4,6 +4,7 @@ package com.LinkVerse.gateway.configuration;
 import com.LinkVerse.gateway.repository.IdentityClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.expression.spel.ast.Identifier;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.reactive.CorsWebFilter;
 import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
@@ -22,9 +23,8 @@ public class WebClientConfiguration {
                 .build();
     }
 
-
     @Bean
-    public CorsWebFilter corsWebFilter() {
+    CorsWebFilter corsWebFilter(){
         CorsConfiguration corsConfiguration = new CorsConfiguration();
         corsConfiguration.setAllowedOrigins(List.of("*"));
         corsConfiguration.setAllowedHeaders(List.of("*"));
@@ -38,13 +38,10 @@ public class WebClientConfiguration {
 
     @Bean
     IdentityClient identityClient(WebClient webClient){
-        // đăng ký proxy -> khi request method, proxy request tới @PostExchange
-        // proxy xử lý việc tuần tự hóa/giải tuần tự hóa dữ liệu, gửi yêu cầu, nhận phản hồi
-        // và chuyển đổi phản hồi thành các đối tượng Java
         HttpServiceProxyFactory httpServiceProxyFactory = HttpServiceProxyFactory
-                .builderFor(WebClientAdapter.create(webClient)).build(); //tạo một adapter để kết nối WebClient với OpenFeign
+                .builderFor(WebClientAdapter.create(webClient)).build();
 
-        return httpServiceProxyFactory.createClient(IdentityClient.class); //tạo proxy cho IdentityClient
+        return httpServiceProxyFactory.createClient(IdentityClient.class);
     }
 
 }

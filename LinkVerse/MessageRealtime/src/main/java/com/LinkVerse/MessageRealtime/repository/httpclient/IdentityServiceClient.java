@@ -1,25 +1,18 @@
 package com.LinkVerse.MessageRealtime.repository.httpclient;
 
+import com.LinkVerse.MessageRealtime.configuration.AuthenticationRequestInterceptor;
+import com.LinkVerse.MessageRealtime.dto.ApiResponse;
 import com.LinkVerse.MessageRealtime.dto.response.UserResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
-@Service
-public class IdentityServiceClient {
-    private final WebClient webClient;
-
-    public IdentityServiceClient(@Value("${identity.service.url}") String identityServiceUrl) {
-        this.webClient = WebClient.builder()
-                .baseUrl(identityServiceUrl)
-                .build();
-    }
-
-    public Mono<UserResponse> getUserById(String userId) {
-        return webClient.get()
-                .uri("/users/{userId}", userId)
-                .retrieve()
-                .bodyToMono(UserResponse.class);
-    }
+@FeignClient(
+        name = "identity-service",
+        url = "${app.services.profile}",
+        configuration = {AuthenticationRequestInterceptor.class})
+public interface IdentityServiceClient {
+    @GetMapping(value = "/users/{userId}", produces = MediaType.APPLICATION_JSON_VALUE)
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId);
 }

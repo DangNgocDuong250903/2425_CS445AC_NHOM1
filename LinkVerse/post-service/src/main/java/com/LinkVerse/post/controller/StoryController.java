@@ -29,13 +29,12 @@ public class StoryController {
     @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<ApiResponse<StoryResponse>> createStory(
             @RequestParam("request") String requestJson,
-            @RequestParam("files") List<MultipartFile> files,
-            @RequestHeader("Authorization") String token) throws JsonProcessingException {
+            @RequestParam("files") List<MultipartFile> files) throws JsonProcessingException {
 
         ObjectMapper objectMapper = new ObjectMapper();
         StoryCreationRequest request = objectMapper.readValue(requestJson, StoryCreationRequest.class);
 
-        ApiResponse<StoryResponse> response = storyService.createStory(request, files, token);
+        ApiResponse<StoryResponse> response = storyService.createStory(request, files);
         return ResponseEntity.ok(response);
     }
 }

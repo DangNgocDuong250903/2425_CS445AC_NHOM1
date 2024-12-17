@@ -39,7 +39,7 @@ public class ProfileCreationRequest {
     Gender gender;
 
     @PhoneConstraint(message = "Phone number invalid format")
-    String phoneNumber = "";
+    String phoneNumber ;
 
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")

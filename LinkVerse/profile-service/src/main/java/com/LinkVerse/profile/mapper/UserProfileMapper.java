@@ -13,7 +13,13 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
 
+      @Mapping(source = "gender", target = "gender")
+      @Mapping(source = "phoneNumber", target = "phoneNumber")
+      @Mapping(source = "dateOfBirth", target = "dateOfBirth")
       UserProfileResponse toUserProfileReponse(UserProfile entity);
 
+      @Mapping(source = "gender", target = "gender")
+      @Mapping(source = "phoneNumber", target = "phoneNumber")
+      @Mapping(source = "dateOfBirth", target = "dateOfBirth")
       UserProfile toUserProfile(ProfileCreationRequest request);
 }

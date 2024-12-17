@@ -1,11 +1,22 @@
+
 package com.LinkVerse.identity.dto.request;
 
-import java.time.LocalDate;
-
+import com.LinkVerse.identity.entity.Gender;
 import com.LinkVerse.identity.entity.UserStatus;
-
+import com.LinkVerse.identity.validator.DobValidator.DobConstraint;
+import com.LinkVerse.identity.validator.PhoneValidator.PhoneConstraint;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.persistence.Column;
+import jakarta.persistence.PrePersist;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
+import java.util.Date;
 
 @Data
 @Builder
@@ -14,14 +25,36 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ProfileCreationRequest {
-
     String userId;
+    @Size(min = 4, max = 20, message = "USERNAME_INVALID")
     String username;
-    String email;
-    String imageUrl;
-    UserStatus status = UserStatus.ONLINE;
+
+    @Size(min = 6, max = 50, message = "INVALID_PASSWORD")
+    String password;
+
     String firstName;
     String lastName;
-    LocalDate dob;
+
+    @PhoneConstraint(message = "Phone number invalid format")
+    String phoneNumber = "";
+
+    @Email(message = "INVALID_EMAIL")
+    @NotBlank(message = "EMAIL_IS_REQUIRED")
+    String email;
+    UserStatus status = UserStatus.ONLINE;
+
+    @DobConstraint(min = 18, message = "Date of birth invalid format")
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    Date dateOfBirth;
+
     String city;
+    Gender gender;
+    @Column(name = "created_at", nullable = false, updatable = false)
+    LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }

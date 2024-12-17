@@ -93,6 +93,7 @@ public class ShareMapperImpl implements ShareMapper {
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
         postResponse.commentCount( post.getCommentCount() );
+        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
         postResponse.comments( commentListToCommentResponseList( post.getComments() ) );
         postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
         postResponse.language( post.getLanguage() );

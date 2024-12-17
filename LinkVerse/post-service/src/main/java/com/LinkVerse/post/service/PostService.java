@@ -39,6 +39,7 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -104,7 +105,7 @@ public class PostService {
             }
 
             // Upload the avatar file to S3 and get the URL
-            String avatarUrl = s3Service.uploadFiles(List.of(avatarFile)).get(0);
+            String avatarUrl = s3Service.uploadFile(avatarFile);
 
             // Validate and set visibility
             PostVisibility visibility = request.getVisibility();
@@ -120,7 +121,7 @@ public class PostService {
             Post post = Post.builder()
                     .content(request.getContent())
                     .userId(currentUserId)
-                    .imageUrl(List.of(avatarUrl))
+                    .imgAvatarUrl(avatarUrl)
                     .visibility(visibility)
                     .createdDate(Instant.now())
                     .modifiedDate(Instant.now())
@@ -162,7 +163,7 @@ public class PostService {
             PostResponse postResponse = postMapper.toPostResponse(post);
 
             try {
-                profileServiceClient.updateImage(currentUserId, avatarFile);
+                profileServiceClient.updateImage(currentUserId, post.getImgAvatarUrl());
             } catch (FeignException e) {
                 log.error("Error updating avatar in profile-service: {}", e.getMessage(), e);
                 return ApiResponse.<PostResponse>builder()
@@ -452,6 +453,42 @@ public class PostService {
         return ApiResponse.<PostResponse>builder()
                 .code(200)
                 .message("Post shared successfully")
+                .result(postResponse)
+                .build();
+    }
+
+
+
+    public ApiResponse<PageResponse<PostResponse>> getAllPost(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        var pageData = postRepository.findAll(pageable);
+
+        List<Post> posts = pageData.getContent();
+        List<Post> modifiablePosts = new ArrayList<>(posts);
+        Collections.shuffle(modifiablePosts);
+
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Posts retrieved successfully")
+                .result(PageResponse.<PostResponse>builder()
+                        .currentPage(page)
+                        .pageSize(size)
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(modifiablePosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    public ApiResponse<PostResponse> getPostById(String postId) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post retrieved successfully")
                 .result(postResponse)
                 .build();
     }
