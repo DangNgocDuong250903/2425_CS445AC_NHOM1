@@ -38,11 +38,14 @@ const LoginPage = () => {
       } else {
         navigate("/");
       }
-      localStorage.setItem("token", JSON.stringify(data?.result?.token));
+      localStorage.setItem("token", data?.result?.token);
       if (data?.result?.token) {
         const decoded = jwtDecode(data?.result?.token);
         if (decoded?.ProfileID) {
-          handleGetDetailUser(decoded?.ProfileID, data?.result?.token);
+          handleGetDetailUser({
+            id: decoded?.userId,
+            token: data?.result?.token,
+          });
         }
       }
     } else if (isError) {
@@ -50,9 +53,9 @@ const LoginPage = () => {
     }
   }, [isSuccess, isError]);
 
-  const handleGetDetailUser = async (id, token) => {
+  const handleGetDetailUser = async ({ id, token }) => {
     try {
-      const res = await UserService.getDetailUser(id, token);
+      const res = await UserService.getDetailUserByUserId({ id, token });
       dispatch(updateUser({ ...res?.result, token }));
     } catch (error) {
       console.log(error);

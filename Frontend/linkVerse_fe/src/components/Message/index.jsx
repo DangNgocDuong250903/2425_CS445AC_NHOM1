@@ -1,6 +1,5 @@
 import React from "react";
 import { GoDotFill } from "react-icons/go";
-import { messages } from "~/assets/mockData/data";
 
 const Message = ({ name, status, message, avatar, onClick }) => {
   return (

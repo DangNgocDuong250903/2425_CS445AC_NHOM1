@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     id: "",
+    userId: "",
     firstName: "",
     lastName: "",
     username: "",
@@ -9,7 +10,7 @@ const initialState = {
     city: null,
     token: "",
     dob: "",
-    status: null
+    status: ""
 };
 
 const userSlice = createSlice({
@@ -20,17 +21,19 @@ const userSlice = createSlice({
             const {
                 id = "",
                 firstName = "",
+                userId = "",
                 lastName = "",
                 email = "",
                 username = "",
                 city = null,
                 token = "",
                 dob = "",
-                status = null,
+                status = "",
             } = action.payload
 
             state.lastName = lastName
             state.firstName = firstName
+            state.userId = userId
             state.id = id
             state.email = email
             state.dob = dob
@@ -41,6 +44,7 @@ const userSlice = createSlice({
         },
         resetUser(state, action) {
             state.lastName = ""
+            state.userId = ""
             state.firstName = ""
             state.id = ""
             state.dob = ""

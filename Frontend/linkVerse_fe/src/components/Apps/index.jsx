@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { MdApps } from "react-icons/md";
-import { CustomizeMenu } from "..";
+import { CustomizeMenu, Logout } from "..";
 import { Divider, MenuItem, useColorScheme } from "@mui/material";
 import styled from "@emotion/styled";
 import { useDispatch, useSelector } from "react-redux";
-import { FaRegTrashCan } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { setTheme } from "~/redux/Slices/themeSlice";
 import { FiBookmark } from "react-icons/fi";
@@ -13,6 +12,8 @@ const Apps = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const theme = useSelector((state) => state.theme.theme);
+
   const StyledDivider = styled(Divider)(({ theme }) => ({
     width: "220px",
     borderColor: theme.colorSchemes.light.border,
@@ -22,9 +23,9 @@ const Apps = () => {
       borderColor: theme.colorSchemes.dark.border,
     }),
   }));
-  const theme = useSelector((state) => state.theme.theme);
 
   const [anchorEl, setAnchorEl] = useState(null);
+
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -48,15 +49,20 @@ const Apps = () => {
     <div className="flex justify-center p-1 items-center hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
       <MdApps
         size={28}
-        className="cursor-pointer "
+        className="cursor-pointer"
         onClick={handleClick}
-        id="demo-customized-button"
         aria-controls={open ? "demo-customized-menu" : undefined}
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         variant="contained"
       />
-      <CustomizeMenu handleClose={handleClose} anchorEl={anchorEl} open={open}>
+      <CustomizeMenu
+        anchor={{ vertical: "top", horizontal: "right" }}
+        handleClose={handleClose}
+        anchorEl={anchorEl}
+        open={open}
+        styles={{ marginTop: "10px" }}
+      >
         {user?.token && (
           <div>
             <MenuItem onClick={() => navigate("/settings")}>
@@ -94,12 +100,7 @@ const Apps = () => {
         {user?.token && (
           <div>
             <StyledDivider />
-            <MenuItem onClick={handleClose} disableRipple>
-              <div className="flex items-center justify-between w-full">
-                <span className="text-red-600">Log out</span>
-                <FaRegTrashCan color="red" />
-              </div>
-            </MenuItem>
+            <Logout second />
           </div>
         )}
       </CustomizeMenu>

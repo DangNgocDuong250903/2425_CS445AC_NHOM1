@@ -6,12 +6,12 @@ import ForgotPasswordpage from "./ForgotPasswordPage";
 import ProfilePage from "./ProfilePage";
 import Admin from "./AdminPage";
 import GroupPage from "./GroupPage";
-import FriendPage from "./FriendPage";
 import ChatPage from "./ChatPage"
 import ReplyPage from "./ReplyPage"
 import SettingPage from "./SettingPage";
 import ResetPassword from "./ResetPasswordPage";
+import SavedsPage from "./SavedsPage";
 
 export {
-    ChatPage, SettingPage, ResetPassword, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ForgotPasswordpage, ProfilePage, FriendPage
+    ChatPage, SavedsPage, SettingPage, ResetPassword, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ForgotPasswordpage, ProfilePage
 }

@@ -2,14 +2,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route } from "react-router-dom";
 import { route } from "./routes";
 import { useEffect } from "react";
-import { isJsonString } from "./utils";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "./redux/Slices/userSlice";
 import { ProtectedRoute } from "./components";
 import {
   ForgotPasswordpage,
-  FriendPage,
   HomePage,
   LoginPage,
   RegisterPage,
@@ -18,21 +16,19 @@ import {
 
 function App() {
   const { theme } = useSelector((state) => state.theme);
-  const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const { decoded, token } = handleDecoded();
-    if (decoded?.ProfileID) {
-      handleGetDetailUser(decoded?.ProfileID, token);
+    if (decoded?.userId) {
+      handleGetDetailUser(decoded?.userId, token);
     }
   }, []);
 
   const handleDecoded = () => {
     let token = localStorage.getItem("token");
     let decoded = {};
-    if (token && isJsonString(token)) {
-      token = JSON.parse(token);
+    if (token) {
       decoded = jwtDecode(token);
     }
     return { decoded, token };
@@ -46,7 +42,7 @@ function App() {
         if (decoded?.exp - currentTimeInSeconds <= 1000) {
           const data = await UserService.handleRefreshToken(token);
           config.headers["Authorization"] = `Bearer ${data?.result?.token}`;
-          localStorage.setItem("token", JSON.stringify(data?.result?.token));
+          localStorage.setItem("token", data?.result?.token);
         }
         return config;
       } catch (error) {
@@ -60,7 +56,7 @@ function App() {
 
   const handleGetDetailUser = async (id, token) => {
     try {
-      const res = await UserService.getDetailUser(id, token);
+      const res = await UserService.getDetailUserByUserId({ id, token });
       dispatch(updateUser({ ...res?.result, token }));
     } catch (error) {
       console.log(error);
@@ -68,7 +64,7 @@ function App() {
   };
 
   //protected route
-  const isLoggedIn = !!user?.token;
+  const isLoggedIn = !!localStorage.getItem("token");
 
   return (
     // <div>
@@ -96,7 +92,6 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordpage />} />
           <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/friend/:id" element={<FriendPage />} />
           <Route path="/" element={<HomePage />} />
           {route.map((route, i) => {
             const Page = route.element;

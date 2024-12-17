@@ -1,12 +1,4 @@
-import {
-  DialogCustom,
-  TextInput,
-  TopBar,
-  Button,
-  PostCard,
-  DragToScroll,
-  CreatePost,
-} from "~/components";
+import { TopBar, PostCard, CreatePost, UpdateUser, Button } from "~/components";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { FaInstagram } from "react-icons/fa";
@@ -14,38 +6,21 @@ import { CiFacebook } from "react-icons/ci";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
-import {
-  Avatar,
-  AvatarGroup,
-  CircularProgress,
-  Divider,
-  Fab,
-  FormControl,
-  MenuItem,
-  Select,
-  Snackbar,
-  TextField,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
-import { useCallback, useEffect, useState } from "react";
-import { posts } from "~/assets/mockData/data";
-import { BsImages } from "react-icons/bs";
-import { FaPhotoVideo } from "react-icons/fa";
-import { PiGifThin } from "react-icons/pi";
-import { getBase64 } from "~/utils";
-import { IoCloseCircle } from "react-icons/io5";
-import * as UserService from "~/services/UserService";
-import * as PostService from "~/services/PostService";
 import { BlankAvatar } from "~/assets";
-import { ImUserPlus } from "react-icons/im";
+import { useEffect, useState } from "react";
+import { CircularProgress } from "@mui/material";
+import * as PostService from "~/services/PostService";
+import { useParams } from "react-router-dom";
+import useGetDetailUser from "~/hooks/useGetDetailUser";
 import { useMutationHook } from "~/hooks/useMutationHook";
+import { useQuery } from "@tanstack/react-query";
 
 const ProfilePage = () => {
-  const { t } = useTranslation();
   const theme = useSelector((state) => state.theme.theme);
-  const user = useSelector((state) => state.user);
+  const userState = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
-  const [isOpenDialogEdit, setIsOpenDialogEdit] = useState(false);
+  const { id } = useParams();
+  const { user, loading } = useGetDetailUser();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -74,94 +49,38 @@ const ProfilePage = () => {
     };
   };
 
-  const handleCloseDiaLogEdit = () => {
-    setIsOpenDialogEdit(false);
+  //fetch my post
+  // const [fetchingPosts, setFetchingPosts] = useState(true);
+  // const [posts, setPosts] = useState([]);
+  // useEffect(() => {
+  //   const getPosts = async () => {
+  //     if (!user) return;
+  //     setFetchingPosts(true);
+  //     try {
+  //       const res = await PostService.getMyPosts(user?.token);
+  //       console.log(res);
+  //       setPosts(res?.result?.data);
+  //     } catch (error) {
+  //       setPosts([]);
+  //     } finally {
+  //       setFetchingPosts(false);
+  //     }
+  //   };
+  //   getPosts();
+  // }, [user?.token, setPosts, user]);
+
+  const getMyPosts = async () => {
+    const token = localStorage.getItem("token");
+    const res = await PostService.getMyPosts(token);
+    return res?.result?.data;
   };
 
-  // edit profile
-  const [lastName, setLastName] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [avatar, setAvatar] = useState("");
-  const [email, setEmail] = useState("");
-  const [profession, setProfession] = useState("");
-  const [address, setAddress] = useState("");
-  const [avatarFile, setAvatarFile] = useState("");
-  const [bio, setBio] = useState("");
+  const queryPosts = useQuery({
+    queryKey: ["posts"],
+    queryFn: getMyPosts,
+  });
 
-  useEffect(() => {
-    setLastName(user?.lastName);
-    setFirstName(user?.firstName);
-    setAvatar(user?.avatar);
-    setProfession(user?.profession);
-    setAddress(user?.address);
-    setBio(user?.bio);
-    setEmail(user?.email);
-  }, [user]);
-
-  const handleChangeFirstName = (e) => {
-    setFirstName(e.target.value);
-  };
-
-  const handleChangeLastName = (e) => {
-    setLastName(e.target.value);
-  };
-
-  const handleChangeEmail = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handleChangeProfession = (e) => {
-    setProfession(e.target.value);
-  };
-
-  const handleChangeAddress = (e) => {
-    setAddress(e.target.value);
-  };
-
-  const handleChangeAvatar = (e) => {
-    const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setAvatarFile(selectedFile);
-    }
-  };
-  const handleChangeBio = (e) => {
-    setBio(e.target.value);
-  };
-
-  useEffect(() => {
-    if (avatarFile) {
-      getBase64(avatarFile)
-        .then((result) => setAvatar(result))
-        .catch((error) => console.error(error));
-    }
-  }, [avatarFile]);
-
-  const mutation = useMutationHook((data) => UserService.update(data));
-  const { data, isPending, isSuccess, isError } = mutation;
-
-  useEffect(() => {
-    if (isSuccess) {
-      console.log("success");
-    } else if (isError) {
-      console.log("error");
-    }
-  }, [isSuccess, isError]);
-
-  const handleSubmitChange = () => {
-    const data = {
-      token: user?.token,
-      id: user?.id,
-      lastName,
-      firstName,
-      avatar,
-      email,
-      profession,
-      address,
-      avatar,
-      bio,
-    };
-    mutation.mutate(data);
-  };
+  const { isLoading, data: posts } = queryPosts;
 
   return (
     <>
@@ -183,29 +102,18 @@ const ProfilePage = () => {
                   </span>
                 </div>
                 <img
-                  src={avatar ? avatar : BlankAvatar}
+                  src={user?.avatar || BlankAvatar}
                   alt="avatar"
                   className="rounded-full object-cover w-20 h-20 bg-no-repeat shadow-newFeed"
                 />
               </div>
               {/* 2 */}
               <div className="flex items-center">
-                <p className="text-ascent-1">{bio || "No storie"}</p>
+                <p className="text-ascent-1">{user?.bio || "No storie"}</p>
               </div>
               {/* 3 */}
-              {/* <div className="flex justify-between items-center">
-                {user?.following.length > 0 ? (
-                  <AvatarGroup total={user?.following.length}>
-                    {user.following.map((item, i) => (
-                      <Avatar
-                        alt="avatar"
-                        src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Mohamed_Salah_2018.jpg"
-                      />
-                    ))}
-                  </AvatarGroup>
-                ) : (
-                  <span>0 friends</span>
-                )}
+              <div className="flex justify-between items-center">
+                <span>0 friends</span>
                 <div className="flex gap-2">
                   <FaInstagram
                     color={theme === "dark" ? "#fff" : "#000"}
@@ -216,34 +124,31 @@ const ProfilePage = () => {
                     size="30px"
                   />
                 </div>
-              </div> */}
-              {/* 4 */}
-              <div className="w-full text-center items-center justify-center flex ">
-                <Button
-                  onClick={() => setIsOpenDialogEdit(true)}
-                  title={t("Chỉnh sửa trang cá nhân")}
-                  containerStyles={
-                    "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                  }
-                />
               </div>
+              {/* 4 */}
 
-              {/* <div className="w-full text-center items-center justify-center flex gap-x-2">
-                <Button
-                  onClick={() => setIsOpenDialogEdit(true)}
-                  title="Bạn bè"
-                  containerStyles={
-                    "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                  }
-                />
-                <Button
-                  onClick={() => setIsOpenDialogEdit(true)}
-                  title="Nhắn tin"
-                  containerStyles={
-                    "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                  }
-                />
-              </div> */}
+              {userState?.id !== user?.id ? (
+                <div className="w-full text-center items-center justify-center flex gap-x-2">
+                  <Button
+                    onClick={() => setIsOpenDialogEdit(true)}
+                    title="Bạn bè"
+                    containerStyles={
+                      "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                    }
+                  />
+                  <Button
+                    onClick={() => setIsOpenDialogEdit(true)}
+                    title="Nhắn tin"
+                    containerStyles={
+                      "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                    }
+                  />
+                </div>
+              ) : (
+                <div className="w-full text-center items-center justify-center flex ">
+                  <UpdateUser profile />
+                </div>
+              )}
             </div>
             {/* 2 */}
             <div className="flex w-full h-auto items-center justify-center">
@@ -279,14 +184,14 @@ const ProfilePage = () => {
                   </Box>
                   {/* 1 */}
                   <CustomTabPanel value={value} index={0}>
-                    <div className="w-full h-full">
+                    <div className="w-full pb-10 h-full">
                       {/* header */}
-                      <div className=" w-full flex items-center justify-between px-6 py-3">
-                        <div className="flex items-center justify-center gap-4">
+                      <div className=" w-full flex items-center justify-between px-6 py-3 border-b">
+                        <div className="flex items-center justify-center gap-4 ">
                           <img
-                            src="https://res.cloudinary.com/djs3wu5bg/image/upload/v1683874470/cld-sample.jpg"
+                            src={user?.avatar || BlankAvatar}
                             alt="avatar"
-                            className="rounded-full object-cover w-12 h-12 bg-no-repeat"
+                            className="rounded-full object-cover w-14 h-14 bg-no-repeat"
                           />
                           <span className="text-ascent-2 text-sm font-normal">
                             Có gì mới...
@@ -295,322 +200,68 @@ const ProfilePage = () => {
                         <CreatePost profilePage />
                       </div>
                       {/* posts */}
-                      <div className="flex-1 h-full bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto  border-1">
-                        {/* post */}
+                      <div className="flex-1 bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto  ">
+                        {/* {!fetchingPosts && posts.length === 0 && (
+                          <div className="w-full h-60 flex items-center justify-center">
+                            <p className="text-lg text-ascent-2">
+                              Không có bài viết nào
+                            </p>
+                          </div>
+                        )}
+                        {fetchingPosts && (
+                          <div className="w-full h-60 flex items-center justify-center">
+                            <CircularProgress />
+                          </div>
+                        )}
+
                         {posts.map((post, i) => (
-                          <PostCard
-                            key={i}
-                            post={post}
-                            user={user}
-                            deletePost={() => {}}
-                            likePost={() => {}}
-                          />
-                        ))}
+                          <PostCard key={i} post={post} user={user} />
+                        ))} */}
+
+                        {!isLoading && posts.length === 0 && (
+                          <div className="w-full h-60 flex items-center justify-center">
+                            <p className="text-lg text-ascent-2">
+                              Không có bài viết nào
+                            </p>
+                          </div>
+                        )}
+                        {isLoading && (
+                          <div className="w-full h-60 flex items-center justify-center">
+                            <CircularProgress />
+                          </div>
+                        )}
+
+                        {posts &&
+                          posts.length > 0 &&
+                          posts.map((post, i) => (
+                            <PostCard key={i} post={post} user={user} />
+                          ))}
                       </div>
                     </div>
                   </CustomTabPanel>
                   {/* 2 */}
                   <CustomTabPanel value={value} index={1}>
                     <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
-                      <h1>Chưa có bài đăng nào</h1>
+                      <div className="w-full h-60 flex items-center justify-center">
+                        <p className="text-lg text-ascent-2">
+                          Không có trả lời nào
+                        </p>
+                      </div>
                     </div>
                   </CustomTabPanel>
                   {/* 3 */}
                   <CustomTabPanel value={value} index={2}>
-                    Item Three
+                    <div className="w-full h-60 flex items-center justify-center">
+                      <p className="text-lg text-ascent-2">
+                        Chưa có bài đăng lại nào
+                      </p>
+                    </div>
                   </CustomTabPanel>
                 </Box>
               </div>
             </div>
           </div>
         </div>
-
-        {/* Edit */}
-        <DialogCustom
-          isOpen={isOpenDialogEdit}
-          theme={theme}
-          handleCloseDiaLogAdd={handleCloseDiaLogEdit}
-        >
-          <div
-            className={`w-full ${
-              theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
-            } shadow-newFeed`}
-          >
-            <div className="flex w-full flex-col px-8 py-3">
-              <div className="flex items-center justify-between py-3">
-                {/* name */}
-                <div className="flex flex-col">
-                  <h1 className="text-ascent-2 font-medium">Full name</h1>
-                  <div className="flex">
-                    <TextInput
-                      onChange={handleChangeFirstName}
-                      value={firstName}
-                      styles="border-0 bg-transparent px-0 pl-0 text-ascent-2"
-                      labelStyles="font-medium"
-                    />
-                    <TextInput
-                      onChange={handleChangeLastName}
-                      value={lastName}
-                      styles="border-0 bg-transparent px-0 pl-0 text-ascent-2"
-                      labelStyles="font-medium"
-                    />
-                  </div>
-                </div>
-
-                <div className="relative group w-14 h-14">
-                  {avatar ? (
-                    <div className="w-full h-full">
-                      <img
-                        src={avatar}
-                        alt="avatar"
-                        className="rounded-full relative object-cover bg-no-repeat w-full h-full"
-                      />
-                      <div className="flex items-center justify-center w-full h-full absolute top-0">
-                        <label
-                          htmlFor="imgUpload"
-                          className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                        >
-                          <input
-                            type="file"
-                            onChange={handleChangeAvatar}
-                            className="hidden"
-                            id="imgUpload"
-                            data-max-size="5120"
-                            accept=".jpg, .png, .jpeg"
-                          />
-                          <ImUserPlus
-                            size={20}
-                            className=" duration-300 transition-opacity opacity-0 hover:opacity-100 cursor-pointer"
-                          />
-                        </label>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="w-14 h-14 rounded-full bg-[#ccc] flex items-center justify-center cursor-pointer">
-                      <label
-                        htmlFor="imgUpload"
-                        className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                      >
-                        <input
-                          type="file"
-                          onChange={handleChangeAvatar}
-                          className="hidden"
-                          id="imgUpload"
-                          data-max-size="5120"
-                          accept=".jpg, .png, .jpeg"
-                        />
-                        <ImUserPlus size={20} />
-                      </label>
-                    </div>
-                  )}
-                </div>
-              </div>
-              <Divider sx={{ borderColor: "#ccc" }} />
-
-              <div className="flex items-center justify-between py-3">
-                <div className="flex flex-col">
-                  <h1 className="text-ascent-2 font-medium">Tiểu sử</h1>
-                  <TextField
-                    value={bio}
-                    placeholder="Viết tiểu sử"
-                    onChange={handleChangeBio}
-                    multiline
-                    maxRows={5}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      "& .MuiInput-root": {
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "&:before": {
-                          display: "none",
-                        },
-                        "&:after": {
-                          display: "none",
-                        },
-                        ":hover:not(.Mui-focused)": {
-                          color: "",
-                          "&:before": {
-                            display: "none",
-                          },
-                        },
-                      },
-                      "& .MuiInputLabel-standard": {
-                        color: "rgb(89, 91, 100)",
-                        "&.Mui-focused": {
-                          display: "none",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <Divider sx={{ borderColor: "#ccc" }} />
-
-              <div className="flex items-center w-full justify-between py-3">
-                <div className="flex w-full flex-col">
-                  <h1 className="text-ascent-2 font-medium">Email</h1>
-                  <TextField
-                    value={email}
-                    onChange={handleChangeEmail}
-                    multiline
-                    maxRows={5}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      "& .MuiInput-root": {
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "&:before": {
-                          display: "none",
-                        },
-                        "&:after": {
-                          display: "none",
-                        },
-                        ":hover:not(.Mui-focused)": {
-                          color: "",
-                          "&:before": {
-                            display: "none",
-                          },
-                        },
-                      },
-                      "& .MuiInputLabel-standard": {
-                        color: "rgb(89, 91, 100)",
-                        "&.Mui-focused": {
-                          display: "none",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <Divider sx={{ borderColor: "#ccc" }} />
-
-              <div className="flex items-center w-full justify-between py-3">
-                <div className="flex w-full flex-col">
-                  <h1 className="text-ascent-2 font-medium">User name</h1>
-                  <TextField
-                    // value={email}
-                    // onChange={handleChangeEmail}
-                    multiline
-                    maxRows={5}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      "& .MuiInput-root": {
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "&:before": {
-                          display: "none",
-                        },
-                        "&:after": {
-                          display: "none",
-                        },
-                        ":hover:not(.Mui-focused)": {
-                          color: "",
-                          "&:before": {
-                            display: "none",
-                          },
-                        },
-                      },
-                      "& .MuiInputLabel-standard": {
-                        color: "rgb(89, 91, 100)",
-                        "&.Mui-focused": {
-                          display: "none",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <Divider sx={{ borderColor: "#ccc" }} />
-
-              <div className="flex items-center w-full justify-between py-3">
-                <div className="flex w-full flex-col">
-                  <h1 className="text-ascent-2 font-medium">Address</h1>
-                  <TextField
-                    value={address}
-                    placeholder="Thêm địa chỉ"
-                    onChange={handleChangeAddress}
-                    multiline
-                    maxRows={5}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      "& .MuiInput-root": {
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "&:before": {
-                          display: "none",
-                        },
-                        "&:after": {
-                          display: "none",
-                        },
-                        ":hover:not(.Mui-focused)": {
-                          color: "",
-                          "&:before": {
-                            display: "none",
-                          },
-                        },
-                      },
-                      "& .MuiInputLabel-standard": {
-                        color: "rgb(89, 91, 100)",
-                        "&.Mui-focused": {
-                          display: "none",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <Divider sx={{ borderColor: "#ccc" }} />
-
-              <div className="flex items-center   w-full justify-between py-3">
-                <div className="flex w-full flex-col">
-                  <h1 className="text-ascent-2 font-medium">Profession</h1>
-                  <TextField
-                    value={profession}
-                    placeholder="Thêm công việc"
-                    onChange={handleChangeProfession}
-                    multiline
-                    maxRows={5}
-                    variant="standard"
-                    fullWidth
-                    sx={{
-                      "& .MuiInput-root": {
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "&:before": {
-                          display: "none",
-                        },
-                        "&:after": {
-                          display: "none",
-                        },
-                        ":hover:not(.Mui-focused)": {
-                          color: "",
-                          "&:before": {
-                            display: "none",
-                          },
-                        },
-                      },
-                      "& .MuiInputLabel-standard": {
-                        color: "rgb(89, 91, 100)",
-                        "&.Mui-focused": {
-                          display: "none",
-                        },
-                      },
-                    }}
-                  />
-                </div>
-              </div>
-
-              <Button
-                title={"Xong"}
-                onClick={handleSubmitChange}
-                containerStyles="w-full bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
-              />
-            </div>
-          </div>
-        </DialogCustom>
       </div>
       <CreatePost buttonRight />
     </>

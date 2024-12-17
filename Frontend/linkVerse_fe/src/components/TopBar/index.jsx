@@ -1,65 +1,24 @@
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import {
   Apps,
-  Button,
+  ChangeLanguage,
   Chat,
+  Logout,
   Notifications,
+  SelectPosts,
   TextInput,
 } from "~/components/index";
 import { useTranslation } from "react-i18next";
-import i18n from "~/utils/i18n/i18n";
-import { MenuItem, Select, useColorScheme } from "@mui/material";
-import { setLanguage } from "~/redux/Slices/languageSlice";
-import { setTheme } from "~/redux/Slices/themeSlice";
-import { useState } from "react";
 import { useForm } from "react-hook-form";
-import * as UserService from "~/services/UserService";
-import { resetUser } from "~/redux/Slices/userSlice";
 import { IoIosSearch } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 
-const TopBar = ({ title, iconBack }) => {
-  const dispatch = useDispatch();
+const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
-  const { language } = useSelector((state) => state.language);
   const navigate = useNavigate();
-
-  //language
-  const handleChangeLanguage = (e) => {
-    const value = e.target.value;
-    dispatch(setLanguage(value));
-    i18n.changeLanguage(language === "en" ? "vie" : "en");
-  };
-
-  //theme
-  const { mode, setMode } = useColorScheme();
-  const handleTheme = () => {
-    const themeValue = theme === "light" ? "dark" : "light";
-    setMode(theme === "light" ? "dark" : "light");
-    dispatch(setTheme(themeValue));
-  };
-
-  //logout
-  const handleLogOut = async () => {
-    await UserService.logout(user?.token);
-    dispatch(resetUser());
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [popoverOpen, setPopoverOpen] = useState(false);
-
-  const handleClick = (event) => {
-    setAnchorEl(anchorEl ? null : event.currentTarget);
-    setPopoverOpen(!popoverOpen);
-  };
-
-  const open = Boolean(anchorEl);
-  const id = open ? "simple-popper" : undefined;
 
   //search
   const {
@@ -117,7 +76,7 @@ const TopBar = ({ title, iconBack }) => {
       </div>
       {/* 2 */}
       <div className="flex flex-1 px-8 items-center justify-center h-full my-auto ">
-        <div className="flex justify-between w-full">
+        <div className="flex justify-between w-full ">
           {iconBack ? (
             <div
               onClick={() => navigate("/")}
@@ -128,73 +87,22 @@ const TopBar = ({ title, iconBack }) => {
           ) : (
             <div className="w-6 h-6"></div>
           )}
-          <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
-            {t(title)}
-          </h1>
+          <div className="flex gap-x-4 items-center justify-center">
+            <h1 className="text-base text-ascent-1 font-medium cursor-pointer">
+              {t(title)}
+            </h1>
+            {selectPosts && user?.token && <SelectPosts />}
+          </div>
           <div className="w-6 h-6" />
         </div>
       </div>
       {/* 3 */}
       <div className="w-1/4 flex gap-4 items-center text-ascent-1 text-base md:text-xl justify-end">
-        {/* notification */}
         <Notifications />
-        {/* change language */}
-        <div className="w-10 h-10 flex items-center justify-center">
-          <Select
-            IconComponent={() => {}}
-            sx={{
-              padding: 0,
-              boxShadow: "none",
-              ".MuiOutlinedInput-notchedOutline": {
-                border: 0,
-              },
-              "&.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                {
-                  border: 0,
-                },
-              "& .MuiSelect-select": {
-                padding: 0,
-                "&.css-1pq31d5-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-1pq31d5-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-1pq31d5-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
-                  {
-                    padding: 0,
-                  },
-              },
-            }}
-            value={language}
-            onChange={handleChangeLanguage}
-          >
-            <MenuItem value={"vie"}>
-              <span className="">VIE</span>
-            </MenuItem>
-            <MenuItem value={"en"}>
-              <span>EN</span>
-            </MenuItem>
-          </Select>
-        </div>
+        <ChangeLanguage />
         <Chat />
-        {/* app */}
         <Apps />
-        {/* log out + log in */}
-        <div>
-          {user?.token ? (
-            <Button
-              onClick={handleLogOut}
-              title={t("Đăng xuất")}
-              containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
-            />
-          ) : (
-            <div className="relative inline-flex  group">
-              <div className="absolute transitiona-all duration-1000 opacity-70 -inset-px bg-gradient-to-r from-[#44BCFF] via-[#FF44EC] to-[#FF675E] rounded-xl blur-lg group-hover:opacity-100 group-hover:-inset-1 group-hover:duration-200 animate-tilt"></div>
-              <span
-                onClick={() => navigate("/login")}
-                className="relative inline-flex items-center justify-center px-4 md:px-6 py-1 md:py-2 text-sm text-white transition-all duration-200 bg-gray-900 rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900"
-                role="button"
-              >
-                {t("Đăng nhập")}
-              </span>
-            </div>
-          )}
-        </div>
+        <Logout primary />
       </div>
     </div>
   );

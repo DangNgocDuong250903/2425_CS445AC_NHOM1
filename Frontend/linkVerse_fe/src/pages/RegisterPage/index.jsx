@@ -36,7 +36,11 @@ const RegisterPage = () => {
   }, [isSuccess, isError]);
 
   const onSubmit = async (data) => {
-    mutation.mutate(data);
+    const { dateOfBirth } = data;
+    const [year, month, day] = dateOfBirth.split("-");
+    const formattedDate = `${day}/${month}/${year}`;
+    const newData = { ...data, dateOfBirth: formattedDate };
+    mutation.mutate(newData);
   };
 
   return (
@@ -142,25 +146,29 @@ const RegisterPage = () => {
               />
 
               <TextInput
-                name="dbo"
+                name="dateOfBirth"
                 type="date"
                 label="Ngày sinh"
-                styles={`w-full h-10 ${errors.dbo ? "border-red-600" : ""}`}
-                register={register("dbo", {
-                  required: "Birthday is required",
+                styles={`w-full h-10 ${
+                  errors.dateOfBirth ? "border-red-600" : ""
+                }`}
+                register={register("dateOfBirth", {
+                  required: "Date of birth is required",
                 })}
-                toolTipInput={errors.dbo ? errors.dbo?.message : ""}
+                toolTipInput={
+                  errors.dateOfBirth ? errors.dateOfBirth?.message : ""
+                }
               />
             </div>
 
-            {/* sex */}
-            {/* <div className="w-full flex flex-col mt-2">
-              <p className="text-ascent-2 text-sm mb-2">Sex</p>
+            {/* gender */}
+            <div className="w-full flex flex-col mt-2">
+              <p className="text-ascent-2 text-sm mb-2">Gender</p>
 
               <div className="w-full h-10 flex flex-col lg:flex-row gap-1 md:gap-2">
                 <div
                   className={`flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5 ${
-                    errors.sex ? "border-red-600" : ""
+                    errors.gender ? "border-red-600" : ""
                   }`}
                 >
                   <label className="text-ascent-1" htmlFor="male">
@@ -170,13 +178,13 @@ const RegisterPage = () => {
                     type="radio"
                     id="male"
                     value="male"
-                    {...register("sex", { required: "Sex is required" })}
+                    {...register("gender", { required: "Gender is required" })}
                   />
                 </div>
 
                 <div
                   className={`flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5 ${
-                    errors.sex ? "border-red-600" : ""
+                    errors.gender ? "border-red-600" : ""
                   }`}
                 >
                   <label className="text-ascent-1" htmlFor="female">
@@ -186,13 +194,13 @@ const RegisterPage = () => {
                     type="radio"
                     id="female"
                     value="female"
-                    {...register("sex", { required: "Sex is required" })}
+                    {...register("gender", { required: "Gender is required" })}
                   />
                 </div>
 
                 <div
                   className={`flex w-full items-center justify-between bg-secondary rounded border border-[#66666690] outline-none text-sm text-ascent-1 px-4 py-2.5 ${
-                    errors.sex ? "border-red-600" : ""
+                    errors.gender ? "border-red-600" : ""
                   }`}
                 >
                   <label className="text-ascent-1" htmlFor="other">
@@ -202,30 +210,52 @@ const RegisterPage = () => {
                     type="radio"
                     id="other"
                     value="other"
-                    {...register("sex", { required: "Sex is required" })}
+                    {...register("gender", { required: "Gender is required" })}
                   />
                 </div>
               </div>
-            </div> */}
+            </div>
 
-            <TextInput
-              name="email"
-              placeholder="email@example.com"
-              label={t("Địa chỉ email")}
-              type="email"
-              register={register("email", {
-                required: t("Địa chỉ email là bắt buộc"),
-                validate: {
-                  noSpaces: (value) =>
-                    !/\s/.test(value) || "Email must not contain spaces.",
-                },
-              })}
-              styles={`w-full h-10 ${errors.email ? "border-red-600" : ""}`}
-              iconRight={
-                errors.email ? <FaCircleExclamation color="red" /> : ""
-              }
-              toolTip={errors.email ? errors.email?.message : ""}
-            />
+            <div className="w-full flex flex-col  lg:flex-row gap-1 md:gap-2">
+              <TextInput
+                name="email"
+                placeholder="email@ex.com"
+                label={t("Địa chỉ email")}
+                type="email"
+                register={register("email", {
+                  required: t("Địa chỉ email là bắt buộc"),
+                  validate: {
+                    noSpaces: (value) =>
+                      !/\s/.test(value) || "Email must not contain spaces.",
+                  },
+                })}
+                styles={`w-full h-10 ${errors.email ? "border-red-600" : ""}`}
+                iconRight={
+                  errors.email ? <FaCircleExclamation color="red" /> : ""
+                }
+                toolTip={errors.email ? errors.email?.message : ""}
+              />
+              <TextInput
+                name="phoneNumber"
+                label="Phone Number"
+                placeholder="Phone Number"
+                type="text"
+                styles={`w-full h-10 ${
+                  errors.phoneNumber ? "border-red-600" : ""
+                }`}
+                iconRight={
+                  errors.phoneNumber ? <FaCircleExclamation color="red" /> : ""
+                }
+                toolTip={errors.phoneNumber ? errors.phoneNumber.message : ""}
+                register={register("phoneNumber", {
+                  required: "Phone Number is required!",
+                  pattern: {
+                    value: /^[0-9]{10,11}$/,
+                    message: "Phone Number is invalid",
+                  },
+                })}
+              />
+            </div>
 
             <TextInput
               name="password"

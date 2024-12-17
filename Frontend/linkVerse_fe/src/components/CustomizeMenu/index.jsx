@@ -9,16 +9,11 @@ const StyledMenu = styled((props) => (
       vertical: "bottom",
       horizontal: "right",
     }}
-    transformOrigin={{
-      vertical: "top",
-      horizontal: "right",
-    }}
     {...props}
   />
 ))(({ theme }) => ({
   "& .MuiPaper-root": {
     borderRadius: 15,
-    marginTop: theme.spacing(1),
     padding: "5px",
     minWidth: 180,
     borderWidth: "0.8px",
@@ -51,10 +46,19 @@ const StyledMenu = styled((props) => (
   },
 }));
 
-const CustomizeMenu = ({ open, handleClose, anchorEl, children }) => {
+const CustomizeMenu = ({
+  open,
+  handleClose,
+  anchorEl,
+  children,
+  anchor,
+  styles,
+}) => {
   return (
     <div>
       <StyledMenu
+        sx={styles}
+        transformOrigin={anchor}
         id="demo-customized-menu"
         MenuListProps={{
           "aria-labelledby": "demo-customized-button",

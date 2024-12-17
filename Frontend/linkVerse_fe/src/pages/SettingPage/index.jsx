@@ -6,11 +6,13 @@ import { RxLockClosed } from "react-icons/rx";
 import { RiEyeOffLine } from "react-icons/ri";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { IoIosArrowForward } from "react-icons/io";
+import { useLocation } from "react-router-dom";
 
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
   const user = useSelector((state) => state.user);
+  const location = useLocation();
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -166,14 +168,14 @@ const SettingPage = () => {
                       </div>
                     </div>
                     {/* footer */}
-                    <div className="w-full flex flex-col gap-y-2  items-center justify-between">
+                    <div className="w-full  flex flex-col gap-y-2  items-center justify-between">
                       <Button
                         title="Vô hiệu hóa tài khoản"
-                        containerStyles="w-full text-white bg-bgStandard flex items-center justify-center py-3 rounded-2xl"
+                        containerStyles="w-full text-white bg-bgStandard flex items-center border-1 justify-center py-3 rounded-2xl border-borderNewFeed border-1"
                       />
                       <Button
                         title="Xóa tài khoản"
-                        containerStyles="py-3 rounded-2xl text-red-600  bg-slate-200 w-full flex items-center justify-center"
+                        containerStyles="border-borderNewFeed border-1 py-3 rounded-2xl text-red-600  bg-primary w-full flex items-center justify-center"
                       />
                     </div>
                   </div>
@@ -229,6 +231,7 @@ const SettingPage = () => {
           </Box>
         </div>
       </div>
+      <CreatePost buttonRight />
     </div>
   );
 };

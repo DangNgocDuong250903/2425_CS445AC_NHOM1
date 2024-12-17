@@ -1,8 +1,4 @@
-import { Link } from "react-router-dom";
-import { requests } from "~/assets/mockData/data";
-import { Button } from "..";
 import { useTranslation } from "react-i18next";
-import { BlankAvatar } from "~/assets";
 
 const FriendRequest = () => {
   const { t } = useTranslation();
@@ -11,10 +7,12 @@ const FriendRequest = () => {
     <div className="w-full bg-primary shadow-newFeed rounded-xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]">
         <span>{t("Lời mời kết bạn")}</span>
-        {/* <span>{requests?.length || ""} </span> */}
+        <span>0 </span>
       </div>
 
-      <div className="w-full flex flex-col gap-4 pt-4">
+      <div className="w-full items-center flex flex-col gap-4 pt-4">
+        <span>Chưa có lời mời nào</span>
+
         {/* {requests?.map(({ _id, requestFrom: from }) => (
           <div key={_id} className="flex items-center justify-between">
             <Link

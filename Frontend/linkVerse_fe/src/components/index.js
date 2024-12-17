@@ -8,7 +8,6 @@ import DialogCustom from "./DialogCustom"
 import GroupCard from "./GroupCard"
 import FriendRequest from "./FriendRequest"
 import FriendSuggest from "./FriendSuggest"
-import PopperCustom from "./PopperCustom"
 import Story from "./Story"
 import DragToScroll from "./DragToScroll"
 import CustomizeMenu from "./CustomizeMenu"
@@ -18,8 +17,18 @@ import Chat from "./Chat"
 import ProtectedRoute from "./ProtectedRoute"
 import CreatePost from "./CreatePost"
 import Welcome from "./Welcome"
+import UpdateUser from "./UpdateUser"
+import ChangeLanguage from "./ChangeLanguage"
+import SelectPosts from "./SelectPosts"
+import Logout from "./Logout"
+import Alerts from "./Alerts"
 
 export {
+    Alerts,
+    Logout,
+    SelectPosts,
+    ChangeLanguage,
+    UpdateUser,
     Welcome,
     ProtectedRoute,
     TopBar,
@@ -37,7 +46,6 @@ export {
     GroupCard,
     FriendRequest,
     FriendSuggest,
-    PopperCustom,
     DragToScroll,
     Story
 }

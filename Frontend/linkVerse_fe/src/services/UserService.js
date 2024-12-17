@@ -31,8 +31,18 @@ export const update = async (data) => {
     return res.data
 }
 
-export const getDetailUser = async (id, token) => {
+export const getDetailUser = async ({ id, token }) => {
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/users/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    return res.data
+}
+
+export const getDetailUserByUserId = async ({ id, token }) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/${id}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -59,5 +69,6 @@ export const resetPassword = async ({ token, password }) => {
     const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND_2}/notification/email/reset-password?token=${token}&newPassword=${password}`);
     return res.data;
 }
+
 
 

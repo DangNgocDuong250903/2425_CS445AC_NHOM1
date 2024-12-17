@@ -1,5 +1,3 @@
-import { useLocation } from "react-router-dom";
-
 const NotFound = () => {
   return (
     <div className="h-screen w-screen bg-gray-50 flex items-center">

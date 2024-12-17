@@ -113,6 +113,13 @@ const theme = createTheme({
                     }
                 }
             }
+        },
+        MuiCircularProgress: {
+            styleOverrides: {
+                root: {
+                    color: "#000"
+                }
+            }
         }
     }
 })

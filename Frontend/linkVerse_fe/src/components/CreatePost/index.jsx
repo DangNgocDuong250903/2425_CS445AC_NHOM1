@@ -1,15 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { Button, DialogCustom } from "..";
+import { Alerts, Button, DialogCustom } from "..";
 import { BlankAvatar } from "~/assets";
 import {
-  Alert,
   CircularProgress,
   Fab,
   FormControl,
   MenuItem,
   Select,
-  Snackbar,
   TextField,
 } from "@mui/material";
 import { BsImages } from "react-icons/bs";
@@ -20,7 +18,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
 
-const CreatePost = ({ buttonRight, profilePage, homePage }) => {
+const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const [status, setStatus] = useState("");
@@ -29,10 +27,11 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [postState, setPostState] = useState("PUBLIC");
+  const [type, setType] = useState("");
 
   const handleClose = () => {
-    setOpen(false);
     handleClear();
+    setOpen(false);
   };
 
   const handleClear = () => {
@@ -62,8 +61,14 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
   useEffect(() => {
     if (isSuccess) {
       if (data?.code === 200) {
+        handleClear();
         setOpen(false);
+        setType("success");
+        setMessage("Create post success!");
+        setShowMessage(true);
+        onSuccess();
       } else if (data?.code === 400) {
+        setType("error");
         setMessage(data?.message);
         setShowMessage(true);
         handleClear();
@@ -77,7 +82,8 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
   const handleSubmitPost = () => {
     const request = { content: status, visibility: postState };
     const data = { request, files: files };
-    mutation.mutate({ data, token: user?.token });
+    const token = localStorage.getItem("token");
+    mutation.mutate({ data, token });
   };
 
   const handleCloseMessage = () => {
@@ -104,7 +110,6 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
           </Fab>
         </div>
       )}
-
       {profilePage && (
         <Button
           onClick={() => setOpen(true)}
@@ -112,7 +117,6 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
           containerStyles="px-4 py-2 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
         />
       )}
-
       {homePage && (
         <Button
           title="Post"
@@ -120,23 +124,14 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
           containerStyles="bg-[#0444a4] text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 transition-transform"
         />
       )}
-
-      <Snackbar
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      <Alerts
+        type={type}
+        message={message}
+        position={{ vertical: "bottom", horizontal: "center" }}
+        handleClose={handleCloseMessage}
         open={showMessage}
-        color="red"
-        autoHideDuration={3500}
-        onClose={handleCloseMessage}
-      >
-        <Alert
-          onClose={handleCloseMessage}
-          severity="error"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {message}
-        </Alert>
-      </Snackbar>
+      />
+
       <DialogCustom
         isOpen={open}
         theme={theme}
@@ -213,48 +208,31 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
             {/* 2 */}
             <div className="flex gap-x-10 items-center px-6">
               <div className="h-9 border-solid border-borderNewFeed border-[0.1px]" />
-              {/* upload */}
               <div className="flex items-center justify-between py-4 gap-x-3">
                 <label
-                  htmlFor="imgUpload"
+                  htmlFor="fileUpload"
                   className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
                 >
                   <input
                     type="file"
                     onChange={handleFileChange}
                     className="hidden"
-                    id="imgUpload"
+                    id="fileUpload"
                     data-max-size="5120"
-                    accept=".jpg, .png, .jpeg"
+                    accept=".jpg, .png, .jpeg, .mp4, .wav, .gif"
                   />
                   <BsImages style={{ width: "20px", height: "20px" }} />
                 </label>
                 <label
+                  htmlFor="fileUpload"
                   className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                  htmlFor="videoUpload"
                 >
-                  <input
-                    type="file"
-                    data-max-size="5120"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="videoUpload"
-                    accept=".mp4, .wav"
-                  />
                   <FaPhotoVideo style={{ width: "20px", height: "20px" }} />
                 </label>
                 <label
+                  htmlFor="fileUpload"
                   className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                  htmlFor="vgifUpload"
                 >
-                  <input
-                    type="file"
-                    data-max-size="5120"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="vgifUpload"
-                    accept=".gif"
-                  />
                   <PiGifThin style={{ width: "25px", height: "25px" }} />
                 </label>
               </div>
@@ -341,11 +319,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage }) => {
                   title="Đăng"
                   onClick={handleSubmitPost}
                   containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                  disable={
-                    isPending ||
-                    (files.length === 0 && !status.trim()) ||
-                    (files.length > 0 && !!status)
-                  }
+                  disable={isPending || (files.length === 0 && !status.trim())}
                 />
 
                 {isPending && (

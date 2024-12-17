@@ -1,6 +1,6 @@
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BiComment, BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
@@ -27,11 +27,14 @@ import { PiGifThin } from "react-icons/pi";
 import { FaPhotoVideo } from "react-icons/fa";
 import { BsImages } from "react-icons/bs";
 import { IoCloseCircle } from "react-icons/io5";
-import { FaRegTrashCan } from "react-icons/fa6";
+import { FaRegTrashCan, FaEarthAmericas } from "react-icons/fa6";
 import { FaRegEdit } from "react-icons/fa";
 import { IoPaperPlaneOutline } from "react-icons/io5";
+import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
+import { FaRegGrinStars } from "react-icons/fa";
+import * as UserService from "~/services/UserService";
 
-const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
+const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -42,6 +45,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
   const [replyComments, setReplyComments] = useState(0);
   const [showComments, setShowComments] = useState(0);
   const [like, setLike] = useState(false);
+  const [disLike, setDisLike] = useState(false);
 
   const getComments = async () => {};
 
@@ -111,38 +115,65 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
     setIsOpenReply(false);
   };
 
+  const handleDisLike = () => {};
+
+  const handleTranslateEn = () => {};
+  const handleTranslateVie = () => {};
+
+  // const [user, setUser] = useState(null);
+
+  // useEffect(() => {
+  //   const fetchUser = async () => {
+  //     const userDetails = await fetchUserDetails(post.userId);
+  //     setUser(userDetails);
+  //   };
+  //   fetchUser();
+  // }, [post.userId, fetchUserDetails]);
+
   return (
     <div className="bg-primary p-2 rounded-xl">
       <div
-        onClick={() => navigate(`/post/${post._id}`)}
+        onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
       >
-        <Link
-          to={`/profile/${post?.postedBy}`}
+        {/* <Link
+          to={`/profile/${post?.userId}`}
+          className="block w-14 h-14"
           onClick={(e) => e.stopPropagation()}
         >
           <img
-            src={post?.userId?.profileUrl ?? BlankAvatar}
-            alt={post?.userId?.firstName}
-            className="w-14 h-14 object-cover rounded-full"
+            src={BlankAvatar}
+            alt={"avatar"}
+            className="w-14 h-14 object-cover"
           />
-        </Link>
+        </Link> */}
+        <img
+          onClick={(e) => e.stopPropagation()}
+          src={BlankAvatar}
+          alt={"avatar"}
+          className="w-14 h-14 object-cover rounded-full"
+        />
 
         <div className="w-full flex justify-between">
           <div onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 ">
-              <Link to={`/profile/${post?.postedBy}`}>
+              <Link to={`/profile/${post?.userId}`}>
                 <p className="font-medium text-lg text-ascent-1">
-                  {post?.userId?.firstName} {post?.userId?.lastName}
+                  {user?.username ?? "No name"}
                 </p>
               </Link>
-              <span className="text-ascent-2">
-                {moment(post?.createdAt ?? "2024-10-10").fromNow()}
-              </span>
             </div>
-            <span className="text-ascent-2 text-sm">
-              {post?.userId?.location}
-            </span>
+            <div className="flex items-center gap-1">
+              <span className="text-[#A4A8AD] text-sm">
+                {moment(post?.createdDate).fromNow()}
+              </span>
+              {post?.visibility && post?.visibility === "PRIVATE" && (
+                <BiSolidLockAlt size={14} color="#A4A8AD" />
+              )}
+              {post?.visibility && post?.visibility === "PUBLIC" && (
+                <FaEarthAmericas size={14} color="#A4A8AD" />
+              )}
+            </div>
           </div>
 
           <div
@@ -165,6 +196,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                 handleClose={handleClose}
                 anchorEl={anchorEl}
                 open={open}
+                anchor={{ vertical: "top", horizontal: "right" }}
               >
                 <MenuItem onClick={handleClose}>
                   <div className="flex items-center justify-between w-full">
@@ -175,7 +207,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                   </div>
                 </MenuItem>
                 <StyledDivider />
-                {user?.id !== post?._id && (
+                {user?.userId !== post?.userId && (
                   <div>
                     <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
@@ -191,7 +223,7 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                     </MenuItem>
                   </div>
                 )}
-                {user?.id === post?._id && (
+                {user?.userId === post?.userId && (
                   <div>
                     <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
@@ -221,13 +253,16 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
           </div>
         </div>
       </div>
+
       <div>
         <p className="text-ascent-2">
-          {showAll === post?._id
-            ? post?.description
-            : post?.description.slice(0, 300)}
-          {post?.description.length > 301 &&
-            (showAll === post?._id ? (
+          {showAll === post?.id
+            ? post?.content || ""
+            : post?.content?.slice(0, 300) || ""}
+
+          {post?.content &&
+            post.content.length > 301 &&
+            (showAll === post?.id ? (
               <span
                 className="text-blue ml-2 font-medium cursor-pointer"
                 onClick={() => setShowAll(0)}
@@ -237,19 +272,35 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
             ) : (
               <span
                 className="text-blue ml-2 font-medium cursor-pointer"
-                onClick={() => setShowAll(post?._id)}
+                onClick={() => setShowAll(post?.id)}
               >
                 Show more
               </span>
             ))}
         </p>
+        {/* {post?.language === "en" && (
+          <p
+            onClick={handleTranslateEn}
+            className="cursor-pointer text-sm text-ascent-2"
+          >
+            Translate to Vietnamese
+          </p>
+        )}
+        {post?.language === "vi" && (
+          <p
+            onClick={handleTranslateEn}
+            className="cursor-pointer text-sm text-ascent-2"
+          >
+            Translate to English
+          </p>
+        )} */}
 
-        {post?.image && !isShowImage && (
+        {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
           <>
             <img
               ref={imgRef}
               onClick={handleClickImage}
-              src={post?.image}
+              src={post?.imageUrl}
               alt="post image"
               className="w-full mt-2 rounded-lg cursor-pointer"
             />
@@ -283,36 +334,37 @@ const PostCard = ({ post, deletePost, likePost, isShowImage }) => {
                 <BiLike size={20} className="hover:scale-105" />
               )}
             </div>
-            {post?.likes?.length} Likes
+            {post?.like}
           </div>
 
+          <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
+            <div onClick={handleDisLike}>
+              {disLike ? (
+                <BiSolidDislike size={20} color="blue" />
+              ) : (
+                <BiDislike size={20} className="hover:scale-105" />
+              )}
+            </div>
+            {post?.unlike}
+          </div>
+          {/* BiDislike */}
           <p
             className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform"
             onClick={() => {
               setIsOpenReply(true);
-              setShowComments(showComments === post._id ? null : post?._id);
+              setShowComments(showComments === post.id ? null : post?.id);
               getComments(post?._id);
             }}
           >
             <BiCommentDetail size={20} />
-            {post?.comments?.length} Comments
+            {post?.commentCount}
           </p>
         </div>
         <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
           <IoPaperPlaneOutline size={20} />
-          Shares
+          {post?.sharedPost}Shares
         </div>
       </div>
-      {/* deletpost */}
-      {/* {user?._id === post?.userId?._id && (
-          <div
-            className="flex gap-1 items-center text-base text-ascent-1 cursor-pointer"
-            onClick={() => deletePost(post?._id)}
-          >
-            <MdOutlineDelete size={20} />
-            <span>Delete</span>
-          </div>
-        )} */}
     </div>
   );
 };
