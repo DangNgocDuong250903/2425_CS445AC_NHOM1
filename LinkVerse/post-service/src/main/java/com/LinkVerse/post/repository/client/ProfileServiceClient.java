@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @FeignClient(name = "profile-service", url = "http://localhost:8081", configuration = {AuthenticationRequestInterceptor.class})
 public interface ProfileServiceClient {
 
-    @PutMapping("/profile/{profileId}/image")
-    void updateImage(@PathVariable("profileId") String profileId, @RequestParam("imageFile") MultipartFile imageFile);
+    @PutMapping("/profile/{userId}")
+    void updateImage(@PathVariable("userId") String userId, @RequestParam("imageFile") String imageFile);
+
 }

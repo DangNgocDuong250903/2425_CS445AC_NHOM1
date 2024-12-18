@@ -51,6 +51,10 @@ public class User {
 
     Gender gender;
 
+    Date dateOfBirth;
+
+    Gender gender;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

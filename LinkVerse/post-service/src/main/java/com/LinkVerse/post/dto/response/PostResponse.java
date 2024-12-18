@@ -19,6 +19,7 @@ public class PostResponse {
 
     @ElementCollection
     List<String> imageUrl;
+    String imgAvatarUrl;
     PostVisibility visibility;
     String userId;
     Instant createdDate;

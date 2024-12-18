@@ -18,6 +18,6 @@ public interface StoryRepository extends MongoRepository<Story, String> {
     void deleteByPostedAtBefore(LocalDateTime time);
 
     List<Story> findAllByExpiryTimeAfterAndVisibilityOrUserIdAndExpiryTimeAfter(
-            LocalDateTime expiryTime, StoryVisibility visibility, String userId, LocalDateTime expiryTimeAgain);
+    LocalDateTime expiryTime, StoryVisibility visibility, String userId, LocalDateTime expiryTimeAgain);
 }
 

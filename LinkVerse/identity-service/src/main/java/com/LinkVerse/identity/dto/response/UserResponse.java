@@ -23,9 +23,6 @@ public class UserResponse {
     UserStatus status = UserStatus.ONLINE;
     String phoneNumber;
     String email;
-    @DobConstraint(min = 18, message = "Date of birth invalid format")
-    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-    @JsonFormat(pattern = "dd/MM/yyyy")
     Date dateOfBirth;
     String profileId;
     boolean emailVerified;
@@ -33,4 +30,3 @@ public class UserResponse {
     LocalDateTime createdAt;
     Gender gender;
 }
-

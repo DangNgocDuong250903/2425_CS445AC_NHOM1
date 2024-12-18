@@ -1,0 +1,142 @@
+version: "3.9"
+services:
+  kafka:
+    image: 'bitnami/kafka:3.7.0'
+    container_name: kafka
+    hostname: kafka
+    ports:
+      - '9094:9094'
+    environment:
+      - KAFKA_CFG_NODE_ID=0
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=0@kafka:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+  neo4j:
+    image: neo4j:latest
+    container_name: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    environment:
+      - NEO4J_AUTH=neo4j/12345678
+    volumes:
+      - neo4j_data:/data
+      - neo4j_logs:/logs
+      - neo4j_import:/var/lib/neo4j/import
+      - neo4j_plugins:/plugins
+
+
+
+  mysql:
+    image: mysql:8.0.36-debian
+    container_name: mysql
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  mongodb:
+    image: bitnami/mongodb:7.0.11
+    container_name: mongodb-7.0.11
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+
+  elastic-search:
+    image: elasticsearch:8.16.0
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+
+
+
+#  zookeeper:
+#    image: confluentinc/cp-zookeeper:latest
+#    container_name: zookeeper
+#    environment:
+#      ZOOKEEPER_CLIENT_PORT: 2181
+#      ZOOKEEPER_TICK_TIME: 2000
+#    ports:
+#      - '22181:2181'
+
+  api-gateway:
+    container_name: api-gateway
+    build:
+      context: ./LinkVerse/api-gateway
+      dockerfile: Dockerfile
+    ports:
+      - '8888:8888'
+    networks:
+      - default
+
+  identity-service:
+    container_name: identity-service
+    build:
+      context: ./LinkVerse/identity-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8080:8080'
+    networks:
+      - default
+
+  profile-service:
+    container_name: profile-service
+    build:
+      context: ./LinkVerse/profile-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8081:8081'
+    networks:
+      - default
+
+  notification-service:
+    container_name: notification-service
+    build:
+      context: ./LinkVerse/notification-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8082:8082'
+    networks:
+      - default
+
+  post-service:
+    container_name: post-service
+    build:
+      context: ./LinkVerse/post-service
+      dockerfile: Dockerfile
+    environment:
+      API_GATEWAY: http://localhost:8888
+    ports:
+      - '8083:8083'
+    networks:
+      - default
+
+networks:
+  default:
+    name: api-network
+
+volumes:
+  mysql_data:
+  data:
+  mongodb_data:
+    driver: local

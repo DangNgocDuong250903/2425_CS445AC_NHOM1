@@ -1,6 +1,11 @@
 package com.LinkVerse.identity.dto.request;
 
+import java.time.LocalDate;
+import java.util.Date;
+import java.util.List;
+
 import com.LinkVerse.identity.validator.DobValidator.DobConstraint;
+
 import com.LinkVerse.identity.validator.PhoneValidator.PhoneConstraint;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.validation.constraints.Email;
@@ -8,9 +13,6 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
-
-import java.util.Date;
-import java.util.List;
 
 @Data
 @Builder
@@ -29,7 +31,7 @@ public class UserUpdateRequest {
     @NotBlank(message = "EMAIL_IS_REQUIRED")
     String email;
 
-    @DobConstraint(min = 18, message = "Date of birth invalid format")
+    @DobConstraint(min = 18,message = "Date of birth invalid format")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date dateOfBirth;

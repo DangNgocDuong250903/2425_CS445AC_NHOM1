@@ -120,6 +120,22 @@ public class S3Service {
         }
     }
 
+    public String uploadFile(MultipartFile file) {
+        String contentType = file.getContentType();
+        if (contentType == null || !contentType.startsWith("image/")) {
+            throw new IllegalArgumentException("Only image files are allowed.");
+        }
+        File fileObj = convertMultiPartFileToFile(file);
+        String fileName = System.currentTimeMillis() + "_" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+        try {
+            s3Client.putObject(new PutObjectRequest(bucketName, fileName, fileObj));
+            return s3Client.getUrl(bucketName, fileName).toString();
+        } finally {
+            fileObj.delete();
+        }
+    }
+
+
     private File convertMultiPartFileToFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
             throw new IllegalArgumentException("Cannot convert an empty or null file");

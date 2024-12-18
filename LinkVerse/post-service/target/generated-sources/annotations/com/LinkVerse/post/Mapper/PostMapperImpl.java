@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
 )
 @Component
 public class PostMapperImpl implements PostMapper {
@@ -29,6 +29,7 @@ public class PostMapperImpl implements PostMapper {
         if ( list != null ) {
             postResponse.imageUrl( new ArrayList<String>( list ) );
         }
+        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
         postResponse.visibility( post.getVisibility() );

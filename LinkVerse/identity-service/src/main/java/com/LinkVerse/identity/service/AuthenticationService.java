@@ -152,6 +152,22 @@ public class AuthenticationService {
         }
     }
 
+    public String getUserIdFromToken(String token) {
+        try {
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
+
+            if (!signedJWT.verify(verifier)) {
+                throw new AppException(ErrorCode.UNAUTHENTICATED);
+            }
+
+            return signedJWT.getJWTClaimsSet().getStringClaim("userId");
+        } catch (ParseException | JOSEException e) {
+            log.error("Cannot parse or verify token", e);
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+    }
+
     private SignedJWT verifyToken(String token) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
 

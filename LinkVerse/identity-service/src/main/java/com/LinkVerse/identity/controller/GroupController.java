@@ -37,6 +37,7 @@ public class GroupController {
         ApiResponse<GroupResponse> response = groupService.addMemberToGroup(groupId, memberId);
         return ResponseEntity.ok(response);
     }
+
     @GetMapping("/{groupId}")
     public ApiResponse<GroupResponse> getGroup(@PathVariable String groupId) {
         return groupService.getGroupById(groupId);

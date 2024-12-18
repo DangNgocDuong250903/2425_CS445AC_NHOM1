@@ -65,6 +65,7 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
+        // Tạo hồ sơ người dùng qua profile-service
         var profileRequest = profileMapper.toProfileCreationRequest(request);
         profileRequest.setUserId(user.getId());
 
@@ -141,4 +142,5 @@ public class UserService {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
+
 }

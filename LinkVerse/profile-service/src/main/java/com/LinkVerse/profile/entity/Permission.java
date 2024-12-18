@@ -1,11 +1,8 @@
 package com.LinkVerse.profile.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
-import org.springframework.data.neo4j.core.schema.Property;
 
 @Getter
 @Setter
@@ -13,15 +10,17 @@ import org.springframework.data.neo4j.core.schema.Property;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Node("Permission")
+@Entity
+@Table(name = "permissions")
 public class Permission {
-    @Id
-    @GeneratedValue
-    String id;
 
-    @Property("name")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+
+    @Column(name = "name", nullable = false, unique = true)
     String name;
 
-    @Property("description")
+    @Column(name = "description", nullable = true)
     String description;
 }

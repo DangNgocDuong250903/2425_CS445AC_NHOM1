@@ -9,7 +9,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 
-public class DobValidator implements ConstraintValidator<DobConstraint, Date> {
+public class DobValidator implements ConstraintValidator<DobConstraint, Date>{
     private int min;
 
     @Override

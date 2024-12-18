@@ -1,3 +1,4 @@
+
 package com.LinkVerse.gateway.configuration;
 
 import com.LinkVerse.gateway.dto.ApiResponse;
@@ -45,7 +46,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/email/reset-password",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*",
+            "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*","/posts-random", "/post/posts-random"
     };
     @Value("${app.api-prefix}")
     @NonFinal

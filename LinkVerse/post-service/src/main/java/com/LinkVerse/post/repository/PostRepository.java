@@ -17,6 +17,9 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     Page<Post> findAllByLanguage(String language, Pageable pageable);
 
+    Page<Post> findAll(Pageable pageable);
+
+
     List<Post> findByKeywordsIn(List<String> keywordIds); // Use 'keywords' instead of 'keywordIds'
 
 

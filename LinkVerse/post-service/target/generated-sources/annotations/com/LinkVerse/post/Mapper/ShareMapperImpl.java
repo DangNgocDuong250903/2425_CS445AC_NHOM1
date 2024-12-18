@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
 )
 @Component
 public class ShareMapperImpl implements ShareMapper {
@@ -93,6 +93,7 @@ public class ShareMapperImpl implements ShareMapper {
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
         postResponse.commentCount( post.getCommentCount() );
+        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
         postResponse.comments( commentListToCommentResponseList( post.getComments() ) );
         postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
         postResponse.language( post.getLanguage() );

@@ -1,8 +1,8 @@
 package com.LinkVerse.profile.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.neo4j.core.schema.*;
 
 import java.util.Set;
 
@@ -12,18 +12,25 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Node("Role")
+@Entity
+@Table(name = "roles")
 public class Role {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @Property("name")
+    @Column(name = "name", nullable = false, unique = true)
     String name;
 
-    @Property("description")
+    @Column(name = "description", nullable = true)
     String description;
 
-    @Relationship(type = "HAS_PERMISSION", direction = Relationship.Direction.OUTGOING)
+    @ManyToMany
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
     Set<Permission> permissions;
 }

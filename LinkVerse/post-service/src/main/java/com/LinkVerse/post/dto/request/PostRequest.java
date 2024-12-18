@@ -19,5 +19,6 @@ public class PostRequest {
     String language;
     @ElementCollection
     List<String> ImageUrl;
+    String imgAvatarUrl;
     String PostId;
 }

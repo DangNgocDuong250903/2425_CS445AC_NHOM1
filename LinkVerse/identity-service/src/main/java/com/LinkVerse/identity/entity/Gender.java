@@ -1,7 +1,12 @@
 package com.LinkVerse.identity.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public enum Gender {
+    @JsonProperty("male")
     MALE,
+    @JsonProperty("female")
     FEMALE,
-    OTHER
+    @JsonProperty("other")
+    OTHER;
 }

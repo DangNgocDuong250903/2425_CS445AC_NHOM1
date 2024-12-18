@@ -4,8 +4,11 @@ server:
     context-path: /notification
 
 spring:
+  data:
+    mongodb:
+      uri: mongodb://root:root@localhost:27017/notification-service?authSource=admin
   datasource:
-    url: "jdbc:mysql://localhost:3306/Data_Firstt"
+    url: "jdbc:mysql://localhost:3306/notification"
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
     password: root
@@ -14,18 +17,6 @@ spring:
       ddl-auto: update
     show-sql: true
     database-platform: org.hibernate.dialect.MySQLDialect
-  application:
-    name: notification-service
-  neo4j:
-    uri: bolt://localhost:7687
-    authentication:
-      username: neo4j
-      password: 12345678
-
-  data:
-    mongodb:
-      uri: mongodb://root:root@localhost:27017/notification-service?authSource=admin
-
   kafka:
     bootstrap-servers: localhost:9094
     consumer:
@@ -41,24 +32,24 @@ spring:
     admin:
       auto-create: true  # Tự động tạo topic nếu cần thiết
 
-jwt:
-  signerKey: ${KEY_JWT}
-  valid-duration: 3600  # in seconds
-  refreshable-duration: 720000  # in seconds
-
 notification:
   email:
     brevo-url: https://api.brevo.com
-    brevo-apikey: ${BREVO_APIKEY}
+    brevo-apikey: "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"
 
 mail:
   host: smtp.gmail.com
   port: 587
-  username: ${MAIL_USERNAME}
-  password: ${MAIL_PASSWORD}
+  username: dangngocduong2509@gmail.com
+  password: qenz zvxi qzdy lupo
   properties:
     mail:
       smtp:
         auth: true
         starttls:
           enable: true
+
+jwt:
+  signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
+  valid-duration: 3600  # in seconds
+  refreshable-duration: 720000  # in seconds

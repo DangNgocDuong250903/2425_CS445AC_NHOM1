@@ -1,11 +1,15 @@
 package com.LinkVerse.profile.controller;
 
 import com.LinkVerse.profile.dto.ApiResponse;
+import com.LinkVerse.profile.dto.PageResponse;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
+import com.LinkVerse.profile.service.SearchService;
 import com.LinkVerse.profile.service.UserProfileService;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,10 +23,10 @@ import java.util.List;
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    @PutMapping("/{profileId}/image")
-    public ResponseEntity<Void> updateImage(@PathVariable("profileId") String profileId, @RequestBody String imageUrl) {
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId,  @RequestParam String imageFile) {
         try {
-            userProfileService.updateImage(profileId, imageUrl);
+            userProfileService.updateImage(userId, imageFile);
             return ResponseEntity.ok().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -51,4 +55,7 @@ public class UserProfileController {
                 .result(userProfileService.getMyProfile())
                 .build();
     }
+
+
+
 }

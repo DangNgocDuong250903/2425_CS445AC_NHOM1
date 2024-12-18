@@ -1,13 +1,15 @@
 package com.LinkVerse.profile.controller;
 
 import com.LinkVerse.profile.dto.response.FriendshipResponse;
+import com.LinkVerse.profile.dto.response.UserProfileResponse;
+import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.service.FriendService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/friends")
@@ -32,6 +34,22 @@ public class FriendController {
 
     @PostMapping("/unfriend")
     public ResponseEntity<FriendshipResponse> unFriendRequest(@RequestParam String recipientUserId) {
-        return ResponseEntity.ok(friendService.rejectFriendRequest(recipientUserId));
+        return ResponseEntity.ok(friendService.unfriend(recipientUserId));
     }
+
+    @GetMapping("/friend")
+    public ResponseEntity<Set<UserProfileResponse>> getFriendOfUser(@RequestParam String userId) {
+        return ResponseEntity.ok(friendService.getAllFriends(userId));
+    }
+
+    @GetMapping("/my-friend-request")
+    public ResponseEntity<Set<UserProfileResponse>> getFriendRequest() {
+        return ResponseEntity.ok(friendService.getAllFriendsRequest());
+    }
+
+    @GetMapping("/my-friends")
+    public ResponseEntity<Set<UserProfileResponse>> getMyFriend() {
+        return ResponseEntity.ok(friendService.getAllFriendsOfCurrentUser());
+    }
+
 }

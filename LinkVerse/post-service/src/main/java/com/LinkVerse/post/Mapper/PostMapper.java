@@ -20,6 +20,7 @@ public interface PostMapper {
     @Mapping(target = "sharedPost", source = "sharedPost", qualifiedByName = "toPostResponse")
     @Mapping(target = "language", source = "language")
     @Mapping(target = "imageUrl", source = "imageUrl")
+    @Mapping(target = "imgAvatarUrl", source = "imgAvatarUrl")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
@@ -38,6 +39,7 @@ public interface PostMapper {
                 .createdDate(post.getCreatedDate())
                 .modifiedDate(post.getModifiedDate())
                 .imageUrl(post.getImageUrl())
+                .imgAvatarUrl(post.getImgAvatarUrl())
                 .like(post.getLike())
                 .unlike(post.getUnlike())
                 .comments(toCommentResponses(post.getComments()))

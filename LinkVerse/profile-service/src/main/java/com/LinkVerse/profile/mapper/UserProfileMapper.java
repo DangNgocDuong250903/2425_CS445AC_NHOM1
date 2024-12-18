@@ -1,19 +1,25 @@
 package com.LinkVerse.profile.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Named;
+
 import com.LinkVerse.profile.dto.request.ProfileCreationRequest;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.entity.UserProfile;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+
+import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface UserProfileMapper {
-    @Mapping(target = "dateOfBirth", source = "dateOfBirth")
-    @Mapping(target = "phoneNumber", source = "phoneNumber")
-    @Mapping(target = "gender", source = "gender")
-    @Mapping(target = "createdAt", ignore = true)
-        // Ignore createdAt during mapping
-    UserProfile toUserProfile(ProfileCreationRequest request);
 
-    UserProfileResponse toUserProfileReponse(UserProfile userProfile);
+      @Mapping(source = "gender", target = "gender")
+      @Mapping(source = "phoneNumber", target = "phoneNumber")
+      @Mapping(source = "dateOfBirth", target = "dateOfBirth")
+      UserProfileResponse toUserProfileReponse(UserProfile entity);
+
+      @Mapping(source = "gender", target = "gender")
+      @Mapping(source = "phoneNumber", target = "phoneNumber")
+      @Mapping(source = "dateOfBirth", target = "dateOfBirth")
+      UserProfile toUserProfile(ProfileCreationRequest request);
 }
