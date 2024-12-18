@@ -77,6 +77,7 @@ public class SearchService {
                 .build();
     }
 
+
     // 2
     @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserProfileResponse> advancedSearchByCriteria(int pageNo, int pageSize, String sortBy, String... search) {

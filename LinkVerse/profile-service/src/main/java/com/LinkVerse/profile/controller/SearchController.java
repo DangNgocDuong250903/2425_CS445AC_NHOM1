@@ -30,15 +30,17 @@ public class SearchController {
     }
 
     @GetMapping("/search")
-    ApiResponse<PageResponse<UserProfileResponse>> getUsersWithSortByColumnAndSearch(@RequestParam(defaultValue = "0",required = false) int page,
-                                                                                     @Min(2)@RequestParam(defaultValue = "3",required = false) int size,
-                                                                                     @RequestParam(required = false) String search,
-                                                                                     @RequestParam(required = false) String sortBy
-    ){
+    ApiResponse<PageResponse<UserProfileResponse>> getUsersWithSortByColumnAndSearch(
+            @RequestParam(defaultValue = "0", required = false) int page,
+            @Min(2) @RequestParam(defaultValue = "3", required = false) int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String sortBy
+    ) {
         return ApiResponse.<PageResponse<UserProfileResponse>>builder()
-                .result(searchService.getUsersWithSortByColumnAndSearch(page, size,search,sortBy))
+                .result(searchService.getUsersWithSortByColumnAndSearch(page, size, search, sortBy))
                 .build();
     }
+
 
     @GetMapping("/criteria-search")
     ApiResponse<PageResponse<UserProfileResponse>> advancedSearchByCriteria(@RequestParam(defaultValue = "0",required = false) int page,

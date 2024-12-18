@@ -33,44 +33,31 @@ public class SearchRepository {
 
     @PersistenceContext
     EntityManager entityManager;
+    //cung cấp các API cho việc tương tác với các Entity
+
     UserProfileMapper userProfileMapper;
 
     private static final String LIKE_FORMAT = "%%%s%%";
 
-    //cung cấp các API cho việc tương tác với các Entity
-
-    /**
-     * Search user using keyword and
-     *
-     * @param page
-     * @param size
-     * @param sortBy
-     * @param search
-     * @return user list with sorting and paging
-     */
 
     // 1 find user by string
     public Page<UserProfile> getUsersWithSortByColumnAndSearch(int page, int size, String sortBy, String search) {
-        // Construct the base query
         StringBuilder sqlQuery = new StringBuilder("SELECT u FROM UserProfile u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
             sqlQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
+                    .append(" OR LOWER(u.username) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
-                    .append(" OR LOWER(u.email) LIKE LOWER(:search)")
-                    .append(" OR LOWER(u.city) LIKE LOWER(:search)")
-                    .append(" OR LOWER(u.phoneNumber) LIKE LOWER(:search)");
+                    .append(" OR LOWER(u.email) LIKE LOWER(:search))");
         }
 
-        // Add sorting if specified
         if (StringUtils.hasLength(sortBy)) {
-            Pattern pattern = Pattern.compile(SORT_BY);
+            Pattern pattern = Pattern.compile("(\\w+?)(:)(asc|desc)");
             Matcher matcher = pattern.matcher(sortBy);
             if (matcher.find()) {
                 sqlQuery.append(String.format(" ORDER BY u.%s %s", matcher.group(1), matcher.group(3)));
             }
         }
 
-        // Create the query
         Query selectedQuery = entityManager.createQuery(sqlQuery.toString());
         selectedQuery.setFirstResult(page * size);
         selectedQuery.setMaxResults(size);
@@ -79,33 +66,24 @@ public class SearchRepository {
         }
         List<UserProfile> users = selectedQuery.getResultList();
 
-        // Construct the count query
         StringBuilder sqlCountQuery = new StringBuilder("SELECT COUNT(u) FROM UserProfile u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
-            sqlCountQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(?1)")
-                    .append(" OR LOWER(u.lastName) LIKE LOWER(?2)")
-                    .append(" OR LOWER(u.email) LIKE LOWER(?3)")
-                    .append(" OR LOWER(u.city) LIKE LOWER(?4)")
-                    .append(" OR LOWER(u.phoneNumber) LIKE LOWER(?5)");
+            sqlCountQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
+                    .append(" OR LOWER(u.username) LIKE LOWER(:search)")
+                    .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
+                    .append(" OR LOWER(u.email) LIKE LOWER(:search))");
         }
 
-        // Create the count query
         Query selectedCountQuery = entityManager.createQuery(sqlCountQuery.toString());
         if (StringUtils.hasLength(search)) {
-            String searchParam = String.format("%%%s%%", search);
-            selectedCountQuery.setParameter(1, searchParam);
-            selectedCountQuery.setParameter(2, searchParam);
-            selectedCountQuery.setParameter(3, searchParam);
-            selectedCountQuery.setParameter(4, searchParam);
-            selectedCountQuery.setParameter(5, searchParam);
+            selectedCountQuery.setParameter("search", String.format("%%%s%%", search));
         }
         Long totalElement = (Long) selectedCountQuery.getSingleResult();
 
-        // Create pageable
         Pageable pageable = PageRequest.of(page, size);
-
         return new PageImpl<>(users, pageable, totalElement);
     }
+
 
     // 2 criteria
     public Page<UserProfile> advancedSearchUser(int page, int size, String sortBy, String... search) {

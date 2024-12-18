@@ -11,7 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PageResponse<T> implements Serializable {
+public class PageResponse<T>   {
     int page;
     int size;
     long total;
