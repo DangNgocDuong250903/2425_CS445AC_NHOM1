@@ -11,6 +11,8 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "firstName", source = "firstName") // Add this mapping
+    @Mapping(target = "lastName", source = "lastName")
     @Mapping(target = "gender", source = "gender")
     User toUser(UserCreationRequest request);
 
