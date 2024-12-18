@@ -47,7 +47,6 @@ public class User {
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
-
     Date dateOfBirth;
 
     Gender gender;
