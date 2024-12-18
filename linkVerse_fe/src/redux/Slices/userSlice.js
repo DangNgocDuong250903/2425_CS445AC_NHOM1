@@ -8,9 +8,11 @@ const initialState = {
     username: "",
     email: "",
     city: null,
+    emailVerified: false,
     token: "",
     dob: "",
-    status: ""
+    status: "",
+    roles: []
 };
 
 const userSlice = createSlice({
@@ -28,7 +30,9 @@ const userSlice = createSlice({
                 city = null,
                 token = "",
                 dob = "",
+                emailVerified = false,
                 status = "",
+                roles = []
             } = action.payload
 
             state.lastName = lastName
@@ -39,8 +43,10 @@ const userSlice = createSlice({
             state.dob = dob
             state.username = username
             state.city = city
+            state.emailVerified = emailVerified
             state.token = token
             state.status = status
+            state.roles = roles
         },
         resetUser(state, action) {
             state.lastName = ""
@@ -48,9 +54,11 @@ const userSlice = createSlice({
             state.firstName = ""
             state.id = ""
             state.dob = ""
+            state.emailVerified = false
             state.city = null
             state.token = ""
             state.username = ""
+            state.roles = []
         }
     },
 });

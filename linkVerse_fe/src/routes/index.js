@@ -2,12 +2,13 @@ import { Admin, ChatPage, GroupPage, NotFoundPage, ProfilePage, ReplyPage, Saved
 
 export const route = [
     {
-        path: '/:id',
+        path: '/profile/:id',
         element: ProfilePage,
     },
     {
         path: '/admin',
         element: Admin,
+        isPrivate: true
     },
     {
         path: '/group/:id',
@@ -27,10 +28,10 @@ export const route = [
     },
     {
         path: '/settings',
-        element: SettingPage
+        element: SettingPage,
     },
     {
         path: '/saveds',
-        element: SavedsPage
+        element: SavedsPage,
     },
 ]

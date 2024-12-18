@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 export const getBase64 = (file) => {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -19,3 +21,9 @@ export const isJsonString = (data) => {
     }
     return true
 }
+
+export const useTitle = (title) => {
+    useEffect(() => {
+        document.title = title + " • LinkVerse";
+    }, [title]);
+};

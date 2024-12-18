@@ -74,24 +74,16 @@ const HomePage = () => {
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={sentiment} selectPosts />
+
       <Welcome />
       <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
         {/* Left */}
         <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
-          {user?.token ? (
+          {user?.token && (
             <>
               <ProfileCard />
               <FriendCard />
               <GroupCard />
-            </>
-          ) : (
-            <>
-              <Skeleton variant="circular" width={40} height={40} />
-              <Skeleton variant="rectangular" width={210} height={60} />
-              <Skeleton variant="rounded" width={210} height={60} />
-              <Skeleton variant="rounded" width={210} height={60} />
-              <Skeleton variant="rounded" width={210} height={60} />
-              <Skeleton variant="rounded" width={210} height={60} />
             </>
           )}
         </div>
@@ -104,19 +96,21 @@ const HomePage = () => {
           <div className="flex  flex-col gap-6 ">
             <div className="w-full h-24 flex justify-center bg-primary rounded-lg overflow-x-auto overflow-y-hidden">
               {/* header */}
-              <div className="w-full flex items-center justify-between gap-3 py-4 px-2 border-b border-[#66666645]">
-                <div className="flex items-center gap-4">
-                  <img
-                    src={user?.avatar || BlankAvatar}
-                    alt="User Image"
-                    className="w-14 h-14 rounded-full object-cover"
-                  />
-                  <span className="text-ascent-2 text-sm cursor-pointer">
-                    Có gì mới?
-                  </span>
+              {user?.token && (
+                <div className="w-full flex items-center justify-between gap-3 py-4 px-2 border-b border-[#66666645]">
+                  <div className="flex items-center gap-4">
+                    <img
+                      src={user?.avatar || BlankAvatar}
+                      alt="User Image"
+                      className="w-14 h-14 rounded-full object-cover"
+                    />
+                    <span className="text-ascent-2 text-sm cursor-pointer">
+                      Có gì mới?
+                    </span>
+                  </div>
+                  <CreatePost homePage onSuccess={handleSuccess} />
                 </div>
-                <CreatePost homePage onSuccess={handleSuccess} />
-              </div>
+              )}
             </div>
             {isLoading ? (
               <div className="w-full h-96 flex items-center justify-center">

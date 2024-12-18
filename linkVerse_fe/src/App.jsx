@@ -17,6 +17,7 @@ import {
 function App() {
   const { theme } = useSelector((state) => state.theme);
   const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     const { decoded, token } = handleDecoded();
@@ -95,10 +96,12 @@ function App() {
           <Route path="/" element={<HomePage />} />
           {route.map((route, i) => {
             const Page = route.element;
+            const isCheckAuth =
+              !route.isPrivate || user.roles[0]?.name.includes("ADMIN");
             return (
               <Route
                 key={i}
-                path={route.path}
+                path={isCheckAuth ? route.path : ""}
                 element={
                   <ProtectedRoute isLoggedIn={isLoggedIn}>
                     <Page />

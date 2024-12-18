@@ -19,14 +19,16 @@ const ProfileCard = () => {
   return (
     <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
-        <Link to={`/${user?.id}`} className="flex gap-2">
+        <Link to={`/profile/${user?.id}`} className="flex gap-2">
           <div className="relative">
             <img
               src={user?.avatar || BlankAvatar}
               alt={"avatar"}
               className="w-14 h-14 object-cover rounded-full"
             />
-            <div className="absolute top-1 right-0 w-4 h-4 bg-[#53C259] rounded-full border-2 border-[#392629]" />
+            {user?.status === "ONLINE" && (
+              <div className="absolute top-1 right-1 w-3 h-3 bg-[#53C259] rounded-full border-2 border-[#392629]" />
+            )}
           </div>
           <div className="flex flex-col justify-center">
             <p className="text-lg font-medium text-ascent-1">
@@ -67,7 +69,7 @@ const ProfileCard = () => {
         </p>
 
         <span className="text-base text-blue">
-          {user?.isActive ? "Verified account" : "Not verified"}
+          {user?.emailVerified ? "Verified account" : "Not verified"}
         </span>
 
         <div className="flex items-center justify-between">

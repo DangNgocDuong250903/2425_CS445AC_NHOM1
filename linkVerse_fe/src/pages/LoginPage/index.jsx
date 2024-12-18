@@ -41,7 +41,7 @@ const LoginPage = () => {
       localStorage.setItem("token", data?.result?.token);
       if (data?.result?.token) {
         const decoded = jwtDecode(data?.result?.token);
-        if (decoded?.ProfileID) {
+        if (decoded?.userId) {
           handleGetDetailUser({
             id: decoded?.userId,
             token: data?.result?.token,
