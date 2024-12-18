@@ -9,7 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
       </profile>
-      <profile name="Annotation profile for MessageRealtime" enabled="true">
+      <profile name="Annotation profile for profile-service" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -24,13 +24,13 @@
         </processorPath>
         <module name="profile-service" />
         <module name="post-service" />
-        <module name="Friend" />
         <module name="identity-service" />
         <module name="notification-service" />
         <module name="whatsapp_clone" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Friend" target="21" />
       <module name="Friend-Service" target="21" />
       <module name="MessageRealtime" target="21" />
       <module name="profile-service (1)" target="21" />

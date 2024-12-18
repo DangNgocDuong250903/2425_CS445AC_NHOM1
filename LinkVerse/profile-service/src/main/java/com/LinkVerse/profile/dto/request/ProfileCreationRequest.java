@@ -1,7 +1,7 @@
 package com.LinkVerse.profile.dto.request;
 
+import com.LinkVerse.profile.entity.Gender;
 import com.LinkVerse.profile.entity.UserStatus;
-import com.LinkVerse.profile.enums.Gender;
 import com.LinkVerse.profile.validator.DobValidator.DobConstraint;
 import com.LinkVerse.profile.validator.GenderValidator.GenderConstraint;
 import com.LinkVerse.profile.validator.PhoneValidator.PhoneConstraint;
@@ -13,9 +13,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import java.time.LocalDate;
 import java.util.Date;
-import java.util.List;
 
 
 @Data
@@ -39,7 +37,7 @@ public class ProfileCreationRequest {
     Gender gender;
 
     @PhoneConstraint(message = "Phone number invalid format")
-    String phoneNumber ;
+    String phoneNumber;
 
     @Email(message = "INVALID_EMAIL")
     @NotBlank(message = "EMAIL_IS_REQUIRED")
@@ -47,7 +45,7 @@ public class ProfileCreationRequest {
 
     UserStatus status = UserStatus.ONLINE;
 
-    @DobConstraint(min = 18,message = "Date of birth invalid format")
+    @DobConstraint(min = 18, message = "Date of birth invalid format")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date dateOfBirth;
