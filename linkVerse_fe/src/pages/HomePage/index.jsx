@@ -12,8 +12,10 @@ import {
   FriendSuggest,
   CreatePost,
   Welcome,
+  Story,
 } from "~/components";
 import { BlankAvatar } from "~/assets/index";
+import CreateStory from "~/components/CreateStory";
 
 const HomePage = () => {
   const user = useSelector((state) => state?.user);
@@ -112,6 +114,7 @@ const HomePage = () => {
                 </div>
               )}
             </div>
+            {/* <Story /> */}
             {isLoading ? (
               <div className="w-full h-96 flex items-center justify-center">
                 <CircularProgress />

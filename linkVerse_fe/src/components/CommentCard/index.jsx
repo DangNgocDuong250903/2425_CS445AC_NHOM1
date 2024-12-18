@@ -35,7 +35,7 @@ import { FaRegGrinStars } from "react-icons/fa";
 import * as UserService from "~/services/UserService";
 import CreateComment from "../CreateComment";
 
-const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
+const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -48,7 +48,6 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
   const [like, setLike] = useState(false);
   const [disLike, setDisLike] = useState(false);
   const [openComment, setOpenComment] = useState(false);
-  const [url, setUrl] = useState("");
 
   const getComments = async () => {};
 
@@ -132,10 +131,6 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
   //   };
   //   fetchUser();
   // }, [post.userId, fetchUserDetails]);
-
-  const handleSaveUrl = (id) => {
-    console.log(id);
-  };
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -247,7 +242,7 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
                   </div>
                 )}
                 <StyledDivider />
-                <MenuItem onClick={() => handleSaveUrl(post?.id)}>
+                <MenuItem onClick={handleClose}>
                   <div className="flex items-center justify-between w-full">
                     <span className={theme === "light" && "text-black"}>
                       Copy address
@@ -336,41 +331,9 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
             <div onClick={handleLike}>
               {like ? (
-                <>
-                  <BiSolidLike
-                    size={20}
-                    color="blue"
-                    className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
-                  />
-                </>
+                <BiSolidLike size={20} color="blue" />
               ) : (
-                <>
-                  <div class="relative group">
-                    <BiLike size={20} className="hover:scale-105" />
-
-                    <div class="absolute bottom-8  left-1/2 -translate-x-8 flex space-x-2 bg-primary rounded-full border-borderNewFeed shadow-newFeed p-2 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-300 ease-in-out">
-                      <div class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full hover:scale-125 transition-transform duration-200">
-                        👍
-                      </div>
-
-                      <div class="w-10 h-10 flex items-center justify-center bg-red-100 rounded-full hover:scale-125 transition-transform duration-200">
-                        ❤️
-                      </div>
-
-                      <div class="w-10 h-10 flex items-center justify-center bg-yellow-100 rounded-full hover:scale-125 transition-transform duration-200">
-                        😂
-                      </div>
-
-                      <div class="w-10 h-10 flex items-center justify-center bg-purple-100 rounded-full hover:scale-125 transition-transform duration-200">
-                        😀
-                      </div>
-
-                      <div class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full hover:scale-125 transition-transform duration-200">
-                        😢
-                      </div>
-                    </div>
-                  </div>
-                </>
+                <BiLike size={20} className="hover:scale-105" />
               )}
             </div>
             {post?.like}
@@ -386,7 +349,6 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
             </div>
             {post?.unlike}
           </div>
-
           {/* BiDislike */}
           <p
             className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform"
@@ -418,4 +380,4 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
   );
 };
 
-export default PostCard;
+export default CommentCard;

@@ -9,6 +9,7 @@ const initialState = {
     email: "",
     city: null,
     emailVerified: false,
+    createdAt: "",
     token: "",
     dob: "",
     status: "",
@@ -27,6 +28,7 @@ const userSlice = createSlice({
                 lastName = "",
                 email = "",
                 username = "",
+                createdAt = "",
                 city = null,
                 token = "",
                 dob = "",
@@ -40,6 +42,7 @@ const userSlice = createSlice({
             state.userId = userId
             state.id = id
             state.email = email
+            state.createdAt = createdAt
             state.dob = dob
             state.username = username
             state.city = city
@@ -54,6 +57,7 @@ const userSlice = createSlice({
             state.firstName = ""
             state.id = ""
             state.dob = ""
+            state.createdAt = ""
             state.emailVerified = false
             state.city = null
             state.token = ""

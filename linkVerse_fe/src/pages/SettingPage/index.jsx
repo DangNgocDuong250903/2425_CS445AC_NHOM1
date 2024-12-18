@@ -81,7 +81,7 @@ const SettingPage = () => {
             </Box>
             {/* 1 */}
             <CustomTabPanel value={value} index={0}>
-              <div className="w-full h-ful gap-y-5 py-5 flex-col flex justify-center items-center">
+              <div className="w-full h-ful gap-y-3 py-5 flex-col flex justify-center items-center">
                 {/* 1 */}
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center">
                   <div className="flex items-center gap-x-2">
@@ -123,7 +123,7 @@ const SettingPage = () => {
             </CustomTabPanel>
             {/* 2 */}
             <CustomTabPanel value={value} index={1}>
-              <div className="w-full h-ful gap-y-5 py-5 flex-col flex justify-center items-center">
+              <div className="w-full h-ful gap-y-3 py-5 flex-col flex justify-center items-center">
                 {/* 1 */}
                 <div
                   onClick={() => setIsOpenDelete(true)}
@@ -180,6 +180,11 @@ const SettingPage = () => {
                     </div>
                   </div>
                 </DialogCustom>
+                {/* 2 */}
+                <div className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer">
+                  <h1 className="text-ascent-1">Verify your email</h1>
+                  <IoIosArrowForward size={20} className="cursor-pointer" />
+                </div>
               </div>
             </CustomTabPanel>
             {/* 3 */}

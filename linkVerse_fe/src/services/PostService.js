@@ -64,6 +64,26 @@ export const comment = async ({ id, token, content }) => {
             Authorization: `Bearer ${token}`
         }
     })
+    return res.data
+}
 
+export const like = async ({ id, emoji, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/like?emoji=${emoji}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const getPostById = async ({ id, token }) => {
+    console.log(id)
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}`,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+    )
     return res.data
 }
