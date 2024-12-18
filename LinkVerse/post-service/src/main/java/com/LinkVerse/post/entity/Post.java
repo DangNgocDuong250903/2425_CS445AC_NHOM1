@@ -58,4 +58,7 @@ public class Post {
 
     boolean hasViolation = false;
     boolean violationResolved = false;
+
+    @ElementCollection
+    private List<String> savedBy = new ArrayList<>();
 }

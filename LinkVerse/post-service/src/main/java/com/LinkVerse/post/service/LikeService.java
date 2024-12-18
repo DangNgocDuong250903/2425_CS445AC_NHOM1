@@ -1,4 +1,3 @@
-
 package com.LinkVerse.post.service;
 
 import com.LinkVerse.post.Mapper.CommentMapper;
@@ -81,7 +80,7 @@ public class LikeService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
         Optional<Comment> commentOptional = post.getComments().stream()
-                .filter(comment -> comment.getCommentID().equals(commentId))
+                .filter(comment -> comment.getCommentId().equals(commentId))
                 .findFirst();
         //kiemtra
         if (!commentOptional.isPresent()) {

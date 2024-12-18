@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @Builder
@@ -14,9 +15,12 @@ import java.time.Instant;
 public class CommentResponse {
     String id;
     String userId;
-    String CommentId;
+    List<String> imageUrl;
+    String commentId;
     String content;
     Instant createdDate;
     int like;
     int unlike;
+
+
 }

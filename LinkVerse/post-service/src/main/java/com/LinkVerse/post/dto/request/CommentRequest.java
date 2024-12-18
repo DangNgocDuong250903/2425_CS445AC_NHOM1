@@ -1,8 +1,9 @@
 package com.LinkVerse.post.dto.request;
 
-import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.List;
 
 @Data
 @Getter
@@ -12,4 +13,5 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CommentRequest {
     String content;
+    List<String> imageUrl;
 }

@@ -2,6 +2,7 @@ package com.LinkVerse.identity.mapper;
 
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
+import com.LinkVerse.identity.dto.request.UserUpdateRequestAdmin;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.User;
 import org.mapstruct.Mapper;
@@ -20,5 +21,8 @@ public interface UserMapper {
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)
-    void updateUser(@MappingTarget User user, UserUpdateRequest request);
+    void updateUser(@MappingTarget User user, UserUpdateRequestAdmin request);
+
+    void updateUserbyUsers(@MappingTarget User user, UserUpdateRequest request); // Add this method
+
 }

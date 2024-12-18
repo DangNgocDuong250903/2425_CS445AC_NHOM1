@@ -52,6 +52,11 @@ public class ShareMapperImpl implements ShareMapper {
 
         commentResponse.id( comment.getId() );
         commentResponse.userId( comment.getUserId() );
+        List<String> list = comment.getImageUrl();
+        if ( list != null ) {
+            commentResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        commentResponse.commentId( comment.getCommentId() );
         commentResponse.content( comment.getContent() );
         commentResponse.createdDate( comment.getCreatedDate() );
         commentResponse.like( comment.getLike() );

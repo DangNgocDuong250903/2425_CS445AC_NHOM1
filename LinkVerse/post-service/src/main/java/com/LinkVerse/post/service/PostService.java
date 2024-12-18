@@ -10,7 +10,10 @@ import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.*;
-import com.LinkVerse.post.repository.*;
+import com.LinkVerse.post.repository.HashtagRepository;
+import com.LinkVerse.post.repository.PostHistoryRepository;
+import com.LinkVerse.post.repository.PostRepository;
+import com.LinkVerse.post.repository.SharedPostRepository;
 import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
@@ -491,7 +494,6 @@ public class PostService {
     }
 
 
-
     public ApiResponse<PageResponse<PostResponse>> getAllPost(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         var pageData = postRepository.findAll(pageable);
@@ -526,6 +528,86 @@ public class PostService {
                 .build();
     }
 
+    public ApiResponse<PostResponse> savePost(String postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getSavedBy().contains(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post already saved")
+                    .build();
+        }
+
+        post.getSavedBy().add(currentUserId);
+        post = postRepository.save(post);
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post saved successfully")
+                .result(postResponse)
+                .build();
+    }
+
+    public ApiResponse<PageResponse<PostResponse>> getAllPostsave(int page, int size) {
+        // Validate page and size values
+        if (page < 1 || size < 1) {
+            return ApiResponse.<PageResponse<PostResponse>>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Page and size parameters must be greater than 0.")
+                    .build();
+        }
+
+        // Retrieve the currently authenticated user
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || authentication.getName() == null) {
+            return ApiResponse.<PageResponse<PostResponse>>builder()
+                    .code(HttpStatus.UNAUTHORIZED.value())
+                    .message("User is not authenticated.")
+                    .build();
+        }
+
+        String currentUserId = authentication.getName();
+
+        try {
+            // Define pagination
+            Pageable pageable = PageRequest.of(page - 1, size);
+            var pageData = postRepository.findAllBySavedBy(currentUserId, pageable);
+
+            // Map posts to responses
+            List<PostResponse> postResponses = pageData.getContent()
+                    .stream()
+                    .map(postMapper::toPostResponse)
+                    .collect(Collectors.toList());
+
+            // Build the paginated response
+            PageResponse<PostResponse> pageResponse = PageResponse.<PostResponse>builder()
+                    .currentPage(page)
+                    .pageSize(size)
+                    .totalPage(pageData.getTotalPages())
+                    .totalElement(pageData.getTotalElements())
+                    .data(postResponses)
+                    .build();
+
+            return ApiResponse.<PageResponse<PostResponse>>builder()
+                    .code(HttpStatus.OK.value())
+                    .message("Saved posts retrieved successfully")
+                    .result(pageResponse)
+                    .build();
+
+        } catch (Exception ex) {
+            log.error("Failed to retrieve saved posts for user: {}", currentUserId, ex);
+            return ApiResponse.<PageResponse<PostResponse>>builder()
+                    .code(HttpStatus.INTERNAL_SERVER_ERROR.value())
+                    .message("An error occurred while retrieving saved posts.")
+                    .build();
+        }
+    }
 
     boolean isFriend(String currentUserId, String postUserId) {
         // TODO nối qua friend-service để check relationship

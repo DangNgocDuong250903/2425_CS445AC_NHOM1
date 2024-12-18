@@ -16,9 +16,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -119,7 +117,6 @@ public class PostController {
     }
 
 
-
     @PostMapping("/{postId}/translate")
     public ResponseEntity<ApiResponse<PostResponse>> translatePostContent(
             @PathVariable String postId,
@@ -146,5 +143,17 @@ public class PostController {
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
         return postService.getAllPost(page, size);
+    }
+
+    @PostMapping("/{postId}/save")
+    public ApiResponse<PostResponse> savePost(@PathVariable String postId) {
+        return postService.savePost(postId);
+    }
+
+    @GetMapping("/saved-posts")
+    public ApiResponse<PageResponse<PostResponse>> getSavedPosts(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return postService.getAllPostsave(page, size);
     }
 }

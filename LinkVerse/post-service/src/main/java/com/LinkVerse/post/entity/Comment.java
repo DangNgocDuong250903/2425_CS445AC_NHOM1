@@ -18,18 +18,18 @@ public class Comment {
     String userId;
     String content;
     Instant createdDate;
-    @Getter
-    String CommentID;
-
     int like;
     int unlike;
     int likeCount;
     List<String> likedEmojis;
-
+    List<String> imageUrl;
+    boolean deleted = false;
+    @Getter
+    String commentId;
 
     public Comment() {
-        this.CommentID = UUID.randomUUID().toString(); // Tạo UUID cho commentID
-        this.createdDate = Instant.now(); // Gán thời gian tạo
+        this.commentId = UUID.randomUUID().toString(); // Generate UUID for commentId
+        this.createdDate = Instant.now(); // Set creation time
     }
 
 }

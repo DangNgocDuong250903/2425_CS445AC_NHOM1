@@ -29,4 +29,5 @@ public interface PostRepository extends MongoRepository<Post, String> {
 
     Page<Post> findAllByHashtags_Name(String hashtag, Pageable pageable);
 
+    Page<Post> findAllBySavedBy(String currentUserId, Pageable pageable);
 }
