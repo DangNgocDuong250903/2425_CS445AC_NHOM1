@@ -62,10 +62,16 @@ public class AuthenticationService {
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        var user = userRepository
-                .findByUsername(request.getUsername())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        User user;
+        if (request.getUsername().contains("@")) {
+            user = userRepository
+                    .findByEmail(request.getUsername())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        } else {
+            user = userRepository
+                    .findByUsername(request.getUsername())
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        }
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
@@ -142,22 +148,6 @@ public class AuthenticationService {
             return new TokenInfo(jwsObject.serialize(), expiryTime);
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-    }
-
-    public String getUserIdFromToken(String token) {
-        try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
-
-            if (!signedJWT.verify(verifier)) {
-                throw new AppException(ErrorCode.UNAUTHENTICATED);
-            }
-
-            return signedJWT.getJWTClaimsSet().getStringClaim("userId");
-        } catch (ParseException | JOSEException e) {
-            log.error("Cannot parse or verify token", e);
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
     }

@@ -45,6 +45,7 @@ public class Post {
     String language;
     @ElementCollection
     List<String> keywords = new ArrayList<>(); // Ensure this property is named 'keywords'
+    String mostActiveUserId;
 
     @DBRef
     List<Hashtag> hashtags = new ArrayList<>();
@@ -57,4 +58,7 @@ public class Post {
 
     boolean hasViolation = false;
     boolean violationResolved = false;
+
+    @ElementCollection
+    private List<String> savedBy = new ArrayList<>();
 }

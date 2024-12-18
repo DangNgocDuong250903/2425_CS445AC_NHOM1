@@ -4,6 +4,7 @@ import com.LinkVerse.event.dto.NotificationEvent;
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
+import com.LinkVerse.identity.dto.request.UserUpdateRequestAdmin;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
@@ -40,7 +41,6 @@ public class UserService {
     ProfileMapper profileMapper;
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
-    AuthenticationService authenticationService;
     KafkaTemplate<String, Object> kafkaTemplate;
 
 
@@ -59,6 +59,7 @@ public class UserService {
         } else {
             user.setStatus(request.getStatus());
         }
+        user.setGender(request.getGender());
         try {
             user = userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
@@ -113,7 +114,9 @@ public class UserService {
         return userMapper.toUserResponse(user);
     }
 
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public UserResponse updateUser(String userId, UserUpdateRequestAdmin request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
@@ -125,15 +128,27 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    public UserResponse updateUserbyUsers(String userId, UserUpdateRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        userMapper.updateUserbyUsers(user, request);
+
+        return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
+    //    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));

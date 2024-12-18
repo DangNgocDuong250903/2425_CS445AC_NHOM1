@@ -1,19 +1,14 @@
 package com.LinkVerse.profile.controller;
 
 import com.LinkVerse.profile.dto.ApiResponse;
-import com.LinkVerse.profile.dto.PageResponse;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
-import com.LinkVerse.profile.service.SearchService;
 import com.LinkVerse.profile.service.UserProfileService;
-import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -24,7 +19,7 @@ public class UserProfileController {
     UserProfileService userProfileService;
 
     @PutMapping("/{userId}")
-    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId,  @RequestParam String imageFile) {
+    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId, @RequestParam String imageFile) {
         try {
             userProfileService.updateImage(userId, imageFile);
             return ResponseEntity.ok().build();
@@ -44,6 +39,8 @@ public class UserProfileController {
 
     @GetMapping("/users")
     ApiResponse<List<UserProfileResponse>> getAllProfiles() {
+        //Bỏ xác thực ng dùng
+
         return ApiResponse.<List<UserProfileResponse>>builder()
                 .result(userProfileService.getAllProfiles())
                 .build();
@@ -55,7 +52,6 @@ public class UserProfileController {
                 .result(userProfileService.getMyProfile())
                 .build();
     }
-
 
 
 }

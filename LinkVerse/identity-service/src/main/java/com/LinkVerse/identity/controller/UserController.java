@@ -1,22 +1,20 @@
 package com.LinkVerse.identity.controller;
 
-import java.util.List;
-
-import jakarta.validation.Valid;
-
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
+import com.LinkVerse.identity.dto.request.UserUpdateRequestAdmin;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.service.UserService;
-
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -71,9 +69,18 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequestAdmin request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
+                .build();
+    }
+
+    @PutMapping("/my-profile")
+    ApiResponse<UserResponse> updateUserbyUsers(@RequestBody UserUpdateRequest request) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUserbyUsers(userId, request))
                 .build();
     }
 

@@ -1,6 +1,6 @@
 package com.LinkVerse.profile.validator.GenderValidator;
 
-import com.LinkVerse.profile.enums.Gender;
+import com.LinkVerse.profile.entity.Gender;
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
 
@@ -18,7 +18,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = GenderValidator.class)
 public @interface GenderConstraint {
     Gender[] anyOf();
+
     String message() default "must be any of {anyOf}";
+
     Class<?>[] groups() default {};
+
     Class<? extends Payload>[] payload() default {};
 }

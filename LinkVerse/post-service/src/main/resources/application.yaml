@@ -8,7 +8,7 @@ spring:
     mongodb:
       uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
   datasource:
-    url: jdbc:mysql://localhost:3306/post
+    url: jdbc:mysql://localhost:3306/Data_Firstt   # Cấu hình kết nối MySQL
     driverClassName: "com.mysql.cj.jdbc.Driver"
     username: root
     password: root

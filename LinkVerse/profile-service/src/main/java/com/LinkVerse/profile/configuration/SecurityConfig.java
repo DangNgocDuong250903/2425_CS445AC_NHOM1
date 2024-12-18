@@ -3,7 +3,6 @@ package com.LinkVerse.profile.configuration;
 import io.micrometer.common.lang.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,7 +22,7 @@ public class SecurityConfig {
     private static final String[] PUBLIC_ENDPOINTS = {
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
 
-            "/internal/users", "/internal/users/**", "/v3/.*", "/profile/.*", "/search", "/sorts", "/criteria-search", "/advanced-search",
+            "/internal/users", "/internal/users/**", "/v3/.*", "/profile/users",
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -35,10 +34,8 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll()
                 .anyRequest()
-                .authenticated());
+                .permitAll());
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)

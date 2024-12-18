@@ -1,6 +1,6 @@
 package com.LinkVerse.profile.validator.GenderValidator;
 
-import com.LinkVerse.profile.enums.Gender;
+import com.LinkVerse.profile.entity.Gender;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 

@@ -23,7 +23,8 @@ public class User {
     String profileId;
     @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
     String username;
-
+    String firstName;
+    String lastName;
     String password;
 
     @Column(name = "email", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
@@ -47,10 +48,10 @@ public class User {
     // Groups the user belongs to
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
-
     Date dateOfBirth;
 
     Gender gender;
+
 
     @PrePersist
     protected void onCreate() {
