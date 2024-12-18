@@ -5,7 +5,6 @@ import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostDocument;
 import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.service.KeywordService;
@@ -48,15 +47,15 @@ public class SearchController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping(value = "/search-posts", produces = "application/json")
-    public ApiResponse<List<PostDocument>> searchPosts(
-            @RequestParam(value = "searchString", required = false) String searchString,
-            @RequestParam(value = "year", required = false) Integer year,
-            @RequestParam(value = "month", required = false) Integer month,
-            @RequestParam(value = "visibility", required = false) PostVisibility visibility) {
-
-        return searchService.searchPosts(searchString, year, month, visibility);
-    }
+//    @GetMapping(value = "/search-posts", produces = "application/json")
+//    public ApiResponse<List<PostDocument>> searchPosts(
+//            @RequestParam(value = "searchString", required = false) String searchString,
+//            @RequestParam(value = "year", required = false) Integer year,
+//            @RequestParam(value = "month", required = false) Integer month,
+//            @RequestParam(value = "visibility", required = false) PostVisibility visibility) {
+//
+//        return searchService.searchPosts(searchString, year, month, visibility);
+//    }
 
     // Tìm kiếm bài đăng theo từ khóa
     @GetMapping("/searchPostKeyword")

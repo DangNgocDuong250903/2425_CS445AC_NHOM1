@@ -10,10 +10,7 @@ import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.*;
-import com.LinkVerse.post.repository.HashtagRepository;
-import com.LinkVerse.post.repository.PostHistoryRepository;
-import com.LinkVerse.post.repository.PostRepository;
-import com.LinkVerse.post.repository.SharedPostRepository;
+import com.LinkVerse.post.repository.*;
 import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
@@ -68,6 +65,7 @@ public class PostService {
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     ProfileServiceClient profileServiceClient;
+//    PostSearchRepository postSearchRepository;
 
     @Autowired
     private TagProcessor tagProcessor;
@@ -159,6 +157,23 @@ public class PostService {
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
             post = postRepository.save(post);
+
+//            // Lưu vào Elasticsearch
+//            if (post.getId() != null) {
+//                PostDocument postDocument = PostDocument.builder()
+//                        .id(post.getId())
+//                        .content(post.getContent())
+//                        .userId(post.getUserId())
+//                        .imageUrl(post.getImageUrl())
+//                        .imgAvatarUrl(post.getImgAvatarUrl())
+//                        .visibility(post.getVisibility())
+//                        .createdAt(post.getCreatedDate())
+//                        .updatedAt(post.getModifiedDate())
+//                        .comments(new ArrayList<>())
+//                        .build();
+//                postSearchRepository.save(postDocument);
+//                log.info("Save postDocument", postDocument);
+//            }
 
             PostResponse postResponse = postMapper.toPostResponse(post);
 
@@ -263,6 +278,24 @@ public class PostService {
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
             post = postRepository.save(post);
+
+//            // Lưu vào Elasticsearch
+//            if (post.getId() != null) {
+//                PostDocument postDocument = PostDocument.builder()
+//                        .id(post.getId())
+//                        .content(post.getContent())
+//                        .userId(post.getUserId())
+//                        .imageUrl(post.getImageUrl())
+//                        .imgAvatarUrl(post.getImgAvatarUrl())
+//                        .visibility(post.getVisibility())
+//                        .createdAt(post.getCreatedDate())
+//                        .updatedAt(post.getModifiedDate())
+//                        .comments(new ArrayList<>())
+//                        .build();
+//                postSearchRepository.save(postDocument);
+//                log.info("Save postDocument", postDocument);
+//            }
+
             PostResponse postResponse = postMapper.toPostResponse(post);
 
             return ApiResponse.<PostResponse>builder()
