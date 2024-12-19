@@ -24,7 +24,7 @@ public class UserSearchCriteriaQueryConsumer implements Consumer<SearchCriteria>
     private Root root;
 
     @Override
-    public void accept(SearchCriteria param) {//key:operation:value
+    public void accept(SearchCriteria param) {// key:operation:value
         if(param.getOperation().equals(">")) {
             //predicate = where key > value (kiểu số)
             //builder.and() -> kết hợp nhiều điều kiện lại với nhau

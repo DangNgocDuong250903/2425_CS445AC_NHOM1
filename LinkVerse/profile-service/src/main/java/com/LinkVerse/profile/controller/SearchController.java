@@ -32,7 +32,7 @@ public class SearchController {
     @GetMapping("/search")
     ApiResponse<PageResponse<UserProfileResponse>> getUsersWithSortByColumnAndSearch(
             @RequestParam(defaultValue = "0", required = false) int page,
-            @Min(2) @RequestParam(defaultValue = "3", required = false) int size,
+            @RequestParam(defaultValue = "3", required = false) int size,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String sortBy
     ) {

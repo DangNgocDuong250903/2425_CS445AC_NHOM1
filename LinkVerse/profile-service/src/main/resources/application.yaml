@@ -35,7 +35,3 @@ cloud:
 aws:
   s3:
     bucket-name: imgpost-2
-#Cloudinary:
-#  cloud_name: dkeyerq4g
-#  api_key: 459476596648974
-#  api_secret: ex_KAk4H4glXgYObhHvORS1ueQ0

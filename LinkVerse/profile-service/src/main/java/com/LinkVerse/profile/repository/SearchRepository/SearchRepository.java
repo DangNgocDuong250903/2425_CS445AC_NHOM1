@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static com.LinkVerse.profile.enums.AppConst.*;
 
@@ -41,11 +42,12 @@ public class SearchRepository {
 
 
     // 1 find user by string
+    // SearchRepository.java
+    // SearchRepository.java
     public Page<UserProfile> getUsersWithSortByColumnAndSearch(int page, int size, String sortBy, String search) {
         StringBuilder sqlQuery = new StringBuilder("SELECT u FROM UserProfile u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
             sqlQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
-                    .append(" OR LOWER(u.username) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.email) LIKE LOWER(:search))");
         }
@@ -59,17 +61,16 @@ public class SearchRepository {
         }
 
         Query selectedQuery = entityManager.createQuery(sqlQuery.toString());
-        selectedQuery.setFirstResult(page * size);
-        selectedQuery.setMaxResults(size);
         if (StringUtils.hasLength(search)) {
             selectedQuery.setParameter("search", String.format("%%%s%%", search));
         }
+        selectedQuery.setFirstResult(page * size);
+        selectedQuery.setMaxResults(size);
         List<UserProfile> users = selectedQuery.getResultList();
 
         StringBuilder sqlCountQuery = new StringBuilder("SELECT COUNT(u) FROM UserProfile u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
             sqlCountQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
-                    .append(" OR LOWER(u.username) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.email) LIKE LOWER(:search))");
         }
@@ -83,7 +84,6 @@ public class SearchRepository {
         Pageable pageable = PageRequest.of(page, size);
         return new PageImpl<>(users, pageable, totalElement);
     }
-
 
     // 2 criteria
     public Page<UserProfile> advancedSearchUser(int page, int size, String sortBy, String... search) {
@@ -148,6 +148,7 @@ public class SearchRepository {
         criteriaQuery.select(criteriaBuilder.count(root));
         criteriaQuery.where(predicate);
 
+        criteriaQuery.select(criteriaBuilder.count(root));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
 

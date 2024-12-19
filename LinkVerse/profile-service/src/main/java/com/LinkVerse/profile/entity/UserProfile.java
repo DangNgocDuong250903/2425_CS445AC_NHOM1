@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -16,7 +17,7 @@ import java.util.*;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class UserProfile {
+public class UserProfile implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;

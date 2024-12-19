@@ -14,7 +14,7 @@ public class SpecSearchCriteria {
     private String key;
     private SearchOperation operation; // EQUALITY, LIKE,...
     private Object value;
-    private boolean orPredicate; // OR-AND
+    private boolean orPredicate; // OR, AND
 
 
     public SpecSearchCriteria(final String key, final SearchOperation operation, final Object value) {

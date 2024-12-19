@@ -61,9 +61,6 @@ public class UserProfileService {
     }
 
     public List<UserProfileResponse> getAllProfiles() {
-        // Bỏ xác thực ng dùng
-        // return userProfileRepository.findAll();
-
         var profiles = userProfileRepository.findAll();
 
         return profiles.stream().map(userProfileMapper::toUserProfileReponse).toList();

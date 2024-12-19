@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,7 +33,6 @@ public class SearchService {
     SearchRepository searchRepository;
 
     // 0
-    @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserProfileResponse> getUsersWithSortsByMultipleColumn(int pageNo, int pageSize, String... sorts) {
         int p = 0;
         if (pageNo > 0) {
@@ -66,20 +66,23 @@ public class SearchService {
     }
 
     // 1
-    @PreAuthorize("hasRole('ADMIN')")
+    // SearchService.java
     public PageResponse<UserProfileResponse> getUsersWithSortByColumnAndSearch(int pageNo, int pageSize, String search, String sortBy) {
         Page<UserProfile> users = searchRepository.getUsersWithSortByColumnAndSearch(pageNo, pageSize, sortBy, search);
+        List<UserProfileResponse> userProfileResponses = users.stream()
+                .map(userProfileMapper::toUserProfileReponse)
+                .collect(Collectors.toList());
+
         return PageResponse.<UserProfileResponse>builder()
                 .page(users.getNumber())
                 .size(users.getSize())
                 .total(users.getTotalPages())
-                .items(users.stream().map(userProfileMapper::toUserProfileReponse).toList())
+                .items(userProfileResponses)
                 .build();
     }
 
 
     // 2
-    @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserProfileResponse> advancedSearchByCriteria(int pageNo, int pageSize, String sortBy, String... search) {
         Page<UserProfile> users = searchRepository.advancedSearchUser(pageNo, pageSize, sortBy, search);
         return PageResponse.<UserProfileResponse>builder()
@@ -91,7 +94,6 @@ public class SearchService {
     }
     // -------------------------------------------------------------------------------------------------------------------
 
-    @PreAuthorize("hasRole('ADMIN')")
     public PageResponse<UserProfileResponse> advanceSearchWithSpecifications(Pageable pageable, String[] user) {
         if (user != null) {
             return searchRepository.searchUserByCriteria(pageable, user);
