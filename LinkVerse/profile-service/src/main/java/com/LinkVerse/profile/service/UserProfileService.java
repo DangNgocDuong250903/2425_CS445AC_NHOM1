@@ -60,13 +60,13 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
 
-    public List<UserProfileResponse> getAllProfiles() {
-        // Bỏ xác thực ng dùng
-        // return userProfileRepository.findAll();
 
+    public List<UserProfileResponse> getAllProfiles() {
         var profiles = userProfileRepository.findAll();
 
-        return profiles.stream().map(userProfileMapper::toUserProfileReponse).toList();
+        return profiles.stream()
+                .map(userProfileMapper::toUserProfileReponse)
+                .toList();
     }
 
 

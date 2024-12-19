@@ -1,13 +1,12 @@
 package com.LinkVerse.profile.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -20,7 +19,6 @@ public class UserProfile {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
     String userId;
     String imageUrl;
     String username;
@@ -29,7 +27,7 @@ public class UserProfile {
     String lastName;
     Date dateOfBirth;
     String city;
-    String phoneNumber ;
+    String phoneNumber;
     Gender gender;
 
     @Enumerated(EnumType.STRING)
@@ -43,4 +41,7 @@ public class UserProfile {
     @JsonManagedReference
     Set<Friendship> friends;
 
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
 }

@@ -28,4 +28,5 @@ public class UserResponse {
     Set<RoleResponse> roles;
     LocalDateTime createdAt;
     Gender gender;
+    String city;
 }
