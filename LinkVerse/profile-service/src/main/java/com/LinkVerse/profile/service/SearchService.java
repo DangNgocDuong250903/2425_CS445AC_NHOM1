@@ -94,17 +94,4 @@ public class SearchService {
     }
     // -------------------------------------------------------------------------------------------------------------------
 
-    public PageResponse<UserProfileResponse> advanceSearchWithSpecifications(Pageable pageable, String[] user) {
-        if (user != null) {
-            return searchRepository.searchUserByCriteria(pageable, user);
-        }
-
-        Page<UserProfile> users = userProfileRepository.findAll(pageable);
-        return PageResponse.<UserProfileResponse>builder()
-                .page(pageable.getPageNumber())
-                .size(pageable.getPageSize())
-                .total(users.getTotalPages())
-                .items(users.stream().map(userProfileMapper::toUserProfileReponse).toList())
-                .build();
-    }
 }

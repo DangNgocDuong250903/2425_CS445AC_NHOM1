@@ -53,12 +53,5 @@ public class SearchController {
                 .build();
     }
 
-    @GetMapping("/advanced-search")
-    ApiResponse<PageResponse<UserProfileResponse>> advanceSearchWithSpecifications(Pageable pageable,
-                                                                                   @RequestParam(required = false) String[] user
-    ){
-        return ApiResponse.<PageResponse<UserProfileResponse>>builder()
-                .result(searchService.advanceSearchWithSpecifications(pageable, user))
-                .build();
-    }
+
 }

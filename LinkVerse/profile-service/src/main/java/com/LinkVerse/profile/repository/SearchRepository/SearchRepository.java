@@ -6,7 +6,6 @@ import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.mapper.UserProfileMapper;
 import com.LinkVerse.profile.repository.SearchRepository.criteria.SearchCriteria;
 import com.LinkVerse.profile.repository.SearchRepository.criteria.UserSearchCriteriaQueryConsumer;
-import com.LinkVerse.profile.repository.SearchRepository.specification.SpecSearchCriteria;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -150,80 +149,6 @@ public class SearchRepository {
 
         criteriaQuery.select(criteriaBuilder.count(root));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
-    }
-
-
-    public PageResponse<UserProfileResponse> searchUserByCriteria(Pageable pageable, String[] user) {
-        log.info("-------------- searchUserByCriteria --------------");
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserProfile> query = builder.createQuery(UserProfile.class);
-        Root<UserProfile> userRoot = query.from(UserProfile.class);
-
-        List<Predicate> userPreList = new ArrayList<>();
-        Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR);
-        for (String u : user) {
-            Matcher matcher = pattern.matcher(u);
-            if (matcher.find()) {
-                SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                userPreList.add(toUserPredicate(userRoot, builder, searchCriteria));
-            }
-        }
-
-        Predicate userPre = builder.or(userPreList.toArray(new Predicate[0]));
-        query.where(userPre);
-
-        List<UserProfile> users = entityManager.createQuery(query)
-                .setFirstResult(pageable.getPageNumber() * pageable.getPageSize())
-                .setMaxResults(pageable.getPageSize())
-                .getResultList();
-
-        long count = countUser(user);
-
-        return PageResponse.<UserProfileResponse>builder()
-                .page(pageable.getPageNumber())
-                .size(pageable.getPageSize())
-                .total(count)
-                .items(users.stream().map(userProfileMapper::toUserProfileReponse).toList())
-                .build();
-    }
-
-    private Predicate toUserPredicate(Root<UserProfile> root, CriteriaBuilder builder, SpecSearchCriteria criteria) {
-        log.info("-------------- toUserPredicate --------------");
-        return switch (criteria.getOperation()) {
-            case EQUALITY -> builder.equal(root.get(criteria.getKey()), criteria.getValue());
-            case NEGATION -> builder.notEqual(root.get(criteria.getKey()), criteria.getValue());
-            case GREATER_THAN -> builder.greaterThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LESS_THAN -> builder.lessThan(root.get(criteria.getKey()), criteria.getValue().toString());
-            case LIKE -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue().toString() + "%");
-            case STARTS_WITH -> builder.like(root.get(criteria.getKey()), criteria.getValue() + "%");
-            case ENDS_WITH -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue());
-            case CONTAINS -> builder.like(root.get(criteria.getKey()), "%" + criteria.getValue() + "%");
-        };
-    }
-
-    private long countUser(String[] user) {
-        log.info("-------------- countUser --------------");
-
-        CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<Long> query = builder.createQuery(Long.class);
-        Root<UserProfile> userRoot = query.from(UserProfile.class);
-
-        List<Predicate> userPreList = new ArrayList<>();
-        Pattern pattern = Pattern.compile(SEARCH_SPEC_OPERATOR); //  SEARCH_SPEC_OPERATOR = "(\\w+?)([<:>~!])(.*)(\\p{Punct}?)(\\p{Punct}?)"
-        for (String u : user) {
-            Matcher matcher = pattern.matcher(u);
-            if (matcher.find()) {
-                SpecSearchCriteria searchCriteria = new SpecSearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3), matcher.group(4), matcher.group(5));
-                userPreList.add(toUserPredicate(userRoot, builder, searchCriteria));
-            }
-        }
-
-        Predicate userPre = builder.or(userPreList.toArray(new Predicate[0]));
-        query.select(builder.count(userRoot));
-        query.where(userPre);
-
-        return entityManager.createQuery(query).getSingleResult();
     }
 
 }

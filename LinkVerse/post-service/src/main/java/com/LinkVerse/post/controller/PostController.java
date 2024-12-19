@@ -138,7 +138,7 @@ public class PostController {
         return postService.getPostById(postId);
     }
 
-    @GetMapping("/posts-random")
+    @GetMapping("/all")
     public ApiResponse<PageResponse<PostResponse>> getAllPost(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size) {
