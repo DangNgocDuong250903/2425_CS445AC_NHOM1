@@ -1,1 +1,1 @@
-export const selectsPost = ["Positive", "Negative", "Neutral", "Mixed"]
+export const selectsPost = ["For you", "Positive", "Negative", "Neutral", "Mixed"]

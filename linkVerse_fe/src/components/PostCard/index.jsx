@@ -6,7 +6,7 @@ import { BiSolidLike } from "react-icons/bi";
 import { MdOutlineDelete } from "react-icons/md";
 import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Button, CustomizeMenu, DialogCustom } from "..";
+import { Alerts, Button, CustomizeMenu, DialogCustom } from "..";
 import { BiCommentDetail } from "react-icons/bi";
 import {
   Divider,
@@ -22,7 +22,7 @@ import { TbMessageReport } from "react-icons/tb";
 import { RiAttachment2 } from "react-icons/ri";
 import { ImUserMinus } from "react-icons/im";
 import { useSelector } from "react-redux";
-import { getBase64 } from "~/utils";
+import { copyToClipboard, getBase64 } from "~/utils";
 import { PiGifThin } from "react-icons/pi";
 import { FaPhotoVideo } from "react-icons/fa";
 import { BsImages } from "react-icons/bs";
@@ -34,12 +34,15 @@ import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
 import { FaRegGrinStars } from "react-icons/fa";
 import * as UserService from "~/services/UserService";
 import CreateComment from "../CreateComment";
+import * as PostService from "~/services/PostService";
 
-const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
+const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
+  const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
+  const [react, setReact] = useState("👍");
   const [showReply, setShowReply] = useState(0);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,6 +52,9 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
   const [disLike, setDisLike] = useState(false);
   const [openComment, setOpenComment] = useState(false);
   const [url, setUrl] = useState("");
+  const [typeMessage, setTypeMessage] = useState("success");
+  const [message, setMessage] = useState("");
+  const [openMessage, setOpenMessage] = useState(false);
 
   const getComments = async () => {};
 
@@ -118,27 +124,90 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
     setIsOpenReply(false);
   };
 
-  const handleDisLike = () => {};
-
   const handleTranslateEn = () => {};
   const handleTranslateVie = () => {};
 
   // const [user, setUser] = useState(null);
 
+  // const fetchDetailUser = async ({ id, token }) => {
+  //   const res = await UserService.getDetailUserByUserId({ id, token });
+  //   setUser(res);
+  // };
+
   // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const userDetails = await fetchUserDetails(post.userId);
-  //     setUser(userDetails);
-  //   };
-  //   fetchUser();
-  // }, [post.userId, fetchUserDetails]);
+  //   fetchDetailUser({ id: post?.userId, token });
+  // }, []);
+
+  // const likePost = async ({ id, emoji, token }) => {
+  //   const res = await PostService.like({ id, emoji, token });
+  //   return res;
+  // };
+
+  // useEffect(() => {
+  //   const id = post?.id;
+  //   const emoji = react;
+  //   likePost({ id, emoji, token });
+  // }, [react]);
+
+  const handleCloseMessage = () => {
+    setOpenMessage(false);
+  };
 
   const handleSaveUrl = (id) => {
-    console.log(id);
+    setUrl(`http://localhost:5173/post/${id}`);
+    setMessage("Copy to clipboard success!");
+    copyToClipboard(url);
+    handleClose();
+    setOpenMessage(true);
+  };
+
+  //share post
+  const handleShare = async (id) => {
+    const res = await PostService.share({ id, token });
+    if (res?.code === 200) {
+      setMessage("Share post success!");
+      setOpenMessage(true);
+    }
+  };
+
+  //delete post
+  const handleDeletePost = async (id) => {
+    const res = await PostService.deletePost({ id, token });
+    if (res?.code === 200) {
+      handleClose();
+      setOpenMessage(true);
+      setMessage("Delete post success!");
+      fetchPosts();
+    }
+  };
+
+  //save post
+  const handleSavePost = async (id) => {
+    const res = await PostService.save({ id, token });
+    if (res?.code === 200) {
+      setOpenMessage(true);
+      setMessage("Save post success!");
+      handleClose();
+      fetchPosts();
+    }
+    if (res?.code === 400) {
+      setTypeMessage("error");
+      setOpenMessage(true);
+      setMessage("Post already saved!");
+      handleClose();
+      fetchPosts();
+    }
   };
 
   return (
     <div className="bg-primary p-2 rounded-xl">
+      <Alerts
+        type={typeMessage}
+        message={message}
+        open={openMessage}
+        position={{ vertical: "bottom", horizontal: "center" }}
+        handleClose={handleCloseMessage}
+      />
       <div
         onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
@@ -205,7 +274,10 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
                 open={open}
                 anchor={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={handleClose}>
+                <MenuItem
+                  disableRipple
+                  onClick={() => handleSavePost(post?.id)}
+                >
                   <div className="flex items-center justify-between w-full">
                     <span className={theme === "light" && "text-black"}>
                       Save
@@ -230,7 +302,7 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
                     </MenuItem>
                   </div>
                 )}
-                {user?.userId === post?.userId && (
+                {user?.id === post?.userId && (
                   <div>
                     <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
@@ -238,7 +310,10 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
                         <FaRegEdit color="red" />
                       </div>
                     </MenuItem>
-                    <MenuItem onClick={handleClose} disableRipple>
+                    <MenuItem
+                      onClick={() => handleDeletePost(post?.id)}
+                      disableRipple
+                    >
                       <div className="flex items-center justify-between w-full">
                         <span className="text-red-600">Delete</span>
                         <FaRegTrashCan color="red" />
@@ -334,7 +409,7 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div onClick={handleLike}>
+            <div>
               {like ? (
                 <>
                   <BiSolidLike
@@ -346,26 +421,42 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
               ) : (
                 <>
                   <div class="relative group">
-                    <BiLike size={20} className="hover:scale-105" />
+                    {react}
+                    {/* <BiLike size={20} className="hover:scale-105" /> */}
 
                     <div class="absolute bottom-8  left-1/2 -translate-x-8 flex space-x-2 bg-primary rounded-full border-borderNewFeed shadow-newFeed p-2 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-300 ease-in-out">
-                      <div class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full hover:scale-125 transition-transform duration-200">
+                      <div
+                        onClick={() => setReact("👍")}
+                        class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full hover:scale-125 transition-transform duration-200"
+                      >
                         👍
                       </div>
 
-                      <div class="w-10 h-10 flex items-center justify-center bg-red-100 rounded-full hover:scale-125 transition-transform duration-200">
+                      <div
+                        onClick={() => setReact("❤️")}
+                        class="w-10 h-10 flex items-center justify-center bg-red-100 rounded-full hover:scale-125 transition-transform duration-200"
+                      >
                         ❤️
                       </div>
 
-                      <div class="w-10 h-10 flex items-center justify-center bg-yellow-100 rounded-full hover:scale-125 transition-transform duration-200">
+                      <div
+                        onClick={() => setReact("😂")}
+                        class="w-10 h-10 flex items-center justify-center bg-yellow-100 rounded-full hover:scale-125 transition-transform duration-200"
+                      >
                         😂
                       </div>
 
-                      <div class="w-10 h-10 flex items-center justify-center bg-purple-100 rounded-full hover:scale-125 transition-transform duration-200">
+                      <div
+                        onClick={() => setReact("😀")}
+                        class="w-10 h-10 flex items-center justify-center bg-purple-100 rounded-full hover:scale-125 transition-transform duration-200"
+                      >
                         😀
                       </div>
 
-                      <div class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full hover:scale-125 transition-transform duration-200">
+                      <div
+                        onClick={() => setReact("😢")}
+                        class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full hover:scale-125 transition-transform duration-200"
+                      >
                         😢
                       </div>
                     </div>
@@ -377,11 +468,12 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
           </div>
 
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div onClick={handleDisLike}>
+            <div>
               {disLike ? (
                 <BiSolidDislike size={20} color="blue" />
               ) : (
-                <BiDislike size={20} className="hover:scale-105" />
+                <span>👎</span>
+                // <BiDislike size={20} className="hover:scale-105" />
               )}
             </div>
             {post?.unlike}
@@ -409,7 +501,10 @@ const PostCard = ({ post, fetchUserDetails, isShowImage }) => {
             id={post?.id}
           />
         </div>
-        <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
+        <div
+          onClick={() => handleShare(post?.id)}
+          className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer"
+        >
           <IoPaperPlaneOutline size={20} />
           {post?.sharedPost}Shares
         </div>

@@ -1,18 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Button, TextInput } from "~/components";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 import { CircularProgress } from "@mui/material";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";
+import { FaCircleExclamation } from "react-icons/fa6";
 
 const ForgotPasswordPage = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [errMsg, setErrMsg] = useState("");
+  const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     register,
@@ -20,17 +22,24 @@ const ForgotPasswordPage = () => {
     formState: { errors, isValid },
   } = useForm({ mode: "onChange" });
 
-  const mutation = useMutationHook((data) => UserService.forgotPassword(data));
-  const { data, isPending, isError, isSuccess } = mutation;
-
-  useEffect(() => {
-    if (isError) {
+  const forgotPassword = async (data) => {
+    setLoading(true);
+    try {
+      const res = await UserService.forgotPassword(data);
+      if (res?.code == 500) {
+        setErrMsg("Email is not registered");
+        return;
+      }
+      setSuccess(true);
+    } catch (error) {
       setErrMsg("Email is not registered");
+    } finally {
+      setLoading(false);
     }
-  }, [isSuccess, isError]);
+  };
 
   const onSubmit = async (data) => {
-    mutation.mutate(data);
+    forgotPassword(data);
   };
 
   return (
@@ -49,7 +58,7 @@ const ForgotPasswordPage = () => {
           {t("Nhập địa chỉ email đã sử dụng để đăng ký")}
         </span>
 
-        {isSuccess ? (
+        {success ? (
           <div className="w-full h-auto flex flex-col items-center justify-center gap-y-2 mt-4">
             <div className="w-full flex items-center justify-center">
               <IoCheckmarkCircleSharp size={40} color="#0DBC3D" />
@@ -61,7 +70,7 @@ const ForgotPasswordPage = () => {
         ) : (
           <form
             onSubmit={handleSubmit(onSubmit)}
-            className="py-4 flex flex-col gap-5"
+            className="py-1 flex flex-col gap-5"
           >
             <TextInput
               name="email"
@@ -75,23 +84,28 @@ const ForgotPasswordPage = () => {
                     !/\s/.test(value) || "Email must not contain spaces.",
                 },
               })}
-              styles="w-full rounded-lg"
+              toolTip={errors.email ? errors.email?.message : ""}
+              styles={`w-full rounded-lg  ${
+                errors.email ? "border-red-600" : ""
+              }`}
               labelStyles="ml-2"
-              error={errors.email ? errors.email.message : ""}
+              // error={errors.email ? errors.email.message : ""}
+              iconRight={
+                errors.email ? <FaCircleExclamation color="red" /> : ""
+              }
+              iconRightStyles="right-5"
             />
 
-            {errMsg && (
-              <span className={`text-sm mt-0.5 text-red-600`}>{errMsg}</span>
-            )}
+            {errMsg && <span className={`text-sm text-red-600`}>{errMsg}</span>}
 
             <div className="relative">
               <Button
-                disable={isPending || !isValid}
+                disable={loading || !isValid}
                 type="submit"
                 containerStyles={`inline-flex w-full justify-center rounded-md bg-blue px-8 py-3 text-sm text-white font-medium outline-none`}
                 title={t("Xác nhận")}
               />
-              {isPending && (
+              {loading && (
                 <CircularProgress
                   className="absolute top-4 left-1/2"
                   size={20}

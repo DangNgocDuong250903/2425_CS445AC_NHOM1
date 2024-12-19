@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    sentiment: localStorage.getItem("sentiment") ?? "Positive"
+    sentiment: localStorage.getItem("sentiment") ?? "For you"
 };
 
 const postSlice = createSlice({

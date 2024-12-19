@@ -94,20 +94,12 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
     <>
       {buttonRight && (
         <div className="absolute bottom-5 right-5">
-          <Fab
-            color="primary"
-            aria-label="add"
-            variant="extended"
-            sx={{
-              zIndex: 10,
-              "&.MuiFab-root": {
-                backgroundColor: `${theme === "dark" ? "#fff" : "#000"}`,
-              },
-            }}
-            onClick={() => setOpen(true)}
+          <div
+            onClick={() => setOpen(user?.token ? true : false)}
+            className="bg-bgStandard w-[70px] h-[70px] shadow-newFeed hover:scale-105 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
           >
-            <IoIosAdd className="text-primary" size={50} />
-          </Fab>
+            <IoIosAdd className="text-primary" size={35} />
+          </div>
         </div>
       )}
       {profilePage && (

@@ -14,13 +14,18 @@ import { useParams } from "react-router-dom";
 import useGetDetailUser from "~/hooks/useGetDetailUser";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import { useQuery } from "@tanstack/react-query";
+import { ImUserPlus } from "react-icons/im";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
   const { id } = useParams();
+  const userPrimary = useSelector((state) => state.user);
   const { user, loading } = useGetDetailUser();
+  const token = localStorage.getItem("token");
+  const [loadingPost, setLoadingPost] = useState(false);
+  const [posts, setPosts] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -49,38 +54,28 @@ const ProfilePage = () => {
     };
   };
 
-  //fetch my post
-  // const [fetchingPosts, setFetchingPosts] = useState(true);
-  // const [posts, setPosts] = useState([]);
-  // useEffect(() => {
-  //   const getPosts = async () => {
-  //     if (!user) return;
-  //     setFetchingPosts(true);
-  //     try {
-  //       const res = await PostService.getMyPosts(user?.token);
-  //       console.log(res);
-  //       setPosts(res?.result?.data);
-  //     } catch (error) {
-  //       setPosts([]);
-  //     } finally {
-  //       setFetchingPosts(false);
-  //     }
-  //   };
-  //   getPosts();
-  // }, [user?.token, setPosts, user]);
-
-  const getMyPosts = async () => {
-    const token = localStorage.getItem("token");
-    const res = await PostService.getMyPosts(token);
-    return res?.result?.data;
+  const fetchMyPosts = async (token) => {
+    setLoadingPost(true);
+    try {
+      const res = await PostService.getMyPosts(token);
+      if (res?.code === 200) {
+        setPosts(res?.result?.data);
+      }
+    } catch (error) {
+      console.error("Error fetching posts:", error);
+    } finally {
+      setLoadingPost(false);
+    }
   };
 
-  const queryPosts = useQuery({
-    queryKey: ["posts"],
-    queryFn: getMyPosts,
-  });
+  useEffect(() => {
+    fetchMyPosts(token);
+  }, []);
 
-  const { isLoading, data: posts } = queryPosts;
+  const handleSuccess = () => {
+    setPosts([]);
+    fetchMyPosts(token);
+  };
 
   return (
     <>
@@ -95,17 +90,63 @@ const ProfilePage = () => {
               <div className="flex justify-between">
                 <div className="flex flex-col">
                   <span className="text-2xl font-bold text-ascent-1">
-                    {user?.firstName + user?.lastName || "No name"}
+                    {user?.firstName + " " + user?.lastName || "No name"}
                   </span>
                   <span className="text-md font-normal text-ascent-1">
                     {user?.username || "No name"}
                   </span>
                 </div>
-                <img
+                {/* <img
                   src={user?.avatar || BlankAvatar}
                   alt="avatar"
                   className="rounded-full object-cover w-20 h-20 bg-no-repeat shadow-newFeed"
-                />
+                /> */}
+
+                {userPrimary?.avatar ? (
+                  <div className="w-full h-full">
+                    <img
+                      src={BlankAvatar}
+                      alt="avatar"
+                      className="rounded-full relative object-cover bg-no-repeat w-full h-full"
+                    />
+                    <div className="flex items-center justify-center w-full h-full absolute top-0">
+                      <label
+                        htmlFor="imgUpload"
+                        className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                      >
+                        <input
+                          type="file"
+                          // onChange={handleChangeAvatar}
+                          className="hidden"
+                          id="imgUpload"
+                          data-max-size="5120"
+                          accept=".jpg, .png, .jpeg"
+                        />
+                        <ImUserPlus
+                          size={20}
+                          className=" duration-300 transition-opacity opacity-0 hover:opacity-100 cursor-pointer"
+                        />
+                      </label>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="w-14 h-14 rounded-full bg-[#ccc] flex items-center justify-center cursor-pointer">
+                    <label
+                      htmlFor="imgUpload"
+                      className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                    >
+                      <input
+                        type="file"
+                        // onChange={handleChangeAvatar}
+                        className="hidden"
+                        id="imgUpload"
+                        data-max-size="5120"
+                        accept=".jpg, .png, .jpeg"
+                      />
+                      <ImUserPlus size={20} />
+                    </label>
+                  </div>
+                )}
               </div>
               {/* 2 */}
               <div className="flex items-center">
@@ -131,7 +172,7 @@ const ProfilePage = () => {
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   <Button
                     onClick={() => setIsOpenDialogEdit(true)}
-                    title="Bạn bè"
+                    title="Kết bạn"
                     containerStyles={
                       "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                     }
@@ -178,8 +219,8 @@ const ProfilePage = () => {
                       aria-label="basic tabs example"
                     >
                       <Tab label="Bài đăng" {...a11yProps(0)} />
-                      <Tab label="Trả lời" {...a11yProps(1)} />
-                      <Tab label="Bài đăng lại" {...a11yProps(2)} />
+                      <Tab label="Bài viết chia sẻ" {...a11yProps(1)} />
+                      <Tab label="Lịch sử" {...a11yProps(2)} />
                     </Tabs>
                   </Box>
                   {/* 1 */}
@@ -197,35 +238,18 @@ const ProfilePage = () => {
                             Có gì mới...
                           </span>
                         </div>
-                        <CreatePost profilePage />
+                        <CreatePost profilePage onSuccess={handleSuccess} />
                       </div>
                       {/* posts */}
                       <div className="flex-1 bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto  ">
-                        {/* {!fetchingPosts && posts.length === 0 && (
+                        {!loadingPost && posts.length === 0 && (
                           <div className="w-full h-60 flex items-center justify-center">
                             <p className="text-lg text-ascent-2">
                               Không có bài viết nào
                             </p>
                           </div>
                         )}
-                        {fetchingPosts && (
-                          <div className="w-full h-60 flex items-center justify-center">
-                            <CircularProgress />
-                          </div>
-                        )}
-
-                        {posts.map((post, i) => (
-                          <PostCard key={i} post={post} user={user} />
-                        ))} */}
-
-                        {!isLoading && posts.length === 0 && (
-                          <div className="w-full h-60 flex items-center justify-center">
-                            <p className="text-lg text-ascent-2">
-                              Không có bài viết nào
-                            </p>
-                          </div>
-                        )}
-                        {isLoading && (
+                        {loadingPost && (
                           <div className="w-full h-60 flex items-center justify-center">
                             <CircularProgress />
                           </div>
@@ -234,7 +258,12 @@ const ProfilePage = () => {
                         {posts &&
                           posts.length > 0 &&
                           posts.map((post, i) => (
-                            <PostCard key={i} post={post} user={user} />
+                            <PostCard
+                              fetchPosts={handleSuccess}
+                              key={i}
+                              post={post}
+                              user={user}
+                            />
                           ))}
                       </div>
                     </div>
@@ -244,7 +273,7 @@ const ProfilePage = () => {
                     <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
                       <div className="w-full h-60 flex items-center justify-center">
                         <p className="text-lg text-ascent-2">
-                          Không có trả lời nào
+                          Chưa chia sẻ bài nào
                         </p>
                       </div>
                     </div>
@@ -253,7 +282,7 @@ const ProfilePage = () => {
                   <CustomTabPanel value={value} index={2}>
                     <div className="w-full h-60 flex items-center justify-center">
                       <p className="text-lg text-ascent-2">
-                        Chưa có bài đăng lại nào
+                        Chưa có lịch sử bài viết
                       </p>
                     </div>
                   </CustomTabPanel>
@@ -263,7 +292,7 @@ const ProfilePage = () => {
           </div>
         </div>
       </div>
-      <CreatePost buttonRight />
+      <CreatePost buttonRight onSuccess={handleSuccess} />
     </>
   );
 };

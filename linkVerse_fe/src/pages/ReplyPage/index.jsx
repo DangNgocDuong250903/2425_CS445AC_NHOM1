@@ -2,7 +2,6 @@ import { CreatePost, PostCard, TopBar } from "~/components";
 import { useParams } from "react-router-dom";
 import * as PostService from "~/services/PostService";
 import { useQuery } from "@tanstack/react-query";
-import { posts } from "~/assets/mockData/data";
 import CommentCard from "~/components/CommentCard";
 
 const ReplyPage = () => {
@@ -31,8 +30,8 @@ const ReplyPage = () => {
           {/* Post */}
           <PostCard post={post} />
           {/* comment */}
-          {posts.map((post, i) => (
-            <CommentCard isShowImage key={i} post={post} />
+          {post?.comments.map((comment, i) => (
+            <CommentCard isShowImage key={i} comment={comment} />
           ))}
         </div>
       </div>

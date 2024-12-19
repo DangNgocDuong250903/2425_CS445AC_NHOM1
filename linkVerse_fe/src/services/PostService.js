@@ -49,6 +49,11 @@ export const getPostsBySentiment = async ({ page, sentiment, token }) => {
     return res.data
 }
 
+export const getAllPosts = async () => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/all`)
+    return res.data
+}
+
 export const deletePost = async ({ id, token }) => {
     const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}`, {
         headers: {
@@ -76,8 +81,35 @@ export const like = async ({ id, emoji, token }) => {
     return res.data
 }
 
+export const share = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/share`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const save = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/save`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+
+    })
+    return res.data
+}
+
+export const getSaveds = async (token) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/saved-posts`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
 export const getPostById = async ({ id, token }) => {
-    console.log(id)
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}`,
         {
             headers: {
@@ -87,3 +119,4 @@ export const getPostById = async ({ id, token }) => {
     )
     return res.data
 }
+

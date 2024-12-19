@@ -71,7 +71,7 @@ const SelectPosts = () => {
                 {selectsPost[i] === sentiment && <FaCheck color="black" />}
               </div>
             </MenuItem>
-            {/* {i === 0 && <StyledDivider />} */}
+            {i === 0 && <StyledDivider />}
           </div>
         ))}
       </CustomizeMenu>

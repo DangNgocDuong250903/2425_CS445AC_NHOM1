@@ -35,7 +35,7 @@ import { FaRegGrinStars } from "react-icons/fa";
 import * as UserService from "~/services/UserService";
 import CreateComment from "../CreateComment";
 
-const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
+const CommentCard = ({ comment, isShowImage }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const navigate = useNavigate();
@@ -117,20 +117,7 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
     setIsOpenReply(false);
   };
 
-  const handleDisLike = () => {};
-
-  const handleTranslateEn = () => {};
-  const handleTranslateVie = () => {};
-
-  // const [user, setUser] = useState(null);
-
-  // useEffect(() => {
-  //   const fetchUser = async () => {
-  //     const userDetails = await fetchUserDetails(post.userId);
-  //     setUser(userDetails);
-  //   };
-  //   fetchUser();
-  // }, [post.userId, fetchUserDetails]);
+  console.log(comment);
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -138,17 +125,6 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
         onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
       >
-        {/* <Link
-          to={`/profile/${post?.userId}`}
-          className="block w-14 h-14"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <img
-            src={BlankAvatar}
-            alt={"avatar"}
-            className="w-14 h-14 object-cover"
-          />
-        </Link> */}
         <img
           onClick={(e) => e.stopPropagation()}
           src={BlankAvatar}
@@ -159,7 +135,7 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
         <div className="w-full flex justify-between">
           <div onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 ">
-              <Link to={`/profile/${post?.userId}`}>
+              <Link to={`/profile/${comment?.userId}`}>
                 <p className="font-medium text-lg text-ascent-1">
                   {user?.username ?? "No name"}
                 </p>
@@ -167,18 +143,12 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
             </div>
             <div className="flex items-center gap-1">
               <span className="text-[#A4A8AD] text-sm">
-                {moment(post?.createdDate).fromNow()}
+                {moment(comment?.createdDate).fromNow()}
               </span>
-              {post?.visibility && post?.visibility === "PRIVATE" && (
-                <BiSolidLockAlt size={14} color="#A4A8AD" />
-              )}
-              {post?.visibility && post?.visibility === "PUBLIC" && (
-                <FaEarthAmericas size={14} color="#A4A8AD" />
-              )}
             </div>
           </div>
 
-          <div
+          {/* <div
             className="flex justify-center items-center"
             onClick={(e) => e.stopPropagation()}
           >
@@ -252,19 +222,19 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
                 </MenuItem>
               </CustomizeMenu>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
       <div>
         <p className="text-ascent-2">
-          {showAll === post?.id
-            ? post?.content || ""
-            : post?.content?.slice(0, 300) || ""}
+          {showAll === comment?.id
+            ? comment?.content || ""
+            : comment?.content?.slice(0, 300) || ""}
 
-          {post?.content &&
-            post.content.length > 301 &&
-            (showAll === post?.id ? (
+          {comment?.content &&
+            comment.content.length > 301 &&
+            (showAll === comment?.id ? (
               <span
                 className="text-blue ml-2 font-medium cursor-pointer"
                 onClick={() => setShowAll(0)}
@@ -274,30 +244,14 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
             ) : (
               <span
                 className="text-blue ml-2 font-medium cursor-pointer"
-                onClick={() => setShowAll(post?.id)}
+                onClick={() => setShowAll(comment?.id)}
               >
                 Show more
               </span>
             ))}
         </p>
-        {/* {post?.language === "en" && (
-          <p
-            onClick={handleTranslateEn}
-            className="cursor-pointer text-sm text-ascent-2"
-          >
-            Translate to Vietnamese
-          </p>
-        )}
-        {post?.language === "vi" && (
-          <p
-            onClick={handleTranslateEn}
-            className="cursor-pointer text-sm text-ascent-2"
-          >
-            Translate to English
-          </p>
-        )} */}
 
-        {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
+        {/* {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
           <>
             <img
               ref={imgRef}
@@ -324,9 +278,10 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
               <source src={post?.video} />
             </video>
           </div>
-        )}
+        )} */}
       </div>
-      <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
+
+      {/* <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
             <div onClick={handleLike}>
@@ -349,7 +304,6 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
             </div>
             {post?.unlike}
           </div>
-          {/* BiDislike */}
           <p
             className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform"
             onClick={() => {
@@ -375,7 +329,7 @@ const CommentCard = ({ post, fetchUserDetails, isShowImage }) => {
           <IoPaperPlaneOutline size={20} />
           {post?.sharedPost}Shares
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

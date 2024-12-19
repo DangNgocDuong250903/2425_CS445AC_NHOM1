@@ -7,12 +7,12 @@ import { GoBell } from "react-icons/go";
 import { GoBellFill } from "react-icons/go";
 
 const Notifications = () => {
-  const theme = useSelector((state) => state.theme.theme);
   const [anchorEl, setAnchorEl] = useState(null);
+  const user = useSelector((state) => state?.user);
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
+    setAnchorEl(user?.token ? event.currentTarget : null);
   };
   const handleClose = () => {
     setAnchorEl(null);

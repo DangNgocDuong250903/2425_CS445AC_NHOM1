@@ -16,62 +16,49 @@ import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
 import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
-import * as PostService from "~/services/PostService";
+import * as StoryService from "~/services/StoryService";
 import useDragAndDrop from "~/hooks/useDragAndDrop";
 
-const CreateStory = ({ onSuccess, open }) => {
+const CreateStory = ({ handleClose, open }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const [status, setStatus] = useState("");
-  //   const [files, setFiles] = useState([]);
-  const [message, setMessage] = useState("");
-  const [showMessage, setShowMessage] = useState(false);
+  const [listFiles, setListFiles] = useState([]);
   const [postState, setPostState] = useState("PUBLIC");
-  const [type, setType] = useState("");
-
-  const handleClose = () => {
-    handleClear();
-    setOpen(false);
-  };
-
-  const handleClear = () => {
-    setStatus("");
-    setFiles([]);
-  };
+  const token = localStorage.getItem("token");
 
   const handleChangeStatus = useCallback((e) => {
     setStatus(e.target.value);
   }, []);
 
-  // delete
-  const handleDeleteFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    setListFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   };
 
+  const handleDeleteFile = (index) => {
+    setListFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  //   drag&drop
+  const onDrop = (files) => {
+    setListFiles((prevFiles) => [...prevFiles, ...files]);
+  };
+
+  const { isDragging, files, handleDragOver, handleDragLeave, handleDrop } =
+    useDragAndDrop(onDrop);
+
+  //submit
   const mutation = useMutationHook(({ data, token }) =>
-    PostService.createPost({ data, token })
+    StoryService.createStory({ data, token })
   );
   const { data, isPending, isError, isSuccess } = mutation;
 
   useEffect(() => {
     if (isSuccess) {
       if (data?.code === 200) {
-        handleClear();
-        setOpen(false);
-        setType("success");
-        setMessage("Create post success!");
-        setShowMessage(true);
-        onSuccess();
+        // onSuccess();
       } else if (data?.code === 400) {
-        setType("error");
-        setMessage(data?.message);
-        setShowMessage(true);
-        handleClear();
         setOpen(false);
       }
     } else if (isError) {
@@ -81,33 +68,12 @@ const CreateStory = ({ onSuccess, open }) => {
 
   const handleSubmitPost = () => {
     const request = { content: status, visibility: postState };
-    const data = { request, files: files };
-    const token = localStorage.getItem("token");
+    const data = { request, files: listFiles };
     mutation.mutate({ data, token });
   };
 
-  const handleCloseMessage = () => {
-    setShowMessage(false);
-  };
-
-  //   drag&drop
-  const onDrop = (files) => {
-    console.log("Dropped files:", files);
-  };
-
-  const { isDragging, files, handleDragOver, handleDragLeave, handleDrop } =
-    useDragAndDrop(onDrop);
-
   return (
     <>
-      <Alerts
-        type={type}
-        message={message}
-        position={{ vertical: "bottom", horizontal: "center" }}
-        handleClose={handleCloseMessage}
-        open={showMessage}
-      />
-
       <DialogCustom
         isOpen={open}
         theme={theme}
@@ -121,7 +87,7 @@ const CreateStory = ({ onSuccess, open }) => {
           {/* header */}
           <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
             <button
-              onClick={() => setOpen(false)}
+              onClick={handleClose}
               className={`text-base hover:text-neutral-400 font-medium text-neutral-500 ${
                 theme === "dark" ? "text-white" : "text-black"
               }`}
@@ -142,7 +108,7 @@ const CreateStory = ({ onSuccess, open }) => {
           {/* body */}
           <div className=" w-full flex flex-col px-5 py-4 justify-center gap-y-2">
             {/* 1 */}
-            {/* <div className="flex flex-col w-full gap-y-3">
+            <div className="flex flex-col w-full pb-2 gap-y-3">
               <div className="w-full flex gap-x-3">
                 <img
                   src={user?.profileUrl ?? BlankAvatar}
@@ -177,7 +143,7 @@ const CreateStory = ({ onSuccess, open }) => {
                   }}
                 />
               </div>
-            </div> */}
+            </div>
 
             {/* t */}
             <div
@@ -200,43 +166,11 @@ const CreateStory = ({ onSuccess, open }) => {
                 : "Drag and drop files here or click to upload"}
             </div>
 
-            {/* 2 */}
-            {/* <div className="flex gap-x-10 items-center px-6">
-              <div className="h-9 border-solid border-borderNewFeed border-[0.1px]" />
-              <div className="flex items-center justify-between py-4 gap-x-3">
-                <label
-                  htmlFor="fileUpload"
-                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                >
-                  <input
-                    type="file"
-                    onChange={handleFileChange}
-                    className="hidden"
-                    id="fileUpload"
-                    data-max-size="5120"
-                    accept=".jpg, .png, .jpeg, .mp4, .wav, .gif"
-                  />
-                  <BsImages style={{ width: "20px", height: "20px" }} />
-                </label>
-                <label
-                  htmlFor="fileUpload"
-                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                >
-                  <FaPhotoVideo style={{ width: "20px", height: "20px" }} />
-                </label>
-                <label
-                  htmlFor="fileUpload"
-                  className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                >
-                  <PiGifThin style={{ width: "25px", height: "25px" }} />
-                </label>
-              </div>
-            </div> */}
             {/* 3 */}
-            {/* <div className="w-full flex flex-col gap-y-2">
-              {files &&
-                files.length > 0 &&
-                files.map((file, index) => {
+            <div className="w-full flex flex-col gap-y-2">
+              {listFiles &&
+                listFiles.length > 0 &&
+                listFiles.map((file, index) => {
                   const fileURL = URL.createObjectURL(file);
 
                   if (file?.type?.includes("mp4")) {
@@ -278,10 +212,10 @@ const CreateStory = ({ onSuccess, open }) => {
 
                   return null;
                 })}
-            </div> */}
+            </div>
 
             {/* 4 */}
-            {/* <div className="w-full flex justify-between">
+            <div className="w-full flex justify-between">
               <FormControl
                 sx={{ m: 1, minWidth: 120 }}
                 size="small"
@@ -314,17 +248,17 @@ const CreateStory = ({ onSuccess, open }) => {
                   title="Đăng"
                   onClick={handleSubmitPost}
                   containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                  disable={isPending || (files.length === 0 && !status.trim())}
+                  // disable={isPending || (files.length === 0 && !status.trim())}
                 />
 
-                {isPending && (
+                {/* {isPending && (
                   <CircularProgress
                     className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
                     size={20}
                   />
-                )}
+                )} */}
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </DialogCustom>

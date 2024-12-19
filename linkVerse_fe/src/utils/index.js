@@ -27,3 +27,11 @@ export const useTitle = (title) => {
         document.title = title + " • LinkVerse";
     }, [title]);
 };
+
+export async function copyToClipboard(url) {
+    try {
+        await navigator.clipboard.writeText(url);
+    } catch (err) {
+        console.error("Không thể sao chép URL:", err);
+    }
+}

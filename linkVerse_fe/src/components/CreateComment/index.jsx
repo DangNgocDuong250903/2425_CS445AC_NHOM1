@@ -27,14 +27,10 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
   const [showMessage, setShowMessage] = useState(false);
   const [type, setType] = useState("");
 
-  //   const handleClose = () => {
-  //     handleClear();
-  //   };
-
-  //   const handleClear = () => {
-  //     setStatus("");
-  //     setFiles([]);
-  //   };
+  const handleClear = () => {
+    setStatus("");
+    setFiles([]);
+  };
 
   const handleChangeContent = useCallback((e) => {
     setContent(e.target.value);
@@ -58,18 +54,18 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
   useEffect(() => {
     if (isSuccess) {
       if (data?.code === 200) {
-        //   handleClear();
-        // setOpen(false);
+        handleClear();
+        handleClose();
         setType("success");
         setMessage("Create comment success!");
         setShowMessage(true);
         onSuccess();
       } else if (data?.code === 400) {
-        //   setType("error");
-        //   setMessage(data?.message);
-        //   setShowMessage(true);
-        //   handleClear();
-        //   setOpen(false);
+        setType("error");
+        setMessage(data?.message);
+        setShowMessage(true);
+        handleClear();
+        handleClose();
       }
     } else if (isError) {
       setMessage("Something went wrong!");
