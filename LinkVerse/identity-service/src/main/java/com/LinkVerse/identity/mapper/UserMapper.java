@@ -21,6 +21,7 @@ public interface UserMapper {
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
     @Mapping(source = "city", target = "city")
+    @Mapping(source = "imageUrl", target = "imageUrl")
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)

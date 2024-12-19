@@ -43,6 +43,16 @@ public class UserService {
     ProfileClient profileClient;
     KafkaTemplate<String, Object> kafkaTemplate;
 
+    public void updateImage(String userId, String imageUrl) {
+        User user = userRepository.findUserById(userId);
+        if (user == null) {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+        user.setImageUrl(imageUrl);
+        userRepository.save(user);
+    }
+
+
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);

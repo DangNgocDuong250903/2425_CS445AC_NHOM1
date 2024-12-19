@@ -18,17 +18,6 @@ import java.util.List;
 public class UserProfileController {
     UserProfileService userProfileService;
 
-    @PutMapping("/{userId}")
-    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId, @RequestParam String imageFile) {
-        try {
-            userProfileService.updateImage(userId, imageFile);
-            return ResponseEntity.ok().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
     @GetMapping("/users/{profileId}")
     ApiResponse<UserProfileResponse> getProfile(@PathVariable String profileId) {

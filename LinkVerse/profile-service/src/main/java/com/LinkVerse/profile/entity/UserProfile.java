@@ -23,7 +23,6 @@ public class UserProfile implements Serializable {
     String id;
 
     String userId;
-    String imageUrl;
     String username;
     String email;
     String firstName;

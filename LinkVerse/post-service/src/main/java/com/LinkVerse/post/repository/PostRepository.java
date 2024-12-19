@@ -12,6 +12,9 @@ import java.util.List;
 public interface PostRepository extends MongoRepository<Post, String> {
     Page<Post> findAllByUserId(String userId, Pageable pageable);
 
+    Page<Post> findPostByUserId(String userId, Pageable pageable);
+
+
     Page<Post> findAllByContent(String content, Pageable pageable);
 
 
