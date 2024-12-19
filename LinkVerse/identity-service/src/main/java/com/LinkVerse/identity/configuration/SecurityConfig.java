@@ -12,11 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -52,26 +47,10 @@ public class SecurityConfig {
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())) // Map JWT claims
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint()) // Custom auth entry point
                 )
-                .csrf(AbstractHttpConfigurer::disable) // CSRF disabled for API-based stateless communication
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable and configure CORS
+                .csrf(AbstractHttpConfigurer::disable); // CSRF disabled for API-based stateless communication
+        //.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Disable CORS
 
         return httpSecurity.build();
-    }
-
-    // CORS configuration
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8888", "http://localhost8080")); // Allow specific origins
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed methods
-        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
-        corsConfiguration.setAllowCredentials(true); // Allow credentials such as cookies or Authorization header
-        corsConfiguration.setMaxAge(3600L); // Cache preflight response for 1 hour
-
-        // Register configuration for all paths
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-        return source;
     }
 
     // JWT authentication converter to map custom claims

@@ -10,11 +10,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -49,28 +44,9 @@ public class SecurityConfig {
                 )
 
                 // Disable CSRF (only acceptable for stateless APIs)
-                .csrf(AbstractHttpConfigurer::disable)
-
-                // Enable and configure CORS
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()));
+                .csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
-    }
-
-    // CORS configuration
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173", "http://localhost:8888", "http://localhost:8083")); // Allowed frontend origin(s)
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed HTTP methods
-        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
-        corsConfiguration.setAllowCredentials(true); // Allow Authorization headers and credentials
-        corsConfiguration.setMaxAge(3600L); // Cache preflight response for 1 hour
-
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return source;
     }
 
     // JWT Authentication Converter

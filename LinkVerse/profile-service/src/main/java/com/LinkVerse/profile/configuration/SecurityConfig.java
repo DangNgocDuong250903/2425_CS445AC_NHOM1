@@ -9,11 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -33,7 +28,7 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        // Configure CORS, authentication, and security
+        // Configure authentication and security
         httpSecurity
                 .authorizeHttpRequests(request -> request
                         .anyRequest().permitAll()) // Allow all for simplicity in this example
@@ -42,27 +37,10 @@ public class SecurityConfig {
                                 .decoder(customJwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                         .authenticationEntryPoint(new JwtAuthenticationEntryPoint()))
-                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF (enable in production as needed)
-                .cors(cors -> cors.configurationSource(corsConfigurationSource())); // Enable CORS with source defined
+                .csrf(AbstractHttpConfigurer::disable); // Disable CSRF (enable in production as needed)
+        //.cors(cors -> cors.configurationSource(corsConfigurationSource())); // Disable CORS
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        // Define the CORS configuration
-        CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:8888", "http://localhost:5173")); // Allow specific origins
-        corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
-        corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allowed methods
-        corsConfiguration.setAllowCredentials(false); // Disallow cookies/Authorization headers (adjust if needed)
-        corsConfiguration.setMaxAge(3600L); // 1 hour max age for preflight requests
-
-        // Register the CORS configuration for all paths
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", corsConfiguration);
-
-        return source;
     }
 
     @Bean
