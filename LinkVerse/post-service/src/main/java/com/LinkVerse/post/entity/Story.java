@@ -19,6 +19,7 @@ public class Story {
     @Id
     String id;
     String userId;
+    String content; // Added content field
 
     LocalDateTime postedAt;
 

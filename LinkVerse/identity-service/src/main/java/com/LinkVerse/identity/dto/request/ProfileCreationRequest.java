@@ -1,4 +1,3 @@
-
 package com.LinkVerse.identity.dto.request;
 
 import com.LinkVerse.identity.entity.Gender;
@@ -49,7 +48,7 @@ public class ProfileCreationRequest {
     Date dateOfBirth;
 
     String city;
-    Gender gender;
+    Gender gender;/**/
     @Column(name = "created_at", nullable = false, updatable = false)
     LocalDateTime createdAt;
 

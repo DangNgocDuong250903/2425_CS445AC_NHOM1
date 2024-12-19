@@ -1,11 +1,10 @@
 package com.LinkVerse.identity.dto.response;
 
-import java.time.LocalDate;
-import java.util.Date;
-
 import com.LinkVerse.identity.entity.Gender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.util.Date;
 
 @Data
 @Builder

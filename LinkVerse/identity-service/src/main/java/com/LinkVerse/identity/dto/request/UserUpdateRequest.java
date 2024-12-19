@@ -31,8 +31,6 @@ public class UserUpdateRequest {
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date dateOfBirth;
-
-
+    @Setter
     String city;
-
 }

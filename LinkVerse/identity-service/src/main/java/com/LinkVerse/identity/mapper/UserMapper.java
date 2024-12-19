@@ -20,6 +20,7 @@ public interface UserMapper {
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "phoneNumber", target = "phoneNumber")
     @Mapping(source = "dateOfBirth", target = "dateOfBirth")
+    @Mapping(source = "city", target = "city")
     UserResponse toUserResponse(User user);
 
     @Mapping(target = "roles", ignore = true)

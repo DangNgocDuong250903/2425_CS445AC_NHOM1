@@ -1,4 +1,3 @@
-
 package com.LinkVerse.identity.dto.request;
 
 import com.LinkVerse.identity.entity.Gender;
@@ -45,7 +44,6 @@ public class UserCreationRequest {
     @JsonFormat(pattern = "dd/MM/yyyy")
     Date dateOfBirth;
 
-    String city;
     Gender gender;
     LocalDateTime createdAt;
 

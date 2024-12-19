@@ -23,6 +23,7 @@ public class StoryMapperImpl implements StoryMapper {
 
         Story.StoryBuilder story = Story.builder();
 
+        story.content( request.getContent() );
         story.visibility( request.getVisibility() );
 
         return story.build();
@@ -37,6 +38,7 @@ public class StoryMapperImpl implements StoryMapper {
         StoryResponse storyResponse = new StoryResponse();
 
         storyResponse.setId( story.getId() );
+        storyResponse.setContent( story.getContent() );
         List<String> list = story.getImageUrl();
         if ( list != null ) {
             storyResponse.setImageUrl( new ArrayList<String>( list ) );

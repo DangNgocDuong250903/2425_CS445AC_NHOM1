@@ -49,7 +49,7 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     Set<GroupMember> groupMemberships;
     Date dateOfBirth;
-
+    String City;
     Gender gender;
 
 

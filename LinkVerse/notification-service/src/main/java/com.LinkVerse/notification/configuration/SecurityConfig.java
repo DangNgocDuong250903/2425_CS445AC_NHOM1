@@ -49,19 +49,21 @@ public class SecurityConfig {
 
         return httpSecurity.build();
     }
+
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return webSecurity -> webSecurity
                 .ignoring()
                 .requestMatchers("/actuator/**", "/v3/**", "/swagger-ui*/**", "/webjars/**", "/swagger-ui*/*swagger-initializer.js", "/swagger-ui*/**");
     }
+
     @Bean
     public WebMvcConfigurer corsConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://localhost:8888")
+                        .allowedOrigins("http://localhost:5173") // Add your frontend URL here
                         .allowedMethods("GET", "POST", "PUT", "DELETE")
                         .allowedHeaders("*")
                         .allowCredentials(false)
@@ -69,6 +71,7 @@ public class SecurityConfig {
             }
         };
     }
+
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
