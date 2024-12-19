@@ -48,7 +48,8 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*", "/posts-random", "/post/posts-random"
 
             ,
-            "/profile/users"
+            "/profile/users",
+            "/post/posts-random"
     };
     @Value("${app.api-prefix}")
     @NonFinal
