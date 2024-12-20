@@ -16,13 +16,14 @@ import java.util.List;
 public class Emoji {
     String symbol;
     String name;
-        public static List<Emoji> getAllEmojis() {
+
+    public static List<Emoji> getAllEmojis() {
         return Arrays.asList(
-                new Emoji("😀", "grinning face"),
-                new Emoji("😂", "face with tears of joy"),
-                new Emoji("❤️", "red heart"),
-                new Emoji("👍", "thumbs up"),
-                new Emoji("😢", "crying face")
+                new Emoji("1", "grinning face"),
+                new Emoji("2", "face with tears of joy"),
+                new Emoji("3", "red heart"),
+                new Emoji("4", "thumbs up"),
+                new Emoji("5", "crying face")
                 //Mún thêm thì cứ như trên, kéo xún
         );
     }

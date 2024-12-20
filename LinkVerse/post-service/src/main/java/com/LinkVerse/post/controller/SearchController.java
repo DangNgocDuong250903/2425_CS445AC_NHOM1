@@ -5,7 +5,6 @@ import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.service.KeywordService;
 import com.LinkVerse.post.service.SearchService;

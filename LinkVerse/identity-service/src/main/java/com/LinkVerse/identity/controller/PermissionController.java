@@ -1,18 +1,16 @@
 package com.LinkVerse.identity.controller;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.*;
-
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.PermissionRequest;
 import com.LinkVerse.identity.dto.response.PermissionResponse;
 import com.LinkVerse.identity.service.PermissionService;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/permissions")

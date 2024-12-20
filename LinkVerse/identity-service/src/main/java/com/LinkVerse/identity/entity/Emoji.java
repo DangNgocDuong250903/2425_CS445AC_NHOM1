@@ -16,7 +16,8 @@ import java.util.List;
 public class Emoji {
     String symbol;
     String name;
-        public static List<Emoji> getAllEmojis() {
+
+    public static List<Emoji> getAllEmojis() {
         return Arrays.asList(
                 new Emoji("😀", "grinning face"),
                 new Emoji("😂", "face with tears of joy"),

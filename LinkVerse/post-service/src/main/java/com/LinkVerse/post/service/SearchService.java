@@ -1,11 +1,9 @@
 package com.LinkVerse.post.service;
 
-import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
-import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @Service
 @RequiredArgsConstructor

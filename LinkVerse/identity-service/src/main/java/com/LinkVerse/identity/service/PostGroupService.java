@@ -3,7 +3,6 @@ package com.LinkVerse.identity.service;
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.PostRequest;
 import com.LinkVerse.identity.dto.response.PostResponse;
-import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Group;
 import com.LinkVerse.identity.entity.GroupMember;
 import com.LinkVerse.identity.entity.Post;
@@ -27,13 +26,14 @@ import java.time.Instant;
 @Service
 @RequiredArgsConstructor
 public class PostGroupService {
-     private final GroupRepository groupRepository;
+    private final GroupRepository groupRepository;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
     private final CommentMapper commentMapper;
     UserRepository userRepository;
     GroupMemberRepository groupMemberRepository;
-@Transactional
+
+    @Transactional
     public ApiResponse<PostResponse> createPostInGroup(String groupId, PostRequest request) {
         // Lấy thông tin người dùng hiện tại từ SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

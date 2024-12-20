@@ -1,4 +1,3 @@
-
 package com.LinkVerse.post.entity;
 
 import jakarta.persistence.*;
@@ -29,13 +28,15 @@ public class SharedPost {
 
     @Enumerated(EnumType.STRING)
     private PostVisibility visibility;
+    List<Comment> comments = new ArrayList<Comment>();
 
     Instant createdDate;
     Instant modifiedDate;
     int like;
     int unlike;
     int commentCount;
-
+    String language;
+    String primarySentiment;
     @ManyToOne
     @JoinColumn(name = "original_post_id")
     Post originalPost;  // Liên kết tới bài viết gốc

@@ -3,19 +3,22 @@ package com.LinkVerse.post.Mapper;
 import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
-import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.SharedPost;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
 )
 @Component
 public class ShareMapperImpl implements ShareMapper {
+
+    @Autowired
+    private PostMapper postMapper;
 
     @Override
     public PostResponse toPostResponse(SharedPost sharedPost) {
@@ -25,13 +28,12 @@ public class ShareMapperImpl implements ShareMapper {
 
         PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
 
-        postResponse.sharedPost( postToPostResponse( sharedPost.getOriginalPost() ) );
+        postResponse.id( sharedPost.getId() );
+        postResponse.content( sharedPost.getContent() );
         List<String> list = sharedPost.getImageUrl();
         if ( list != null ) {
             postResponse.imageUrl( new ArrayList<String>( list ) );
         }
-        postResponse.id( sharedPost.getId() );
-        postResponse.content( sharedPost.getContent() );
         postResponse.visibility( sharedPost.getVisibility() );
         postResponse.userId( sharedPost.getUserId() );
         postResponse.createdDate( sharedPost.getCreatedDate() );
@@ -39,8 +41,26 @@ public class ShareMapperImpl implements ShareMapper {
         postResponse.like( sharedPost.getLike() );
         postResponse.unlike( sharedPost.getUnlike() );
         postResponse.commentCount( sharedPost.getCommentCount() );
+        postResponse.sharedPost( postMapper.toPostResponseList( sharedPost.getOriginalPost() ) );
+        postResponse.comments( commentListToCommentResponseList( sharedPost.getComments() ) );
+        postResponse.language( sharedPost.getLanguage() );
+        postResponse.primarySentiment( sharedPost.getPrimarySentiment() );
 
         return postResponse.build();
+    }
+
+    @Override
+    public List<PostResponse> toPostResponseList(List<SharedPost> sharedPosts) {
+        if ( sharedPosts == null ) {
+            return null;
+        }
+
+        List<PostResponse> list = new ArrayList<PostResponse>( sharedPosts.size() );
+        for ( SharedPost sharedPost : sharedPosts ) {
+            list.add( toPostResponse( sharedPost ) );
+        }
+
+        return list;
     }
 
     protected CommentResponse commentToCommentResponse(Comment comment) {
@@ -76,34 +96,5 @@ public class ShareMapperImpl implements ShareMapper {
         }
 
         return list1;
-    }
-
-    protected PostResponse postToPostResponse(Post post) {
-        if ( post == null ) {
-            return null;
-        }
-
-        PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
-
-        postResponse.id( post.getId() );
-        postResponse.content( post.getContent() );
-        List<String> list = post.getImageUrl();
-        if ( list != null ) {
-            postResponse.imageUrl( new ArrayList<String>( list ) );
-        }
-        postResponse.visibility( post.getVisibility() );
-        postResponse.userId( post.getUserId() );
-        postResponse.createdDate( post.getCreatedDate() );
-        postResponse.modifiedDate( post.getModifiedDate() );
-        postResponse.like( post.getLike() );
-        postResponse.unlike( post.getUnlike() );
-        postResponse.commentCount( post.getCommentCount() );
-        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
-        postResponse.comments( commentListToCommentResponseList( post.getComments() ) );
-        postResponse.sharedPost( postToPostResponse( post.getSharedPost() ) );
-        postResponse.language( post.getLanguage() );
-        postResponse.primarySentiment( post.getPrimarySentiment() );
-
-        return postResponse.build();
     }
 }

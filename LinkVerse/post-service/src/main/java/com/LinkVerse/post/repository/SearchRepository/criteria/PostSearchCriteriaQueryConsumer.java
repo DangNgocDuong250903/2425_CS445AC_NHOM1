@@ -25,16 +25,16 @@ public class PostSearchCriteriaQueryConsumer implements Consumer<SearchCriteria>
 
     @Override
     public void accept(SearchCriteria param) {// key:operation:value
-        if(param.getOperation().equals(">")) {
+        if (param.getOperation().equals(">")) {
             //predicate = where key > value (kiểu số)
             //builder.and() -> kết hợp nhiều điều kiện lại với nhau
             predicate = builder.and(predicate, builder.greaterThanOrEqualTo(root.get(param.getKey()), param.getValue().toString()));
-        } else if(param.getOperation().equals("<")) {
+        } else if (param.getOperation().equals("<")) {
             predicate = builder.and(predicate, builder.lessThanOrEqualTo(root.get(param.getKey()), param.getValue().toString()));
-        } else if(param.getOperation().equals(":")) {//kiểu string
-            if(root.get(param.getKey()).getJavaType() == String.class) {
+        } else if (param.getOperation().equals(":")) {//kiểu string
+            if (root.get(param.getKey()).getJavaType() == String.class) {
                 predicate = builder.and(predicate, builder.like(root.get(param.getKey()), "%" + param.getValue() + "%"));
-            } else if(root.get(param.getKey()).getJavaType() == PostVisibility.class) {//kiểu enum
+            } else if (root.get(param.getKey()).getJavaType() == PostVisibility.class) {//kiểu enum
                 PostVisibility status = PostVisibility.valueOf(param.getValue().toString().toUpperCase());
                 predicate = builder.and(predicate, builder.equal(root.get(param.getKey()), status));
             } else {

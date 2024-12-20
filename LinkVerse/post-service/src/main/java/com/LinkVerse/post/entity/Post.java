@@ -40,7 +40,7 @@ public class Post {
     List<String> likedEmojis;
     @ManyToOne
     @JoinColumn(name = "shared_post_id")
-    Post sharedPost;
+    List<SharedPost> sharedPost = new ArrayList<>();
     boolean deleted = false;
     String language;
     @ElementCollection
@@ -55,7 +55,7 @@ public class Post {
     double negativeScore;
     double neutralScore;
     double mixedScore;
-
+    private List<String> likedUserIds;
     boolean hasViolation = false;
     boolean violationResolved = false;
 

@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -19,17 +20,19 @@ public class PostResponse {
 
     @ElementCollection
     List<String> imageUrl;
-    String imgAvatarUrl;
     PostVisibility visibility;
     String userId;
     Instant createdDate;
     Instant modifiedDate;
     int like;
     int unlike;
-    int commentCount; // Add
+    int commentCount;
 
-    List<CommentResponse> comments; // Danh sách bình luận
-    PostResponse sharedPost;
+
+    @Builder.Default
+    List<CommentResponse> comments = new ArrayList<>(); // Initialize with an empty list
+    @Builder.Default
+    List<PostResponse> sharedPost = new ArrayList<>();
     String language;
     private String primarySentiment;
 }

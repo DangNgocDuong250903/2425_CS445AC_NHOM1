@@ -1,8 +1,9 @@
 package com.LinkVerse.post.Mapper;
 
+import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
+import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
-import com.LinkVerse.post.entity.PostHistory;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
 )
 @Component
 public class PostMapperImpl implements PostMapper {
@@ -23,15 +24,12 @@ public class PostMapperImpl implements PostMapper {
 
         PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
 
-        postResponse.sharedPost( toPostResponse( post.getSharedPost() ) );
-        postResponse.language( post.getLanguage() );
+        postResponse.id( post.getId() );
+        postResponse.content( post.getContent() );
         List<String> list = post.getImageUrl();
         if ( list != null ) {
             postResponse.imageUrl( new ArrayList<String>( list ) );
         }
-        postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
-        postResponse.id( post.getId() );
-        postResponse.content( post.getContent() );
         postResponse.visibility( post.getVisibility() );
         postResponse.userId( post.getUserId() );
         postResponse.createdDate( post.getCreatedDate() );
@@ -39,32 +37,45 @@ public class PostMapperImpl implements PostMapper {
         postResponse.like( post.getLike() );
         postResponse.unlike( post.getUnlike() );
         postResponse.commentCount( post.getCommentCount() );
-        postResponse.comments( toCommentResponses( post.getComments() ) );
+        postResponse.comments( commentListToCommentResponseList( post.getComments() ) );
+        postResponse.language( post.getLanguage() );
         postResponse.primarySentiment( post.getPrimarySentiment() );
 
         return postResponse.build();
     }
 
-    @Override
-    public PostResponse toPostResponse(PostHistory postHistory) {
-        if ( postHistory == null ) {
+    protected CommentResponse commentToCommentResponse(Comment comment) {
+        if ( comment == null ) {
             return null;
         }
 
-        PostResponse.PostResponseBuilder postResponse = PostResponse.builder();
+        CommentResponse.CommentResponseBuilder commentResponse = CommentResponse.builder();
 
-        postResponse.id( postHistory.getId() );
-        postResponse.content( postHistory.getContent() );
-        postResponse.visibility( postHistory.getVisibility() );
-        postResponse.userId( postHistory.getUserId() );
-        postResponse.createdDate( postHistory.getCreatedDate() );
-        postResponse.modifiedDate( postHistory.getModifiedDate() );
-        postResponse.like( postHistory.getLike() );
-        postResponse.unlike( postHistory.getUnlike() );
-        postResponse.commentCount( postHistory.getCommentCount() );
-        postResponse.comments( toCommentResponses( postHistory.getComments() ) );
-        postResponse.sharedPost( postHistory.getSharedPost() );
+        commentResponse.id( comment.getId() );
+        commentResponse.userId( comment.getUserId() );
+        List<String> list = comment.getImageUrl();
+        if ( list != null ) {
+            commentResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        commentResponse.commentId( comment.getCommentId() );
+        commentResponse.content( comment.getContent() );
+        commentResponse.createdDate( comment.getCreatedDate() );
+        commentResponse.like( comment.getLike() );
+        commentResponse.unlike( comment.getUnlike() );
 
-        return postResponse.build();
+        return commentResponse.build();
+    }
+
+    protected List<CommentResponse> commentListToCommentResponseList(List<Comment> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<CommentResponse> list1 = new ArrayList<CommentResponse>( list.size() );
+        for ( Comment comment : list ) {
+            list1.add( commentToCommentResponse( comment ) );
+        }
+
+        return list1;
     }
 }

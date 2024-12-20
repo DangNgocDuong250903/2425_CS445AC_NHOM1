@@ -1,4 +1,3 @@
-
 package com.LinkVerse.gateway.service;
 
 import com.LinkVerse.gateway.dto.ApiResponse;
@@ -17,7 +16,7 @@ import reactor.core.publisher.Mono;
 public class IdentityService {
     IdentityClient identityClient;
 
-    public Mono<ApiResponse<IntrospectResponse>> introspect(String token){ //nhận token raw từ httpHeader
+    public Mono<ApiResponse<IntrospectResponse>> introspect(String token) { //nhận token raw từ httpHeader
         return identityClient.introspect(IntrospectRequest.builder() //truyền token raw vào endpoint Introspect từ IS
                 .token(token)
                 .build());

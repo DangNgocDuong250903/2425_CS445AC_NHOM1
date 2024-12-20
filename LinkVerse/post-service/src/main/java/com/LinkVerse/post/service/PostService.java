@@ -2,6 +2,7 @@ package com.LinkVerse.post.service;
 
 
 import com.LinkVerse.post.FileUtil;
+import com.LinkVerse.post.Mapper.PostHistoryMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.Mapper.ShareMapper;
 import com.LinkVerse.post.configuration.TagProcessor;
@@ -55,6 +56,7 @@ public class PostService {
     SharedPostRepository sharedPostRepository;
     ShareMapper shareMapper;
     PostHistoryRepository postHistoryRepository;
+    PostHistoryMapper postHistoryMapper;
     @Autowired
     KeywordService keywordService;
 
@@ -341,6 +343,10 @@ public class PostService {
             }
         }
 
+        List<PostResponse> sharedPostResponses = post.getSharedPost() != null
+                ? shareMapper.toPostResponseList(post.getSharedPost())
+                : null;
+
         PostHistory postHistory = PostHistory.builder()
                 .id(post.getId())
                 .content(post.getContent())
@@ -353,7 +359,7 @@ public class PostService {
                 .unlike(post.getUnlike())
                 .commentCount(post.getCommentCount())
                 .comments(post.getComments())
-                .sharedPost(postMapper.toPostResponse(post.getSharedPost()))
+                .sharedPost(sharedPostResponses)
                 .build();
 
         postHistoryRepository.save(postHistory);
@@ -381,7 +387,9 @@ public class PostService {
                         .pageSize(pageData.getSize())
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(posts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .data(posts.stream()
+                                .map(postHistoryMapper::toPostResponse) // Use PostHistoryMapper here
+                                .collect(Collectors.toList()))
                         .build())
                 .build();
     }
@@ -392,7 +400,10 @@ public class PostService {
 
         var pageData = postRepository.findAllByLanguage(language, pageable);
 
-        List<Post> posts = pageData.getContent();
+        List<Post> posts = pageData.getContent().stream()
+                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
+                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                .collect(Collectors.toList());
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(HttpStatus.OK.value())
@@ -416,12 +427,11 @@ public class PostService {
 
         var pageData = postRepository.findAllByUserId(userID, pageable);
 
-        // Lọc bài viết, bao gồm hoặc loại trừ bài viết đã xóa
         List<Post> filteredPosts = pageData.getContent().stream()
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
-                .filter(post -> includeDeleted || !post.isDeleted()) // Lọc bài viết đã xóa
+                .filter(post -> includeDeleted || !post.isDeleted())
                 .collect(Collectors.toList());
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
@@ -437,18 +447,14 @@ public class PostService {
                 .build();
     }
 
-
     public ApiResponse<PostResponse> sharePost(String postId, String content, PostVisibility visibility) {
-        // Tìm bài gốc theo postId
         Post originalPost = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Kiểm tra xem bài gốc đã bị đánh dấu xóa hay chưa
         if (originalPost.isDeleted()) {
             throw new RuntimeException("Cannot share a deleted post.");
         }
 
-        // Kiểm tra quyền chia sẻ dựa trên visibility của bài viết
         if (originalPost.getVisibility() == PostVisibility.PRIVATE &&
                 !originalPost.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
             throw new RuntimeException("You are not authorized to share this post.");
@@ -457,11 +463,9 @@ public class PostService {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
-        // Lấy URL của các file từ bài viết gốc, nếu có
         List<String> fileUrls = originalPost.getImageUrl() != null ?
                 List.copyOf(originalPost.getImageUrl()) : List.of();
 
-        // Tạo một bản ghi SharedPost thay vì Post
         SharedPost sharedPost = SharedPost.builder()
                 .content(content)
                 .userId(currentUserId)
@@ -473,18 +477,16 @@ public class PostService {
                 .unlike(0)
                 .commentCount(0)
                 .originalPost(originalPost)
+                .language(originalPost.getLanguage())
+                .primarySentiment(originalPost.getPrimarySentiment())
                 .build();
 
-        // Extract and save keywords for the shared post
         List<Keyword> extractedKeywords = keywordService.extractAndSaveKeyPhrases(content, sharedPost.getId());
         List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
         sharedPost.setKeywords(keywordIds);
 
-
-        // Lưu bài viết chia sẻ mới vào SharedPostRepository
         sharedPost = sharedPostRepository.save(sharedPost);
 
-        // Sử dụng ShareMapper để ánh xạ SharedPost sang PostResponse
         PostResponse postResponse = shareMapper.toPostResponse(sharedPost);
 
         return ApiResponse.<PostResponse>builder()
@@ -494,12 +496,15 @@ public class PostService {
                 .build();
     }
 
-
     public ApiResponse<PageResponse<PostResponse>> getAllPost(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         var pageData = postRepository.findAll(pageable);
 
-        List<Post> posts = pageData.getContent();
+        List<Post> posts = pageData.getContent().stream()
+                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
+                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                .collect(Collectors.toList());
+
         List<Post> modifiablePosts = new ArrayList<>(posts);
         Collections.shuffle(modifiablePosts);
 
@@ -520,7 +525,11 @@ public class PostService {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Post> pageData = postRepository.findPostByUserId(userId, pageable);
 
-        List<Post> posts = pageData.getContent();
+        List<Post> posts = pageData.getContent().stream()
+                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
+                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                .collect(Collectors.toList());
+
         List<Post> modifiablePosts = new ArrayList<>(posts);
         Collections.shuffle(modifiablePosts);
 
@@ -537,10 +546,14 @@ public class PostService {
                 .build();
     }
 
-
     public ApiResponse<PostResponse> getPostById(String postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getVisibility() == PostVisibility.PRIVATE &&
+                !post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())) {
+            throw new RuntimeException("You are not authorized to view this post.");
+        }
 
         PostResponse postResponse = postMapper.toPostResponse(post);
 
@@ -551,14 +564,17 @@ public class PostService {
                 .build();
     }
 
-
-
     public ApiResponse<PostResponse> savePost(String postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getVisibility() == PostVisibility.PRIVATE &&
+                !post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to save this post.");
+        }
 
         if (post.getSavedBy().contains(currentUserId)) {
             return ApiResponse.<PostResponse>builder()
@@ -580,7 +596,6 @@ public class PostService {
     }
 
     public ApiResponse<PageResponse<PostResponse>> getAllPostsave(int page, int size) {
-        // Validate page and size values
         if (page < 1 || size < 1) {
             return ApiResponse.<PageResponse<PostResponse>>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
@@ -588,7 +603,6 @@ public class PostService {
                     .build();
         }
 
-        // Retrieve the currently authenticated user
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null || authentication.getName() == null) {
             return ApiResponse.<PageResponse<PostResponse>>builder()
@@ -600,17 +614,15 @@ public class PostService {
         String currentUserId = authentication.getName();
 
         try {
-            // Define pagination
             Pageable pageable = PageRequest.of(page - 1, size);
             var pageData = postRepository.findAllBySavedBy(currentUserId, pageable);
 
-            // Map posts to responses
-            List<PostResponse> postResponses = pageData.getContent()
-                    .stream()
+            List<PostResponse> postResponses = pageData.getContent().stream()
+                    .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
+                            (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(currentUserId)))
                     .map(postMapper::toPostResponse)
                     .collect(Collectors.toList());
 
-            // Build the paginated response
             PageResponse<PostResponse> pageResponse = PageResponse.<PostResponse>builder()
                     .currentPage(page)
                     .pageSize(size)
