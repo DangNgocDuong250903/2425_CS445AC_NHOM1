@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,6 +25,25 @@ import java.util.List;
 @Slf4j
 public class UserController {
     UserService userService;
+
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId, @RequestParam String imageFile) {
+        if (userId == null || userId.isEmpty() || imageFile == null || imageFile.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            userService.updateImage(userId, imageFile);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            log.error("User not found for ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Failed to update user image for ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 
     @PostMapping("/registration")
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
@@ -68,7 +89,7 @@ public class UserController {
                 .build();
     }
 
-    @PutMapping("/{userId}")
+    @PutMapping("/update/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequestAdmin request) {
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))

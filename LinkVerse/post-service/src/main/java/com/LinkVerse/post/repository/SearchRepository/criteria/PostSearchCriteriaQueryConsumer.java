@@ -1,6 +1,6 @@
-package com.LinkVerse.profile.repository.SearchRepository.criteria;
+package com.LinkVerse.post.repository.SearchRepository.criteria;
 
-import com.LinkVerse.profile.entity.UserStatus;
+import com.LinkVerse.post.entity.PostVisibility;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
@@ -16,7 +16,7 @@ import java.util.function.Consumer;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class UserSearchCriteriaQueryConsumer implements Consumer<SearchCriteria> {
+public class PostSearchCriteriaQueryConsumer implements Consumer<SearchCriteria> {
     //Consumer nhận một đối tượng kiểu T và thực hiện một hành động với đối tượng đó mà không trả về giá trị
 
     private CriteriaBuilder builder;
@@ -34,8 +34,8 @@ public class UserSearchCriteriaQueryConsumer implements Consumer<SearchCriteria>
         } else if(param.getOperation().equals(":")) {//kiểu string
             if(root.get(param.getKey()).getJavaType() == String.class) {
                 predicate = builder.and(predicate, builder.like(root.get(param.getKey()), "%" + param.getValue() + "%"));
-            } else if(root.get(param.getKey()).getJavaType() == UserStatus.class) {//kiểu enum
-                UserStatus status = UserStatus.valueOf(param.getValue().toString().toUpperCase());
+            } else if(root.get(param.getKey()).getJavaType() == PostVisibility.class) {//kiểu enum
+                PostVisibility status = PostVisibility.valueOf(param.getValue().toString().toUpperCase());
                 predicate = builder.and(predicate, builder.equal(root.get(param.getKey()), status));
             } else {
                 predicate = builder.and(predicate, builder.equal(root.get(param.getKey()), param.getValue()));

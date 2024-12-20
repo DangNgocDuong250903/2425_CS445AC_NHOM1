@@ -3,6 +3,7 @@ package com.LinkVerse.post.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;
 
@@ -12,7 +13,7 @@ import java.time.Instant;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "image_violations")
+@Document(value = "image_violations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ImageViolation {
 

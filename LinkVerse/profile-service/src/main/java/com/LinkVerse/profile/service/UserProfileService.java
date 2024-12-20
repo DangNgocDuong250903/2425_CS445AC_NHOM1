@@ -24,15 +24,7 @@ import java.util.List;
 public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
-    SearchRepository searchRepository;
 
-
-    public void updateImage(String userId, String imageUrl) {
-        UserProfile userProfile = userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        userProfile.setImageUrl(imageUrl);
-        userProfileRepository.save(userProfile);
-    }
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
@@ -60,13 +52,10 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileReponse(userProfile);
     }
 
-
     public List<UserProfileResponse> getAllProfiles() {
         var profiles = userProfileRepository.findAll();
 
-        return profiles.stream()
-                .map(userProfileMapper::toUserProfileReponse)
-                .toList();
+        return profiles.stream().map(userProfileMapper::toUserProfileReponse).toList();
     }
 
 

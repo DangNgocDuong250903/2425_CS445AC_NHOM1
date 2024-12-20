@@ -14,7 +14,7 @@ import com.LinkVerse.post.repository.HashtagRepository;
 import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
-import com.LinkVerse.post.repository.client.ProfileServiceClient;
+import com.LinkVerse.post.repository.client.IdentityServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
 import feign.FeignException;
@@ -24,6 +24,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -67,7 +68,7 @@ public class PostService {
     @Autowired
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
-    ProfileServiceClient profileServiceClient;
+    IdentityServiceClient identityServiceClient;
 //    PostSearchRepository postSearchRepository;
 
     @Autowired
@@ -181,7 +182,7 @@ public class PostService {
             PostResponse postResponse = postMapper.toPostResponse(post);
 
             try {
-                profileServiceClient.updateImage(currentUserId, post.getImgAvatarUrl());
+                identityServiceClient.updateImage(currentUserId, post.getImgAvatarUrl());
             } catch (FeignException e) {
                 log.error("Error updating avatar in profile-service: {}", e.getMessage(), e);
                 return ApiResponse.<PostResponse>builder()
@@ -515,6 +516,28 @@ public class PostService {
                 .build();
     }
 
+    public ApiResponse<PageResponse<PostResponse>> getUserPost(int page, int size, String userId) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Post> pageData = postRepository.findPostByUserId(userId, pageable);
+
+        List<Post> posts = pageData.getContent();
+        List<Post> modifiablePosts = new ArrayList<>(posts);
+        Collections.shuffle(modifiablePosts);
+
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Posts retrieved successfully")
+                .result(PageResponse.<PostResponse>builder()
+                        .currentPage(page)
+                        .pageSize(size)
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(modifiablePosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+
     public ApiResponse<PostResponse> getPostById(String postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -527,6 +550,8 @@ public class PostService {
                 .result(postResponse)
                 .build();
     }
+
+
 
     public ApiResponse<PostResponse> savePost(String postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

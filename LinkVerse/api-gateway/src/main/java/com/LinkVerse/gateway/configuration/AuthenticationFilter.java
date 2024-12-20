@@ -43,6 +43,11 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/email/reset-password",
             "/email/send-forget-pass",
             "/email/reset-password",
+            "/search", "/sorts", "/criteria-search", "/advanced-search",
+            "/users/random",
+            "/identity/users/random",
+            "/profile/users/random",
+            "/post/all", "/all",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
             "/internal/users", "/internal/users/.*", "/internal/roles", "/internal/roles/.*", "/posts-random", "/post/posts-random"

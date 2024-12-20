@@ -15,22 +15,6 @@ services:
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
 
-  neo4j:
-    image: neo4j:latest
-    container_name: neo4j
-    ports:
-      - "7474:7474"
-      - "7687:7687"
-    environment:
-      - NEO4J_AUTH=neo4j/12345678
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-      - neo4j_import:/var/lib/neo4j/import
-      - neo4j_plugins:/plugins
-
-
-
   mysql:
     image: mysql:8.0.36-debian
     container_name: mysql
@@ -53,25 +37,14 @@ services:
     volumes:
       - mongodb_data:/bitnami/mongodb
 
-  elastic-search:
-    image: elasticsearch:8.16.0
-    container_name: elasticsearch
-    restart: always
-    ports:
-      - "9200:9200"
-    environment:
-      - discovery.type=single-node
-
-
-
-#  zookeeper:
-#    image: confluentinc/cp-zookeeper:latest
-#    container_name: zookeeper
-#    environment:
-#      ZOOKEEPER_CLIENT_PORT: 2181
-#      ZOOKEEPER_TICK_TIME: 2000
+#  elastic-search:
+#    image: elasticsearch:8.16.0
+#    container_name: elasticsearch
+#    restart: always
 #    ports:
-#      - '22181:2181'
+#      - "9200:9200"
+#    environment:
+#      - discovery.type=single-node
 
   api-gateway:
     container_name: api-gateway

@@ -52,6 +52,8 @@ public class User {
     String City;
     Gender gender;
 
+    String imageUrl;
+
 
     @PrePersist
     protected void onCreate() {

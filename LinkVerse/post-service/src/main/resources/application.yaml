@@ -51,5 +51,6 @@ feign:
         load-balancer:
           enabled: true
 
-profile-service:
-  url: http://localhost:8081
+
+identity:
+  url: http://localhost:8080

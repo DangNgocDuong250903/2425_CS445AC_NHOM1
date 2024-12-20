@@ -42,6 +42,7 @@ public class LikeController {
         ApiResponse<CommentResponse> commentResponse = likeService.likeComment(postId, commentId, emoji);
         return ResponseEntity.ok(commentResponse);
     }
+
     //unlikecmt
 
 }

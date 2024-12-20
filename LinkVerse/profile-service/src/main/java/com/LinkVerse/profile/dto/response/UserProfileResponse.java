@@ -17,7 +17,6 @@ public class UserProfileResponse {
     String id;
     String userId;
     String username;
-    String imageUrl;
     String status;
     String email;
     String firstName;

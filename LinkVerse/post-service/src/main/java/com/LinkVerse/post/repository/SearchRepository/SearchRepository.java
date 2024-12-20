@@ -1,15 +1,16 @@
-package com.LinkVerse.profile.repository.SearchRepository;
+package com.LinkVerse.post.repository.SearchRepository;
 
-import com.LinkVerse.profile.dto.PageResponse;
-import com.LinkVerse.profile.dto.response.UserProfileResponse;
-import com.LinkVerse.profile.entity.UserProfile;
-import com.LinkVerse.profile.mapper.UserProfileMapper;
-import com.LinkVerse.profile.repository.SearchRepository.criteria.SearchCriteria;
-import com.LinkVerse.profile.repository.SearchRepository.criteria.UserSearchCriteriaQueryConsumer;
+
+import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.repository.SearchRepository.criteria.PostSearchCriteriaQueryConsumer;
+import com.LinkVerse.post.repository.SearchRepository.criteria.SearchCriteria;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-import static com.LinkVerse.profile.enums.AppConst.*;
+import static com.LinkVerse.post.enums.AppConst.SEARCH_OPERATOR;
+import static com.LinkVerse.post.enums.AppConst.SORT_BY;
 
 
 @Slf4j
@@ -35,16 +36,12 @@ public class SearchRepository {
     EntityManager entityManager;
     //cung cấp các API cho việc tương tác với các Entity
 
-    UserProfileMapper userProfileMapper;
-
     private static final String LIKE_FORMAT = "%%%s%%";
 
 
     // 1 find user by string
-    // SearchRepository.java
-    // SearchRepository.java
-    public Page<UserProfile> getUsersWithSortByColumnAndSearch(int page, int size, String sortBy, String search) {
-        StringBuilder sqlQuery = new StringBuilder("SELECT u FROM UserProfile u WHERE 1=1");
+    public Page<Post> getUsersWithSortByColumnAndSearch(int page, int size, String sortBy, String search) {
+        StringBuilder sqlQuery = new StringBuilder("SELECT u FROM Post u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
             sqlQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
@@ -61,13 +58,13 @@ public class SearchRepository {
 
         Query selectedQuery = entityManager.createQuery(sqlQuery.toString());
         if (StringUtils.hasLength(search)) {
-            selectedQuery.setParameter("search", String.format("%%%s%%", search));
+            selectedQuery.setParameter("search", String.format(LIKE_FORMAT, search));
         }
         selectedQuery.setFirstResult(page * size);
         selectedQuery.setMaxResults(size);
-        List<UserProfile> users = selectedQuery.getResultList();
+        List<Post> users = selectedQuery.getResultList();
 
-        StringBuilder sqlCountQuery = new StringBuilder("SELECT COUNT(u) FROM UserProfile u WHERE 1=1");
+        StringBuilder sqlCountQuery = new StringBuilder("SELECT COUNT(u) FROM Post u WHERE 1=1");
         if (StringUtils.hasLength(search)) {
             sqlCountQuery.append(" AND (LOWER(u.firstName) LIKE LOWER(:search)")
                     .append(" OR LOWER(u.lastName) LIKE LOWER(:search)")
@@ -76,7 +73,7 @@ public class SearchRepository {
 
         Query selectedCountQuery = entityManager.createQuery(sqlCountQuery.toString());
         if (StringUtils.hasLength(search)) {
-            selectedCountQuery.setParameter("search", String.format("%%%s%%", search));
+            selectedCountQuery.setParameter("search", String.format(LIKE_FORMAT, search));
         }
         Long totalElement = (Long) selectedCountQuery.getSingleResult();
 
@@ -85,7 +82,7 @@ public class SearchRepository {
     }
 
     // 2 criteria
-    public Page<UserProfile> advancedSearchUser(int page, int size, String sortBy, String... search) {
+    public Page<Post> advancedSearchUser(int page, int size, String sortBy, String... search) {
         List<SearchCriteria> criteriaList = new ArrayList<>();
         if (search != null) {
             for (String s : search) {
@@ -97,20 +94,20 @@ public class SearchRepository {
             }
         }
 
-        List<UserProfile> users = getUsers(page, size, criteriaList, sortBy);
+        List<Post> users = getUsers(page, size, criteriaList, sortBy);
         Long totalElement = getTotalElement(criteriaList);
         Pageable pageable = PageRequest.of(page, size);
 
         return new PageImpl<>(users, pageable, totalElement.intValue());
     }
 
-    private List<UserProfile> getUsers(int page, int size, List<SearchCriteria> criteriaList, String sortBy) {
+    private List<Post> getUsers(int page, int size, List<SearchCriteria> criteriaList, String sortBy) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<UserProfile> criteriaQuery = criteriaBuilder.createQuery(UserProfile.class);
-        Root<UserProfile> root = criteriaQuery.from(UserProfile.class);
+        CriteriaQuery<Post> criteriaQuery = criteriaBuilder.createQuery(Post.class);
+        Root<Post> root = criteriaQuery.from(Post.class);
 
         Predicate predicate = criteriaBuilder.conjunction();
-        UserSearchCriteriaQueryConsumer consumer = new UserSearchCriteriaQueryConsumer(criteriaBuilder, predicate, root);
+        PostSearchCriteriaQueryConsumer consumer = new PostSearchCriteriaQueryConsumer(criteriaBuilder, predicate, root);
         criteriaList.forEach(consumer);
         predicate = consumer.getPredicate();
         criteriaQuery.where(predicate);
@@ -137,10 +134,10 @@ public class SearchRepository {
     private Long getTotalElement(List<SearchCriteria> criteriaList) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<UserProfile> root = criteriaQuery.from(UserProfile.class);
+        Root<Post> root = criteriaQuery.from(Post.class);
 
         Predicate predicate = criteriaBuilder.conjunction();
-        UserSearchCriteriaQueryConsumer consumer = new UserSearchCriteriaQueryConsumer(criteriaBuilder, predicate, root);
+        PostSearchCriteriaQueryConsumer consumer = new PostSearchCriteriaQueryConsumer(criteriaBuilder, predicate, root);
 
         criteriaList.forEach(consumer);
         predicate = consumer.getPredicate();

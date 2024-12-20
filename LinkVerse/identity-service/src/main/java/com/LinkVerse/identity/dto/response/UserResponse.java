@@ -27,6 +27,7 @@ public class UserResponse {
     boolean emailVerified;
     Set<RoleResponse> roles;
     LocalDateTime createdAt;
+    String imageUrl;
     Gender gender;
     String city;
 }

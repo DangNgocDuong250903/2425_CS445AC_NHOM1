@@ -46,6 +46,7 @@ public class UserCreationRequest {
 
     Gender gender;
     LocalDateTime createdAt;
+    String imageUrl;
 
     @PrePersist
     protected void onCreate() {
