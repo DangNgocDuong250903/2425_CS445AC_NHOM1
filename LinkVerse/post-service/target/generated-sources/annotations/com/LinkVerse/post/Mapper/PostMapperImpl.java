@@ -30,9 +30,9 @@ public class PostMapperImpl implements PostMapper {
             postResponse.imageUrl( new ArrayList<String>( list ) );
         }
         postResponse.imgAvatarUrl( post.getImgAvatarUrl() );
+        postResponse.visibility( post.getVisibility() );
         postResponse.id( post.getId() );
         postResponse.content( post.getContent() );
-        postResponse.visibility( post.getVisibility() );
         postResponse.userId( post.getUserId() );
         postResponse.createdDate( post.getCreatedDate() );
         postResponse.modifiedDate( post.getModifiedDate() );

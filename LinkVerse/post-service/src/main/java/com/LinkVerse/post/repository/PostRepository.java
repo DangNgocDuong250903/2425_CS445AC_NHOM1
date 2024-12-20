@@ -1,6 +1,7 @@
 package com.LinkVerse.post.repository;
 
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostVisibility;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -10,6 +11,9 @@ import java.util.List;
 
 @EnableMongoRepositories
 public interface PostRepository extends MongoRepository<Post, String> {
+
+    Page<Post> findByVisibilityNot(PostVisibility visibility, Pageable pageable);
+
     Page<Post> findAllByUserId(String userId, Pageable pageable);
 
     Page<Post> findPostByUserId(String userId, Pageable pageable);

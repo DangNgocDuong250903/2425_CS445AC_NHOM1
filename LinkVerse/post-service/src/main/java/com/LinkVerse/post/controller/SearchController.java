@@ -9,6 +9,7 @@ import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.service.KeywordService;
 import com.LinkVerse.post.service.SearchService;
+import jakarta.validation.constraints.Min;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -45,6 +46,15 @@ public class SearchController {
         // Không bọc lại trong một ApiResponse khác
         ApiResponse<PageResponse<PostResponse>> response = searchService.searchPost(content, page, size);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/sorts")
+    ApiResponse<PageResponse<PostResponse>> getUsersWithSortsBy(@RequestParam(defaultValue = "0",required = false) int page,
+                                                                       @Min(2)@RequestParam(defaultValue = "3",required = false) int size,
+                                                                       @RequestParam(required = false) String... sorts){
+        return ApiResponse.<PageResponse<PostResponse>>builder()
+                .result(searchService.sortPost(page, size, sorts))
+                .build();
     }
 
 //    @GetMapping(value = "/search-posts", produces = "application/json")

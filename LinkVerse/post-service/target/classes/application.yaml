@@ -7,11 +7,8 @@ spring:
   data:
     mongodb:
       uri: mongodb://root:root@localhost:27017/post-service?authSource=admin
-  datasource:
-    url: jdbc:mysql://localhost:3306/Data_Firstt   # Cấu hình kết nối MySQL
-    driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: root
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration
   jpa:
     hibernate:
       ddl-auto: update  # Cập nhật schema JPA tự động

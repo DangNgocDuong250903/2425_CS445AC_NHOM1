@@ -317,6 +317,30 @@ public class PostService {
         }
     }
 
+    public ApiResponse<PostResponse> changePostVisibility(String postId, PostVisibility newVisibility) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to change the visibility of this post");
+        }
+
+        post.setVisibility(newVisibility);
+        post = postRepository.save(post);
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post visibility updated successfully")
+                .result(postResponse)
+                .build();
+    }
+
+
     public ApiResponse<Void> deletePost(String postId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
@@ -495,9 +519,10 @@ public class PostService {
     }
 
 
+
     public ApiResponse<PageResponse<PostResponse>> getAllPost(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        var pageData = postRepository.findAll(pageable);
+        var pageData = postRepository.findByVisibilityNot(PostVisibility.PRIVATE, pageable); // lấy các bài viết != PRIVATE
 
         List<Post> posts = pageData.getContent();
         List<Post> modifiablePosts = new ArrayList<>(posts);
@@ -511,10 +536,13 @@ public class PostService {
                         .pageSize(size)
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(modifiablePosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .data(modifiablePosts.stream()
+                                .map(postMapper::toPostResponse)
+                                .collect(Collectors.toList()))
                         .build())
                 .build();
     }
+
 
     public ApiResponse<PageResponse<PostResponse>> getUserPost(int page, int size, String userId) {
         Pageable pageable = PageRequest.of(page - 1, size);

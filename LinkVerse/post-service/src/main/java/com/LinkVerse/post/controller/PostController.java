@@ -8,6 +8,7 @@ import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.TranslationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -137,6 +138,24 @@ public class PostController {
     public ApiResponse<PostResponse> getPostById(@PathVariable String postId) {
         return postService.getPostById(postId);
     }
+
+    @PostMapping("/{postId}/change-visibility")
+    public ResponseEntity<ApiResponse<PostResponse>> changePostVisibility(
+            @PathVariable String postId,
+            @RequestParam String visibility) {
+        try {
+            PostVisibility newVisibility = PostVisibility.valueOf(visibility.toUpperCase());
+            ApiResponse<PostResponse> response = postService.changePostVisibility(postId, newVisibility);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.<PostResponse>builder()
+                            .code(HttpStatus.FORBIDDEN.value())
+                            .message(e.getMessage())
+                            .build());
+        }
+    }
+
 
     @GetMapping("/all")
     public ApiResponse<PageResponse<PostResponse>> getAllPost(

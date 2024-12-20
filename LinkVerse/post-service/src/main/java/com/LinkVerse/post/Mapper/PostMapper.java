@@ -21,6 +21,7 @@ public interface PostMapper {
     @Mapping(target = "language", source = "language")
     @Mapping(target = "imageUrl", source = "imageUrl")
     @Mapping(target = "imgAvatarUrl", source = "imgAvatarUrl")
+    @Mapping(target = "visibility", source = "visibility")
     PostResponse toPostResponse(Post post);
 
     default List<CommentResponse> toCommentResponses(List<Comment> comments) {
