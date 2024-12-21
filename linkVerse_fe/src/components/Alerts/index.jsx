@@ -8,12 +8,13 @@ const Alerts = ({
   open,
   handleClose,
   position,
+  duration = 3500,
 }) => {
   return (
     <Snackbar
       anchorOrigin={position}
       open={open}
-      autoHideDuration={3500}
+      autoHideDuration={duration}
       onClose={handleClose}
     >
       <Alert

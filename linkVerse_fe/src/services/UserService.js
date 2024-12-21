@@ -70,24 +70,21 @@ export const resetPassword = async ({ token, password }) => {
     return res.data;
 }
 
-// export const setAvatar = async ({ data, token }) => {
-//     const formData = new FormData
-//     formData.append("request", JSON.stringify(data.request));
-//     ormData.append("avatar", file);
-//     if (data.files && data.files.length > 0) {
-//         data.files.forEach((file) => {
-//             formData.append("files", file);
-//         });
-//     } else {
-//         formData.append('files', new Blob([]));
-//     }
-//     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/set-avatar`, formData, {
-//         headers: {
-//             Authorization: `Bearer ${token}`
-//         }
-//     })
-//     return res.data
-// }
+export const setAvatar = async ({ file, token }) => {
+    const formData = new FormData
+    formData.append("request", JSON.stringify({
+        "content": "Set avatar",
+        "visibility": "PRIVATE"
+    }));
+    formData.append("avatar", file);
+
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/set-avatar`, formData, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
 
 
 

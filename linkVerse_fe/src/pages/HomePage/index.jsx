@@ -16,6 +16,7 @@ import {
 } from "~/components";
 import { BlankAvatar } from "~/assets/index";
 import CreateStory from "~/components/CreateStory";
+import AlertWelcome from "~/components/AlertWelcome";
 
 const HomePage = () => {
   const user = useSelector((state) => state?.user);
@@ -24,57 +25,55 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const [loadMore, setLoadMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
-  // Fetch posts
   const fetchPosts = useCallback(async () => {
-    if (isLoading && hasMore) return;
+    if (isLoading || !hasMore) return;
 
     setIsLoading(true);
     try {
-      sentiment = sentiment.toUpperCase();
-      if (sentiment === "FOR YOU") {
-        const res = await PostService.getAllPosts(token);
-        const { code, result } = res;
-        if (code === 200 && result) {
-          const { data: dataPost } = result;
-          setPosts((prev) => [...prev, ...dataPost]);
-        }
-        return;
-      }
-      const data = await PostService.getPostsBySentiment({
-        page,
-        sentiment,
-        token,
-      });
+      const sentimentParam = sentiment.toUpperCase();
+      let res;
 
-      const { code, result } = data;
+      if (sentimentParam === "FOR YOU") {
+        res = await PostService.getAllPosts(page);
+      } else {
+        res = await PostService.getPostsBySentiment({
+          page,
+          sentiment: sentimentParam,
+          token,
+        });
+      }
+
+      const { code, result } = res;
       if (code === 200 && result) {
-        const { data: postsData, currentPage, totalPage } = result;
-        setPosts((prev) => [...prev, ...postsData]);
-        // setPage(currentPage + 1);
+        const { data: dataPost, currentPage, totalPage } = result;
+
+        setPosts((prev) => [...prev, ...dataPost]);
+        setPage(currentPage + 1);
+        setHasMore(currentPage < totalPage);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
     } finally {
       setIsLoading(false);
     }
-  }, [sentiment, token]);
-
-  useEffect(() => {
-    setPosts([]);
-    setPage(1);
-    fetchPosts();
-  }, [sentiment]);
+  }, [sentiment, page, hasMore, isLoading]);
 
   const handleScroll = (e) => {
     const bottom =
       e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 60;
     if (bottom) {
-      // setLoadMore(true);
-      // fetchPosts();
+      fetchPosts();
     }
   };
+
+  useEffect(() => {
+    setPosts([]);
+    setPage(1);
+    setHasMore(true);
+    fetchPosts();
+  }, [sentiment]);
 
   const handleSuccess = () => {
     setPosts([]);
@@ -126,22 +125,20 @@ const HomePage = () => {
               <div />
             )}
             {/* {user?.token && <Story />} */}
-            {isLoading ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <CircularProgress />
-              </div>
-            ) : posts.length > 0 ? (
-              posts.map((post, i) => {
-                return <PostCard key={i} post={post} />;
-              })
-            ) : (
-              <div className="flex w-full h-96 items-center justify-center">
-                <p className="text-lg text-ascent-2">Không có bài viết nào</p>
-              </div>
-            )}
-            {loadMore && (
+
+            {posts.length > 0 &&
+              posts
+                .filter((post) => post?.visibility === "PUBLIC")
+                .map((post, i) => <PostCard key={i} post={post} />)}
+
+            {isLoading && (
               <div className="w-full h-20 flex items-center justify-center">
                 <CircularProgress />
+              </div>
+            )}
+            {!hasMore && (
+              <div className="flex w-full h-96 items-center justify-center">
+                <p className="text-lg text-ascent-2">Không có bài viết nào</p>
               </div>
             )}
           </div>

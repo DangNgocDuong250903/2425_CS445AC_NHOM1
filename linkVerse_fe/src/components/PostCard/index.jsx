@@ -35,10 +35,11 @@ import { FaRegGrinStars } from "react-icons/fa";
 import * as UserService from "~/services/UserService";
 import CreateComment from "../CreateComment";
 import * as PostService from "~/services/PostService";
+import AlertWelcome from "../AlertWelcome";
 
 const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
-  const user = useSelector((state) => state.user);
+  // const user = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
@@ -55,11 +56,11 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const [typeMessage, setTypeMessage] = useState("success");
   const [message, setMessage] = useState("");
   const [openMessage, setOpenMessage] = useState(false);
+  const [openAlert, setOpenAlert] = useState(false);
+  const [type, setType] = useState("");
 
-  const getComments = async () => {};
-
-  const handleLike = () => {
-    setLike(like === true ? false : true);
+  const handleCloseAlert = () => {
+    setOpenAlert(false);
   };
 
   //Menu
@@ -100,6 +101,15 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const [img, setImg] = useState("");
   const [status, setStatus] = useState("public");
 
+  const handleComment = (id) => {
+    if (!token) {
+      setType("like");
+      setOpenAlert(true);
+      return;
+    }
+    setIsOpenReply(true);
+  };
+
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     if (selectedFile) {
@@ -127,27 +137,36 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const handleTranslateEn = () => {};
   const handleTranslateVie = () => {};
 
-  // const [user, setUser] = useState(null);
+  const [user, setUser] = useState(null);
 
-  // const fetchDetailUser = async ({ id, token }) => {
-  //   const res = await UserService.getDetailUserByUserId({ id, token });
-  //   setUser(res);
-  // };
+  const fetchDetailUser = async ({ id, token }) => {
+    const res = await UserService.getDetailUserByUserId({ id, token });
+    setUser(res?.result);
+  };
 
-  // useEffect(() => {
-  //   fetchDetailUser({ id: post?.userId, token });
-  // }, []);
+  useEffect(() => {
+    fetchDetailUser({ id: post?.userId, token });
+  }, []);
 
-  // const likePost = async ({ id, emoji, token }) => {
-  //   const res = await PostService.like({ id, emoji, token });
-  //   return res;
-  // };
+  //like
+  const handleLike = async (id) => {
+    if (!token) {
+      setType("like");
+      setOpenAlert(true);
+      return;
+    }
+    const res = await PostService.like({ id, emoji, token });
+  };
 
-  // useEffect(() => {
-  //   const id = post?.id;
-  //   const emoji = react;
-  //   likePost({ id, emoji, token });
-  // }, [react]);
+  //dislike
+  const handleDisLike = async (id) => {
+    if (!token) {
+      setType("like");
+      setOpenAlert(true);
+      return;
+    }
+    // const res = await PostService.({ id, emoji, token });
+  };
 
   const handleCloseMessage = () => {
     setOpenMessage(false);
@@ -163,6 +182,11 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
 
   //share post
   const handleShare = async (id) => {
+    if (!token) {
+      setType("share");
+      setOpenAlert(true);
+      return;
+    }
     const res = await PostService.share({ id, token });
     if (res?.code === 200) {
       setMessage("Share post success!");
@@ -199,8 +223,15 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
     }
   };
 
+  //block user
+
   return (
     <div className="bg-primary p-2 rounded-xl">
+      <AlertWelcome
+        open={openAlert}
+        handleClose={handleCloseAlert}
+        type={type}
+      />
       <Alerts
         type={typeMessage}
         message={message}
@@ -212,20 +243,9 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
         onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
       >
-        {/* <Link
-          to={`/profile/${post?.userId}`}
-          className="block w-14 h-14"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <img
-            src={BlankAvatar}
-            alt={"avatar"}
-            className="w-14 h-14 object-cover"
-          />
-        </Link> */}
         <img
           onClick={(e) => e.stopPropagation()}
-          src={BlankAvatar}
+          src={user?.imageUrl ?? BlankAvatar}
           alt={"avatar"}
           className="w-14 h-14 object-cover rounded-full"
         />
@@ -235,7 +255,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
             <div className="flex items-center gap-2 ">
               <Link to={`/profile/${post?.userId}`}>
                 <p className="font-medium text-lg text-ascent-1">
-                  {user?.username ?? "No name"}
+                  {user?.username || "No name"}
                 </p>
               </Link>
             </div>
@@ -274,54 +294,55 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                 open={open}
                 anchor={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem
-                  disableRipple
-                  onClick={() => handleSavePost(post?.id)}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span className={theme === "light" && "text-black"}>
-                      Save
-                    </span>
-                    <FiBookmark color={theme === "light" && "black"} />
-                  </div>
-                </MenuItem>
-                <StyledDivider />
-                {user?.userId !== post?.userId && (
-                  <div>
-                    <MenuItem onClick={handleClose} disableRipple>
+                {token && (
+                  <>
+                    <MenuItem onClick={() => handleSavePost(post?.id)}>
                       <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Report</span>
-                        <TbMessageReport color="red" />
+                        <span className={theme === "light" && "text-black"}>
+                          Save
+                        </span>
+                        <FiBookmark color={theme === "light" && "black"} />
                       </div>
                     </MenuItem>
-                    <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Block</span>
-                        <ImUserMinus color="red" />
+                    <StyledDivider />
+                    {user?.userId !== post?.userId && (
+                      <div>
+                        <MenuItem onClick={handleClose} disableRipple>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-red-600">Report</span>
+                            <TbMessageReport color="red" />
+                          </div>
+                        </MenuItem>
+                        <MenuItem onClick={handleClose} disableRipple>
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-red-600">Block</span>
+                            <ImUserMinus color="red" />
+                          </div>
+                        </MenuItem>
                       </div>
-                    </MenuItem>
-                  </div>
-                )}
-                {user?.id === post?.userId && (
-                  <div>
-                    <MenuItem onClick={handleClose} disableRipple>
+                    )}
+                    {user?.id === post?.userId && (
+                      <div>
+                        {/* <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
                         <span className="text-red-600">Edit post</span>
                         <FaRegEdit color="red" />
                       </div>
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => handleDeletePost(post?.id)}
-                      disableRipple
-                    >
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Delete</span>
-                        <FaRegTrashCan color="red" />
+                    </MenuItem> */}
+                        <MenuItem
+                          onClick={() => handleDeletePost(post?.id)}
+                          disableRipple
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-red-600">Delete</span>
+                            <FaRegTrashCan color="red" />
+                          </div>
+                        </MenuItem>
                       </div>
-                    </MenuItem>
-                  </div>
+                    )}
+                    <StyledDivider />
+                  </>
                 )}
-                <StyledDivider />
                 <MenuItem onClick={() => handleSaveUrl(post?.id)}>
                   <div className="flex items-center justify-between w-full">
                     <span className={theme === "light" && "text-black"}>
@@ -360,22 +381,6 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
               </span>
             ))}
         </p>
-        {/* {post?.language === "en" && (
-          <p
-            onClick={handleTranslateEn}
-            className="cursor-pointer text-sm text-ascent-2"
-          >
-            Translate to Vietnamese
-          </p>
-        )}
-        {post?.language === "vi" && (
-          <p
-            onClick={handleTranslateEn}
-            className="cursor-pointer text-sm text-ascent-2"
-          >
-            Translate to English
-          </p>
-        )} */}
 
         {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
           <>
@@ -409,88 +414,23 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div>
-              {like ? (
-                <>
-                  <BiSolidLike
-                    size={20}
-                    color="blue"
-                    className="p-3 bg-blue-500 text-white rounded-full hover:bg-blue-600 focus:outline-none"
-                  />
-                </>
-              ) : (
-                <>
-                  <div class="relative group">
-                    {react}
-                    {/* <BiLike size={20} className="hover:scale-105" /> */}
-
-                    <div class="absolute bottom-8  left-1/2 -translate-x-8 flex space-x-2 bg-primary rounded-full border-borderNewFeed shadow-newFeed p-2 opacity-0 scale-75 group-hover:opacity-100 group-hover:scale-100 transition duration-300 ease-in-out">
-                      <div
-                        onClick={() => setReact("👍")}
-                        class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full hover:scale-125 transition-transform duration-200"
-                      >
-                        👍
-                      </div>
-
-                      <div
-                        onClick={() => setReact("❤️")}
-                        class="w-10 h-10 flex items-center justify-center bg-red-100 rounded-full hover:scale-125 transition-transform duration-200"
-                      >
-                        ❤️
-                      </div>
-
-                      <div
-                        onClick={() => setReact("😂")}
-                        class="w-10 h-10 flex items-center justify-center bg-yellow-100 rounded-full hover:scale-125 transition-transform duration-200"
-                      >
-                        😂
-                      </div>
-
-                      <div
-                        onClick={() => setReact("😀")}
-                        class="w-10 h-10 flex items-center justify-center bg-purple-100 rounded-full hover:scale-125 transition-transform duration-200"
-                      >
-                        😀
-                      </div>
-
-                      <div
-                        onClick={() => setReact("😢")}
-                        class="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-full hover:scale-125 transition-transform duration-200"
-                      >
-                        😢
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
+            <div class="relative group">
+              <BiLike size={20} onClick={() => handleLike(post?.id)} />
             </div>
             {post?.like}
           </div>
 
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div>
-              {disLike ? (
-                <BiSolidDislike size={20} color="blue" />
-              ) : (
-                <span>👎</span>
-                // <BiDislike size={20} className="hover:scale-105" />
-              )}
+            <div class="relative group">
+              <BiDislike size={20} onClick={() => handleDisLike(post?.id)} />
             </div>
             {post?.unlike}
           </div>
 
-          {/* BiDislike */}
-          <p
-            className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => {
-              setIsOpenReply(true);
-              setShowComments(showComments === post.id ? null : post?.id);
-              getComments(post?._id);
-            }}
-          >
+          <p className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform">
             <BiCommentDetail
               size={20}
-              onClick={() => setOpenComment(true)}
+              onClick={() => handleComment(post?.id)}
               className="cursor-pointer"
             />
             {post?.commentCount}

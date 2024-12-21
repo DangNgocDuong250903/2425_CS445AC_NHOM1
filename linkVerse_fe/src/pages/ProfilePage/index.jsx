@@ -1,5 +1,11 @@
-import { TopBar, PostCard, CreatePost, UpdateUser, Button } from "~/components";
-import { useTranslation } from "react-i18next";
+import {
+  TopBar,
+  PostCard,
+  CreatePost,
+  UpdateUser,
+  Button,
+  Alerts,
+} from "~/components";
 import { useSelector } from "react-redux";
 import { FaInstagram } from "react-icons/fa";
 import { CiFacebook } from "react-icons/ci";
@@ -10,25 +16,36 @@ import { BlankAvatar } from "~/assets";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import * as PostService from "~/services/PostService";
-import { useParams } from "react-router-dom";
 import useGetDetailUser from "~/hooks/useGetDetailUser";
-import { useMutationHook } from "~/hooks/useMutationHook";
-import { useQuery } from "@tanstack/react-query";
-import { ImUserPlus } from "react-icons/im";
+import * as UserService from "~/services/UserService";
+import { BsFillPlusCircleFill } from "react-icons/bs";
+import { useParams } from "react-router-dom";
+import useGetMyFriend from "~/hooks/useGetMyFriend";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
-  const { id } = useParams();
   const userPrimary = useSelector((state) => state.user);
-  const { user, loading } = useGetDetailUser();
+  const { user, loading, reload: fetchUser } = useGetDetailUser();
   const token = localStorage.getItem("token");
   const [loadingPost, setLoadingPost] = useState(false);
   const [posts, setPosts] = useState([]);
+  const [typeMessage, setTypeMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [openMessage, setOpenMessage] = useState(false);
+  const [loadingUpdateAvatar, setLoadingUpdateAvatar] = useState(false);
+  const { id } = useParams();
+  const [page, setPage] = useState(1);
+  const { friends } = useGetMyFriend();
 
+  console.log(friends);
   const handleChange = (event, newValue) => {
     setValue(newValue);
+  };
+
+  const handleClose = () => {
+    setOpenMessage(false);
   };
 
   //tab
@@ -54,10 +71,10 @@ const ProfilePage = () => {
     };
   };
 
-  const fetchMyPosts = async (token) => {
+  const fetchMyPosts = async ({ id, token, page }) => {
     setLoadingPost(true);
     try {
-      const res = await PostService.getMyPosts(token);
+      const res = await PostService.getPostsById({ id, token, page });
       if (res?.code === 200) {
         setPosts(res?.result?.data);
       }
@@ -69,18 +86,47 @@ const ProfilePage = () => {
   };
 
   useEffect(() => {
-    fetchMyPosts(token);
+    fetchMyPosts({ id, token, page });
   }, []);
 
   const handleSuccess = () => {
     setPosts([]);
-    fetchMyPosts(token);
+    fetchMyPosts({ id, token, page });
+  };
+
+  //change avatar
+  const handleChangeAvatar = async (e) => {
+    const file = e.target.files[0];
+    setLoadingUpdateAvatar(true);
+    try {
+      const res = await UserService.setAvatar({ file, token });
+      if (res) {
+        fetchUser();
+      }
+      setTypeMessage("success");
+      setMessage(res);
+      setOpenMessage(true);
+    } catch (error) {
+      setTypeMessage("error");
+      setMessage("Something went wrong!");
+      setOpenMessage(true);
+    } finally {
+      setLoadingUpdateAvatar(false);
+    }
   };
 
   return (
     <>
       <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
         <TopBar title={user?.username} iconBack />
+        <Alerts
+          handleClose={handleClose}
+          position={{ vertical: "bottom", horizontal: "center" }}
+          open={openMessage}
+          message={message}
+          type={typeMessage}
+          duration={2000}
+        />
 
         <div className="w-full h-full justify-center flex ">
           <div className="max-w-[680px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
@@ -96,19 +142,20 @@ const ProfilePage = () => {
                     {user?.username || "No name"}
                   </span>
                 </div>
-                {/* <img
-                  src={user?.avatar || BlankAvatar}
-                  alt="avatar"
-                  className="rounded-full object-cover w-20 h-20 bg-no-repeat shadow-newFeed"
-                /> */}
 
-                {userPrimary?.avatar ? (
-                  <div className="w-full h-full">
+                {userPrimary?.id === user?.id ? (
+                  <div className="relative">
                     <img
-                      src={BlankAvatar}
+                      src={user?.imageUrl ?? BlankAvatar}
                       alt="avatar"
-                      className="rounded-full relative object-cover bg-no-repeat w-full h-full"
+                      className="rounded-full relative object-cover bg-no-repeat w-20 h-20"
                     />
+                    {loadingUpdateAvatar && (
+                      <CircularProgress
+                        size={22}
+                        className="absolute top-8 right-7"
+                      />
+                    )}
                     <div className="flex items-center justify-center w-full h-full absolute top-0">
                       <label
                         htmlFor="imgUpload"
@@ -116,36 +163,25 @@ const ProfilePage = () => {
                       >
                         <input
                           type="file"
-                          // onChange={handleChangeAvatar}
+                          onChange={handleChangeAvatar}
                           className="hidden"
                           id="imgUpload"
                           data-max-size="5120"
                           accept=".jpg, .png, .jpeg"
                         />
-                        <ImUserPlus
+                        <BsFillPlusCircleFill
                           size={20}
-                          className=" duration-300 transition-opacity opacity-0 hover:opacity-100 cursor-pointer"
+                          className="absolute right-1 bottom-1 border-2 rounded-full cursor-pointer"
                         />
                       </label>
                     </div>
                   </div>
                 ) : (
-                  <div className="w-14 h-14 rounded-full bg-[#ccc] flex items-center justify-center cursor-pointer">
-                    <label
-                      htmlFor="imgUpload"
-                      className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
-                    >
-                      <input
-                        type="file"
-                        // onChange={handleChangeAvatar}
-                        className="hidden"
-                        id="imgUpload"
-                        data-max-size="5120"
-                        accept=".jpg, .png, .jpeg"
-                      />
-                      <ImUserPlus size={20} />
-                    </label>
-                  </div>
+                  <img
+                    src={user?.imageUrl || BlankAvatar}
+                    alt="avatar"
+                    className="rounded-full object-cover w-20 h-20 bg-no-repeat shadow-newFeed"
+                  />
                 )}
               </div>
               {/* 2 */}
@@ -170,13 +206,24 @@ const ProfilePage = () => {
 
               {userState?.id !== user?.id ? (
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
-                  <Button
-                    onClick={() => setIsOpenDialogEdit(true)}
-                    title="Kết bạn"
-                    containerStyles={
-                      "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                    }
-                  />
+                  {friends?.find((friend) => friend?.userId === user?.id) ? (
+                    <Button
+                      onClick={() => setIsOpenDialogEdit(true)}
+                      title="Hủy kết bạn"
+                      containerStyles={
+                        "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                      }
+                    />
+                  ) : (
+                    <Button
+                      onClick={() => setIsOpenDialogEdit(true)}
+                      title="Kết bạn"
+                      containerStyles={
+                        "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                      }
+                    />
+                  )}
+
                   <Button
                     onClick={() => setIsOpenDialogEdit(true)}
                     title="Nhắn tin"
@@ -230,7 +277,7 @@ const ProfilePage = () => {
                       <div className=" w-full flex items-center justify-between px-6 py-3 border-b">
                         <div className="flex items-center justify-center gap-4 ">
                           <img
-                            src={user?.avatar || BlankAvatar}
+                            src={user?.imageUrl || BlankAvatar}
                             alt="avatar"
                             className="rounded-full object-cover w-14 h-14 bg-no-repeat"
                           />

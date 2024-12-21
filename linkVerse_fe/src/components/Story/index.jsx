@@ -27,7 +27,7 @@ const Story = () => {
               setOpen(true);
             }}
           /> */}
-          <ul class="flex space-x-6">
+          {/* <ul class="flex space-x-6">
             <li class="flex flex-col items-center space-y-1 ">
               <div class="relative bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
                 <a
@@ -53,7 +53,7 @@ const Story = () => {
 
               <a href="#">kitty_one</a>
             </li>
-          </ul>
+          </ul> */}
         </div>
         <DragToScroll className={"gap-5 flex "}>
           {/* <div class="max-w-2xl mx-auto p-8"> */}

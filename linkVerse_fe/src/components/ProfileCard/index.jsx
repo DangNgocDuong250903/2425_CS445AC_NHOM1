@@ -32,10 +32,10 @@ const ProfileCard = () => {
           </div>
           <div className="flex flex-col justify-center">
             <p className="text-lg font-medium text-ascent-1">
-              {user?.username || "No name"}
+              {user?.firstName + " " + user?.lastName || "No name"}
             </p>
-            <span className="text-ascent-1">
-              {user?.profession || "No profession"}
+            <span className="text-ascent-2">
+              {user?.username || "No profession"}
             </span>
           </div>
         </Link>

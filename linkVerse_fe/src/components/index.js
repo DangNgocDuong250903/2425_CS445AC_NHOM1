@@ -22,8 +22,10 @@ import ChangeLanguage from "./ChangeLanguage"
 import SelectPosts from "./SelectPosts"
 import Logout from "./Logout"
 import Alerts from "./Alerts"
+import Loading from "./Loading"
 
 export {
+    Loading,
     Alerts,
     Logout,
     SelectPosts,

@@ -10,24 +10,53 @@ import {
   TextInput,
 } from "~/components/index";
 import { useTranslation } from "react-i18next";
-import { useForm } from "react-hook-form";
 import { IoIosSearch } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
+import { useEffect, useState } from "react";
+import * as SearchService from "~/services/SearchService";
+import { useDebounceHook } from "~/hooks/useDebounceHook";
 
 const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
+  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const token = localStorage.getItem("token");
+  const searchUser = useDebounceHook(keyword, 1000);
+  const [searchResults, setSearchResults] = useState([]);
 
-  //search
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm();
+  const handleSearch = async () => {
+    setIsLoading(true);
+    try {
+      const res = await SearchService.searchUser({
+        token,
+        keyword: searchUser,
+      });
+      if (res.code === 1000) {
+        setSearchResults(res.result.items || []);
+      } else {
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+      setSearchResults([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-  const handleSearch = async (data) => {};
+  useEffect(() => {
+    if (searchUser) {
+      setIsDropdownOpen(true);
+      handleSearch();
+    } else {
+      setSearchResults([]);
+      setIsDropdownOpen(false);
+    }
+  }, [searchUser]);
 
   return (
     <div className="header w-full flex items-center justify-between pt-2 pb-2 px-1 bg-bgColor ">
@@ -60,20 +89,42 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
             </svg>
           </div>
         </Link>
-        <div>
-          <form
-            className="hidden md:flex items-center justify-center"
-            onSubmit={handleSubmit(handleSearch)}
-          >
-            <TextInput
-              placeholder="Search..."
-              styles=" lg:w-[16rem] rounded-full py-2"
-              iconLeft={<IoIosSearch size={20} />}
-              register={register("search")}
-            />
-          </form>
+        <div className="relative">
+          <TextInput
+            placeholder="Search..."
+            styles=" lg:w-[16rem]  rounded-full py-2"
+            iconLeft={<IoIosSearch size={20} />}
+            onChange={(e) => setKeyword(e.target.value)}
+          />
+          {isDropdownOpen && (
+            <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
+              {isLoading ? (
+                <div className="p-4 text-bgStandard ">{t("Loading...")}</div>
+              ) : searchResults.length > 0 ? (
+                <ul>
+                  {searchResults.map((user) => (
+                    <li
+                      key={user.id}
+                      onClick={() => navigate(`/profile/${user.userId}`)}
+                      className="px-4 py-2 hover:bg-gray-100 bg-primary cursor-pointer"
+                    >
+                      <p className="text-sm text-bgStandard">
+                        {user.firstName} {user.lastName}
+                      </p>
+                      <p className="text-xs text-bgStandard">{user.username}</p>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div className="p-4 text-sm text-bgStandard">
+                  {t("No results found...")}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+
       {/* 2 */}
       <div className="flex flex-1 px-8 items-center justify-center h-full my-auto ">
         <div className="flex justify-between w-full ">

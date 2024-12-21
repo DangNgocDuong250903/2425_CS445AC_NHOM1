@@ -9,20 +9,17 @@ export const friendSuggesstion = async (token) => {
     return res.data
 }
 
-export const accept = async (token) => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/accept`, {}, {
+export const accept = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/accept?senderUserId=${id}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
     })
-
     return res.data
 }
 
 export const request = async ({ id, token }) => {
-    const formData = new FormData
-    formData.append("recipientUserId", id);
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/request`, formData, {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/request?recipientUserId=${id}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -31,7 +28,35 @@ export const request = async ({ id, token }) => {
 }
 
 export const reject = async ({ id, token }) => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/request`, formData, {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/reject?senderUserId=${id}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const unfriend = async () => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/unfriend`)
+    return res.data
+}
+
+export const getFriendOfUser = async () => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends`)
+    return res.data
+}
+
+export const getFriendRequests = async (token) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/my-friend-request`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const getMyFriends = async (token) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/my-friends`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

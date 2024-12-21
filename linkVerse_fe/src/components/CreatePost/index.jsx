@@ -162,7 +162,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
               {/* 1 */}
               <div className="w-full flex gap-x-3">
                 <img
-                  src={user?.profileUrl ?? BlankAvatar}
+                  src={user?.avatar ?? BlankAvatar}
                   alt="User Image"
                   className="w-14 h-14 rounded-full object-cover shadow-newFeed"
                 />

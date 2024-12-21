@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import * as FriendService from "~/services/FriendService";
 import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
+import { Alerts } from "..";
 
 const FriendSuggest = () => {
   const { t } = useTranslation();
@@ -13,15 +14,29 @@ const FriendSuggest = () => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
   const user = useSelector((state) => state?.user);
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState("success");
+
+  //close message
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   //fetch user suggest
   const fetchUsers = async (token) => {
     setLoading(true);
-    const res = await FriendService.friendSuggesstion(token);
-    if (res?.code === 1000) {
-      setLoading(false);
-      setUsers(res?.result);
-    } else {
+    try {
+      const res = await FriendService.friendSuggesstion(token);
+      if (res?.code === 1000) {
+        setUsers(res?.result || []);
+      } else {
+        setUsers([]);
+      }
+    } catch (error) {
+      console.error("Error fetching friend suggestions:", error);
+      setUsers([]);
+    } finally {
       setLoading(false);
     }
   };
@@ -31,13 +46,33 @@ const FriendSuggest = () => {
   }, []);
 
   //request
+
   const handleRequest = async (id) => {
-    const res = await FriendService.request({ id, token });
-    return res;
+    try {
+      const res = await FriendService.request({ id, token });
+      if (res?.code === 9999 || res?.status === "PENDING") {
+        setMessage("Đã gửi lời mời kết bạn");
+        setType(res?.code === 9999 ? "error" : "success");
+        setOpen(true);
+      }
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      setMessage("Không thể gửi lời mời kết bạn");
+      setType("error");
+      setOpen(true);
+    }
   };
 
   return (
     <div className="w-full bg-primary shadow-newFeed rounded-xl border-x-[0.8px] border-y-[0.8px] border-borderNewFeed px-5 py-5">
+      <Alerts
+        message={message}
+        type={type}
+        open={open}
+        handleClose={handleClose}
+        position={{ vertical: "bottom", horizontal: "center" }}
+        duration={1000}
+      />
       <div className="flex items-center justify-between text-lg pb-2 text-ascent-1 border-[#66666645] border-b">
         <span>{t("Bạn bè đề xuất")}</span>
       </div>
@@ -56,7 +91,7 @@ const FriendSuggest = () => {
                   className="flex w-full gap-4 items-center cursor-pointer"
                 >
                   <img
-                    src={item?.profileUrl ?? BlankAvatar}
+                    src={item?.imageUrl ?? BlankAvatar}
                     alt={item?.firstName}
                     className="w-10 h-10 object-cover rounded-full"
                   />
@@ -73,7 +108,7 @@ const FriendSuggest = () => {
                 <div className="flex gap-1">
                   <button
                     className="text-sm text-white p-1 rounded"
-                    onClick={() => handleRequest(item?.id)}
+                    onClick={() => handleRequest(item?.userId)}
                   >
                     <BsPersonFillAdd size={20} className="text-[#0444A4]" />
                   </button>

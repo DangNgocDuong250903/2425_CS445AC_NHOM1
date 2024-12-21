@@ -49,8 +49,17 @@ export const getPostsBySentiment = async ({ page, sentiment, token }) => {
     return res.data
 }
 
-export const getAllPosts = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/all`)
+export const getPostsById = async ({ id, token, page }) => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/user-posts?page=${page}&size=10&userId=${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const getAllPosts = async (page) => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/all?page=${page}`)
     return res.data
 }
 

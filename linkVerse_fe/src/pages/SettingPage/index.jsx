@@ -185,6 +185,11 @@ const SettingPage = () => {
                   <h1 className="text-ascent-1">Verify your email</h1>
                   <IoIosArrowForward size={20} className="cursor-pointer" />
                 </div>
+                {/* 3 */}
+                <div className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer">
+                  <h1 className="text-ascent-1">Đã chặn</h1>
+                  <IoIosArrowForward size={20} className="cursor-pointer" />
+                </div>
               </div>
             </CustomTabPanel>
             {/* 3 */}
