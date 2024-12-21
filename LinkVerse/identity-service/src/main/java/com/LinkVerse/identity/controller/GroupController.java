@@ -1,19 +1,16 @@
 package com.LinkVerse.identity.controller;
 
-import jakarta.validation.Valid;
-
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.GroupRequest;
 import com.LinkVerse.identity.dto.response.GroupResponse;
 import com.LinkVerse.identity.service.GroupService;
-
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/groups")

@@ -6,6 +6,7 @@ import com.LinkVerse.identity.entity.GroupEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
+
 @Service
 public class GroupEventProducer {
     private final KafkaTemplate<String, GroupEvent> kafkaTemplate;

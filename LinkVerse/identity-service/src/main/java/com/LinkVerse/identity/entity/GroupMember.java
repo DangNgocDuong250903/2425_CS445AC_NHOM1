@@ -1,7 +1,6 @@
 package com.LinkVerse.identity.entity;
 
 import jakarta.persistence.*;
-
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

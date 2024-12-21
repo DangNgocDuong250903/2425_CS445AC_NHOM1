@@ -2,15 +2,22 @@ package com.LinkVerse.post.service;
 
 import com.LinkVerse.post.Mapper.StoryMapper;
 import com.LinkVerse.post.dto.ApiResponse;
+import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.StoryCreationRequest;
 import com.LinkVerse.post.dto.response.StoryResponse;
 import com.LinkVerse.post.entity.Story;
+import com.LinkVerse.post.entity.StoryVisibility;
 import com.LinkVerse.post.repository.StoryRepository;
 import com.amazonaws.services.s3.model.S3Object;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -71,25 +78,47 @@ public class StoryService {
                 .build();
     }
 
-    private List<String> uploadAndValidateFiles(List<MultipartFile> files) {
-        if (files == null || files.isEmpty()) {
-            return List.of();
-        }
+    public ApiResponse<PageResponse<StoryResponse>> getAllStories(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("postedAt")));
+        Page<Story> pageData = storyRepository.findAll(pageable);
 
-        List<String> uploadedUrls = s3ServiceStory.uploadFiles(
-                files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList())
-        );
+        List<Story> stories = pageData.getContent().stream()
+                .filter(story -> story.getVisibility() == StoryVisibility.PUBLIC)
+                .collect(Collectors.toList());
 
-        return uploadedUrls.stream().filter(fileUrl -> {
-            String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
-            S3Object s3Object = s3ServiceStory.getObject(fileName);
-            if (!rekognitionService.isImageSafe(s3Object)) {
-                log.warn("Unsafe content detected in file: {}", fileName);
-                s3ServiceStory.deleteFile(fileName);
-                return false;
-            }
-            return true;
-        }).collect(Collectors.toList());
+        return ApiResponse.<PageResponse<StoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Stories retrieved successfully")
+                .result(PageResponse.<StoryResponse>builder()
+                        .currentPage(page)
+                        .pageSize(size)
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(stories.stream().map(storyMapper::toResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    public ApiResponse<PageResponse<StoryResponse>> getStoriesByUser(int page, int size, String userId) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.desc("postedAt")));
+        Page<Story> pageData = storyRepository.findByUserId(userId, pageable);
+
+        List<Story> stories = pageData.getContent().stream()
+                .filter(story -> story.getVisibility() == StoryVisibility.PUBLIC ||
+                        (story.getVisibility() == StoryVisibility.PRIVATE && story.getUserId().equals(getCurrentUserId())))
+                .collect(Collectors.toList());
+
+        return ApiResponse.<PageResponse<StoryResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("User's stories retrieved successfully")
+                .result(PageResponse.<StoryResponse>builder()
+                        .currentPage(page)
+                        .pageSize(size)
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(stories.stream().map(storyMapper::toResponse).collect(Collectors.toList()))
+                        .build())
+                .build();
     }
 
     private String getCurrentUserId() {

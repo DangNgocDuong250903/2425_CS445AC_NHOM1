@@ -1,13 +1,12 @@
 package com.LinkVerse.identity.repository;
 
-import java.util.List;
-import java.util.Optional;
-
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import com.LinkVerse.identity.entity.Group;
 import com.LinkVerse.identity.entity.GroupMember;
 import com.LinkVerse.identity.entity.User;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 public interface GroupMemberRepository extends JpaRepository<GroupMember, String> {
 

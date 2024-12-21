@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
 )
 @Component
 public class PostHistoryMapperImpl implements PostHistoryMapper {
@@ -34,7 +34,10 @@ public class PostHistoryMapperImpl implements PostHistoryMapper {
         postResponse.unlike( postHistory.getUnlike() );
         postResponse.commentCount( postHistory.getCommentCount() );
         postResponse.comments( commentListToCommentResponseList( postHistory.getComments() ) );
-        postResponse.sharedPost( postHistory.getSharedPost() );
+        List<PostResponse> list1 = postHistory.getSharedPost();
+        if ( list1 != null ) {
+            postResponse.sharedPost( new ArrayList<PostResponse>( list1 ) );
+        }
 
         return postResponse.build();
     }

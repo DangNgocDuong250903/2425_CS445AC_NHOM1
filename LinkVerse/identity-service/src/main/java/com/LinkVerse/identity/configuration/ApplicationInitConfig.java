@@ -1,25 +1,23 @@
 package com.LinkVerse.identity.configuration;
 
-import java.util.HashSet;
-
-import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import com.LinkVerse.identity.constant.PredefinedRole;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.entity.UserStatus;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.util.HashSet;
 
 @Configuration
 @RequiredArgsConstructor

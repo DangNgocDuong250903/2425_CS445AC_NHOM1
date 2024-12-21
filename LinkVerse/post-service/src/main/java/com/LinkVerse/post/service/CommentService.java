@@ -7,6 +7,7 @@ import com.LinkVerse.post.dto.request.CommentRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.CommentRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.amazonaws.services.s3.model.S3Object;
@@ -54,6 +55,14 @@ public class CommentService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
+
+        // Check if the post is private and the user is not the owner
+        if (post.getVisibility() == PostVisibility.PRIVATE && !post.getUserId().equals(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("You are not authorized to comment on this post")
+                    .build();
+        }
 
         List<String> safeFileUrls = new ArrayList<>();
 

@@ -31,5 +31,5 @@ public class PostHistory {
     int unlike;
     int commentCount;
     List<Comment> comments = new ArrayList<Comment>();
-    PostResponse sharedPost;
+    List<PostResponse> sharedPost;
 }

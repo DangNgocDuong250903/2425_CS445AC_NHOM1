@@ -1,6 +1,7 @@
 package com.LinkVerse.post.controller;
 
 import com.LinkVerse.post.dto.ApiResponse;
+import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.StoryCreationRequest;
 import com.LinkVerse.post.dto.response.StoryResponse;
 import com.LinkVerse.post.service.StoryCleanupService;
@@ -35,6 +36,23 @@ public class StoryController {
         StoryCreationRequest request = objectMapper.readValue(requestJson, StoryCreationRequest.class);
 
         ApiResponse<StoryResponse> response = storyService.createStory(request, files);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<PageResponse<StoryResponse>>> getAllStories(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        ApiResponse<PageResponse<StoryResponse>> response = storyService.getAllStories(page, size);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<ApiResponse<PageResponse<StoryResponse>>> getStoriesByUser(
+            @PathVariable String userId,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        ApiResponse<PageResponse<StoryResponse>> response = storyService.getStoriesByUser(page, size, userId);
         return ResponseEntity.ok(response);
     }
 }

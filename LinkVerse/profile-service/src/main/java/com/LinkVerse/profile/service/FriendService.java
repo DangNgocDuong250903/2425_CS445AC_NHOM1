@@ -41,7 +41,7 @@ public class FriendService {
         UserProfile userProfile1 = userRepository.findByUserId(senderUserId)
                 .orElseThrow(() -> new RuntimeException("Sender user not found"));
         UserProfile userProfile2 = userRepository.findByUserId(recipientUserId)
-                .orElseThrow(() -> new RuntimeException("Recipient user not found"));
+                .orElseThrow(() -> new RuntimeException("Recipient user not found" + recipientUserId));
 
         if (isBlocked(userProfile1.getUserId(), userProfile2.getUserId())) {
             throw new RuntimeException("Cannot send friend request to a blocked user");

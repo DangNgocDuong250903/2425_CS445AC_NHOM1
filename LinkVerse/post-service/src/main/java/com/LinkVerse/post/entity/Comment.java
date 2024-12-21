@@ -26,6 +26,7 @@ public class Comment {
     boolean deleted = false;
     @Getter
     String commentId;
+    private List<String> likedUserIds;
 
     public Comment() {
         this.commentId = UUID.randomUUID().toString(); // Generate UUID for commentId

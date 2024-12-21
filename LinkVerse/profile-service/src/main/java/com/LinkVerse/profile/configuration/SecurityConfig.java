@@ -22,7 +22,8 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/**", "/v3/.*", "/profile/users",
+            "/internal/users", "/internal/users/**", "/v3/.*", "/profile/users","/post/posts-random","/post/posts-random"
+    ,"/post/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;
@@ -57,6 +58,7 @@ public class SecurityConfig {
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
 
         jwtAuthenticationConverter.setPrincipalClaimName("userId");
+
 
         return jwtAuthenticationConverter;
     }
