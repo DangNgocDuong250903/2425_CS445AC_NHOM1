@@ -52,12 +52,11 @@ public class PostController {
     }
 
     // Create a new post
-    @PostMapping("/post-file")
+    @PostMapping(value = "/post-file")
     public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
-            @RequestParam("request") String requestJson,
-            @RequestParam("files") List<MultipartFile> files) throws IOException {
+            @RequestPart("request") String requestJson,
+            @RequestPart("files") List<MultipartFile> files) throws IOException {
 
-        // Chuyển String JSON thành PostRequest
         ObjectMapper objectMapper = new ObjectMapper();
         PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
 

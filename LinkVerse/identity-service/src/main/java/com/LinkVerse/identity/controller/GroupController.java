@@ -9,8 +9,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/groups")
@@ -26,6 +30,17 @@ public class GroupController {
         ApiResponse<GroupResponse> response = groupService.createGroup(request);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{groupId}/isUserInGroup")
+    public ApiResponse<Boolean> isUserInGroup(@PathVariable String groupId) {
+        boolean isInGroup = groupService.isUserInGroup(groupId);
+        return ApiResponse.<Boolean>builder()
+                .code(200)
+                .message("User is in group")
+                .result(isInGroup)
+                .build();
+    }
+
 
     @PostMapping("/{groupId}/members/{memberId}")
     public ResponseEntity<ApiResponse<GroupResponse>> addMemberToGroup(

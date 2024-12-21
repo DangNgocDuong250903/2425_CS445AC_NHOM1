@@ -13,12 +13,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PostRequest {
+public class PostGroupRequest {
+    String groupId;
     String content;
-    PostVisibility visibility;
     String language;
-    @ElementCollection
-    List<String> ImageUrl;
-    String imgAvatarUrl;
-//    String PostId;
 }

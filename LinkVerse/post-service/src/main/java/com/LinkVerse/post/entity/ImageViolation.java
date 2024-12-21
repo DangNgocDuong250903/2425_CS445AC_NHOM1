@@ -17,7 +17,6 @@ import java.time.Instant;
 public class ImageViolation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column(nullable = false)

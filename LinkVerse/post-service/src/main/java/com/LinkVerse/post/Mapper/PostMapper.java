@@ -1,7 +1,9 @@
 package com.LinkVerse.post.Mapper;
 
+import com.LinkVerse.post.dto.response.PostGroupResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostGroup;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -16,6 +18,9 @@ public interface PostMapper {
     @Mapping(target = "sharedPost", ignore = true)
         // Adjust based on your exact needs
     PostResponse toPostResponse(Post post);
+
+    @Mapping(target = "groupId", ignore = false)
+    PostGroupResponse toPostGroupResponse(PostGroup post);
 
     @Named("toPostResponseList")
     default List<PostResponse> toPostResponseList(Post post) {

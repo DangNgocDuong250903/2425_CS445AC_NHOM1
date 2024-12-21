@@ -1,9 +1,12 @@
 package com.LinkVerse.post.Mapper;
 
 import com.LinkVerse.post.dto.response.CommentResponse;
+import com.LinkVerse.post.dto.response.PostGroupResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostGroup;
+import com.LinkVerse.post.entity.SharedPost;
 import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.processing.Generated;
@@ -44,6 +47,35 @@ public class PostMapperImpl implements PostMapper {
         return postResponse.build();
     }
 
+    @Override
+    public PostGroupResponse toPostGroupResponse(PostGroup post) {
+        if ( post == null ) {
+            return null;
+        }
+
+        PostGroupResponse.PostGroupResponseBuilder postGroupResponse = PostGroupResponse.builder();
+
+        postGroupResponse.groupId( post.getGroupId() );
+        postGroupResponse.id( post.getId() );
+        postGroupResponse.content( post.getContent() );
+        List<String> list = post.getImageUrl();
+        if ( list != null ) {
+            postGroupResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        postGroupResponse.userId( post.getUserId() );
+        postGroupResponse.createdDate( post.getCreatedDate() );
+        postGroupResponse.modifiedDate( post.getModifiedDate() );
+        postGroupResponse.like( post.getLike() );
+        postGroupResponse.unlike( post.getUnlike() );
+        postGroupResponse.commentCount( post.getCommentCount() );
+        postGroupResponse.comments( commentListToCommentResponseList( post.getComments() ) );
+        postGroupResponse.sharedPost( sharedPostListToPostGroupResponseList( post.getSharedPost() ) );
+        postGroupResponse.language( post.getLanguage() );
+        postGroupResponse.primarySentiment( post.getPrimarySentiment() );
+
+        return postGroupResponse.build();
+    }
+
     protected CommentResponse commentToCommentResponse(Comment comment) {
         if ( comment == null ) {
             return null;
@@ -74,6 +106,45 @@ public class PostMapperImpl implements PostMapper {
         List<CommentResponse> list1 = new ArrayList<CommentResponse>( list.size() );
         for ( Comment comment : list ) {
             list1.add( commentToCommentResponse( comment ) );
+        }
+
+        return list1;
+    }
+
+    protected PostGroupResponse sharedPostToPostGroupResponse(SharedPost sharedPost) {
+        if ( sharedPost == null ) {
+            return null;
+        }
+
+        PostGroupResponse.PostGroupResponseBuilder postGroupResponse = PostGroupResponse.builder();
+
+        postGroupResponse.id( sharedPost.getId() );
+        postGroupResponse.content( sharedPost.getContent() );
+        List<String> list = sharedPost.getImageUrl();
+        if ( list != null ) {
+            postGroupResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        postGroupResponse.userId( sharedPost.getUserId() );
+        postGroupResponse.createdDate( sharedPost.getCreatedDate() );
+        postGroupResponse.modifiedDate( sharedPost.getModifiedDate() );
+        postGroupResponse.like( sharedPost.getLike() );
+        postGroupResponse.unlike( sharedPost.getUnlike() );
+        postGroupResponse.commentCount( sharedPost.getCommentCount() );
+        postGroupResponse.comments( commentListToCommentResponseList( sharedPost.getComments() ) );
+        postGroupResponse.language( sharedPost.getLanguage() );
+        postGroupResponse.primarySentiment( sharedPost.getPrimarySentiment() );
+
+        return postGroupResponse.build();
+    }
+
+    protected List<PostGroupResponse> sharedPostListToPostGroupResponseList(List<SharedPost> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<PostGroupResponse> list1 = new ArrayList<PostGroupResponse>( list.size() );
+        for ( SharedPost sharedPost : list ) {
+            list1.add( sharedPostToPostGroupResponse( sharedPost ) );
         }
 
         return list1;

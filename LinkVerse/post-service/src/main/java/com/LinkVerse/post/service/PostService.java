@@ -24,7 +24,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.EnumUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -57,27 +56,16 @@ public class PostService {
     ShareMapper shareMapper;
     PostHistoryRepository postHistoryRepository;
     PostHistoryMapper postHistoryMapper;
-    @Autowired
     KeywordService keywordService;
-
     KafkaTemplate<String, Object> kafkaTemplate;
-    @Autowired
     S3Service s3Service;
-    @Autowired
     ContentModerationService contentModerationService;
-    @Autowired
     TranslationService translationService;
-    @Autowired
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     IdentityServiceClient identityServiceClient;
-//    PostSearchRepository postSearchRepository;
-
-    @Autowired
-    private TagProcessor tagProcessor;
-
-    @Autowired
-    private HashtagRepository hashtagRepository;
+    TagProcessor tagProcessor;
+    HashtagRepository hashtagRepository;
 
     public List<Post> getPostsByHashtag(String hashtagName) {
         Hashtag hashtag = hashtagRepository.findByName(hashtagName);
@@ -163,23 +151,6 @@ public class PostService {
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
             post = postRepository.save(post);
-
-//            // Lưu vào Elasticsearch
-//            if (post.getId() != null) {
-//                PostDocument postDocument = PostDocument.builder()
-//                        .id(post.getId())
-//                        .content(post.getContent())
-//                        .userId(post.getUserId())
-//                        .imageUrl(post.getImageUrl())
-//                        .imgAvatarUrl(post.getImgAvatarUrl())
-//                        .visibility(post.getVisibility())
-//                        .createdAt(post.getCreatedDate())
-//                        .updatedAt(post.getModifiedDate())
-//                        .comments(new ArrayList<>())
-//                        .build();
-//                postSearchRepository.save(postDocument);
-//                log.info("Save postDocument", postDocument);
-//            }
 
             PostResponse postResponse = postMapper.toPostResponse(post);
 
@@ -284,23 +255,6 @@ public class PostService {
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
             post = postRepository.save(post);
-
-//            // Lưu vào Elasticsearch
-//            if (post.getId() != null) {
-//                PostDocument postDocument = PostDocument.builder()
-//                        .id(post.getId())
-//                        .content(post.getContent())
-//                        .userId(post.getUserId())
-//                        .imageUrl(post.getImageUrl())
-//                        .imgAvatarUrl(post.getImgAvatarUrl())
-//                        .visibility(post.getVisibility())
-//                        .createdAt(post.getCreatedDate())
-//                        .updatedAt(post.getModifiedDate())
-//                        .comments(new ArrayList<>())
-//                        .build();
-//                postSearchRepository.save(postDocument);
-//                log.info("Save postDocument", postDocument);
-//            }
 
             PostResponse postResponse = postMapper.toPostResponse(post);
 
@@ -458,6 +412,7 @@ public class PostService {
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
                 .filter(post -> includeDeleted || !post.isDeleted())
+                .filter(post -> post.getGroupId() == null) // Exclude posts with groupId
                 .collect(Collectors.toList());
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
@@ -526,7 +481,10 @@ public class PostService {
         Pageable pageable = PageRequest.of(page - 1, size);
         var pageData = postRepository.findByVisibilityNot(PostVisibility.PRIVATE, pageable); // lấy các bài viết != PRIVATE
 
-        List<Post> posts = pageData.getContent();
+        List<Post> posts = pageData.getContent().stream()
+                .filter(post -> post.getGroupId() == null) // tìm post k có groupId
+                .collect(Collectors.toList());
+
         List<Post> modifiablePosts = new ArrayList<>(posts);
         Collections.shuffle(modifiablePosts);
 
@@ -552,7 +510,8 @@ public class PostService {
         List<Post> posts = pageData.getContent().stream()
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
                         (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
-                .collect(Collectors.toList());
+                .filter(post -> post.getGroupId() == null)
+                .toList();
 
         List<Post> modifiablePosts = new ArrayList<>(posts);
         Collections.shuffle(modifiablePosts);
