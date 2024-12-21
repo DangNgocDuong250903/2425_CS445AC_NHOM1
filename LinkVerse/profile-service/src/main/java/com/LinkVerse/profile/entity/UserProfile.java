@@ -1,14 +1,13 @@
 package com.LinkVerse.profile.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.util.*;
+import java.util.Date;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -29,7 +28,7 @@ public class UserProfile implements Serializable {
     String lastName;
     Date dateOfBirth;
     String city;
-    String phoneNumber ;
+    String phoneNumber;
     Gender gender;
 
     @Enumerated(EnumType.STRING)

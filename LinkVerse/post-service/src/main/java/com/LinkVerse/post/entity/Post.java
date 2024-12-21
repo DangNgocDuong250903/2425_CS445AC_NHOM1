@@ -23,7 +23,8 @@ public class Post {
     String id;
     String userId;
     String content;
-
+    @DBRef
+    User user;
     @ElementCollection
     List<String> imageUrl;
     String imgAvatarUrl;

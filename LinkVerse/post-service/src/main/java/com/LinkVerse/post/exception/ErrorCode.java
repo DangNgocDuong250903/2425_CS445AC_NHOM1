@@ -17,6 +17,10 @@ public enum ErrorCode {
     PERMISSION_DENIED(1011, "Permission denied", HttpStatus.FORBIDDEN),
     SDK_CLIENT_EXCEPTION(1012, "SDK client exception", HttpStatus.INTERNAL_SERVER_ERROR),
     VIOLATION_POLICY(1013, "VIOLATION_POLICY", HttpStatus.BAD_REQUEST),
+    USER_NOT_EXISTED(1014, "User not existed", HttpStatus.NOT_FOUND),
+    GROUP_ALREADY_EXISTS(1015, "Group already exists", HttpStatus.BAD_REQUEST),
+    GROUP_NOT_EXISTED(1016, "Group not existed", HttpStatus.NOT_FOUND),
+    ALREADY_MEMBER(1017, "Already member", HttpStatus.BAD_REQUEST),
     ;
 
 
