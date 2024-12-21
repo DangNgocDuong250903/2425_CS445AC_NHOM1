@@ -418,6 +418,32 @@ public class PostService {
                 .build();
     }
 
+    public ApiResponse<PostResponse> changePostVisibility(String postId, PostVisibility newVisibility) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (!post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to change the visibility of this post");
+        }
+
+        // Update the visibility
+        post.setVisibility(newVisibility);
+        post.setModifiedDate(Instant.now());
+        post = postRepository.save(post);
+
+        // Map the updated post to PostResponse
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post visibility updated successfully")
+                .result(postResponse)
+                .build();
+    }
+
     public ApiResponse<PageResponse<PostResponse>> getMyPosts(int page, int size, boolean includeDeleted) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userID = authentication.getName();
@@ -498,13 +524,9 @@ public class PostService {
 
     public ApiResponse<PageResponse<PostResponse>> getAllPost(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
-        var pageData = postRepository.findAll(pageable);
+        var pageData = postRepository.findByVisibilityNot(PostVisibility.PRIVATE, pageable); // lấy các bài viết != PRIVATE
 
-        List<Post> posts = pageData.getContent().stream()
-                .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
-                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
-                .collect(Collectors.toList());
-
+        List<Post> posts = pageData.getContent();
         List<Post> modifiablePosts = new ArrayList<>(posts);
         Collections.shuffle(modifiablePosts);
 
@@ -516,7 +538,9 @@ public class PostService {
                         .pageSize(size)
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(modifiablePosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .data(modifiablePosts.stream()
+                                .map(postMapper::toPostResponse)
+                                .collect(Collectors.toList()))
                         .build())
                 .build();
     }

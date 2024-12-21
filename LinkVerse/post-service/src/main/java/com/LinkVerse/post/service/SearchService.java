@@ -4,15 +4,22 @@ import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
+import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.repository.PostRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -39,6 +46,36 @@ public class SearchService {
                         .totalElement(pageData.getTotalElements())
                         .data(pageData.getContent().stream().map(postMapper::toPostResponse).toList())
                         .build())
+                .build();
+    }
+
+    public PageResponse<PostResponse> sortPost(int pageNo, int pageSize, String... sorts) {
+        int p = 0;
+        if (pageNo > 0) {
+            p = pageNo - 1;
+        }
+        List<Sort.Order> orders = new ArrayList<>();
+        if (sorts != null) {
+            for (String sortBy : sorts) {
+                Pattern pattern = Pattern.compile("(\\w+?)(:)(.*)");
+                Matcher matcher = pattern.matcher(sortBy);
+                if (matcher.find()) {
+                    if (matcher.group(3).equalsIgnoreCase("asc")) {
+                        orders.add(new Sort.Order(Sort.Direction.ASC, matcher.group(1)));
+                    } else {
+                        orders.add(new Sort.Order(Sort.Direction.DESC, matcher.group(1)));
+                    }
+                }
+            }
+        }
+
+        Pageable pageable = PageRequest.of(p, pageSize, Sort.by(orders));
+
+        Page<Post> posts = postRepository.findAll(pageable);
+        return PageResponse.<PostResponse>builder()
+                .currentPage(pageNo)
+                .totalPage(posts.getTotalPages())
+                .data(posts.stream().map(postMapper::toPostResponse).toList())
                 .build();
     }
 
