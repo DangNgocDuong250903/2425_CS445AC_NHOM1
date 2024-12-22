@@ -12,6 +12,7 @@ import com.LinkVerse.post.exception.ErrorCode;
 import com.LinkVerse.post.repository.GroupMemberRepository;
 import com.LinkVerse.post.repository.GroupRepository;
 import com.LinkVerse.post.repository.UserRepository;
+import com.LinkVerse.post.repository.client.IdentityServiceClient;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class GroupService {
     GroupRepository groupRepository;
     GroupMemberRepository groupMemberRepository;
     UserRepository userRepository;
+    IdentityServiceClient identityServiceClient;
 
     @Transactional
     public ApiResponse<GroupResponse> createGroup(GroupRequest request) {
@@ -91,13 +93,15 @@ public class GroupService {
         log.info("User ID from authentication: " + userId);
 
         // Check user existence
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
+        try {
+            identityServiceClient.getUser(userId);
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.USER_NOT_EXISTED);
+        }
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXISTED));
 
         GroupMember requesterMember = groupMemberRepository
-                .findByGroupAndUser(group, user)
+                .findByGroupAndUser(group, User.builder().id(userId).build())
                 .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_DENIED));
 
         if (requesterMember.getRole() != GroupMember.MemberRole.OWNER &&
