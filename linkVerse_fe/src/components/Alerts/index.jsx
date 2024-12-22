@@ -4,11 +4,11 @@ import React from "react";
 const Alerts = ({
   message = "Something went wrong!",
   type = "success",
-  icon = false,
+  icon,
   open,
   handleClose,
   position,
-  duration = 3500,
+  duration,
 }) => {
   return (
     <Snackbar

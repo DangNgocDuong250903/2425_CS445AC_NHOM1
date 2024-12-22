@@ -4,7 +4,7 @@ import { Fade } from "@mui/material";
 import styled from "@emotion/styled";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
-  return <Fade direction="up" ref={ref} {...props} />;
+  return <Fade di rection="up" ref={ref} {...props} />;
 });
 
 const StyledDialog = styled(Dialog)(({ theme }) => ({

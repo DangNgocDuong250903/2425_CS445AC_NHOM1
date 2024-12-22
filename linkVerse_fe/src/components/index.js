@@ -9,7 +9,6 @@ import GroupCard from "./GroupCard"
 import FriendRequest from "./FriendRequest"
 import FriendSuggest from "./FriendSuggest"
 import Story from "./Story"
-import DragToScroll from "./DragToScroll"
 import CustomizeMenu from "./CustomizeMenu"
 import Apps from "./Apps"
 import Notifications from "./Notifications"
@@ -22,10 +21,10 @@ import ChangeLanguage from "./ChangeLanguage"
 import SelectPosts from "./SelectPosts"
 import Logout from "./Logout"
 import Alerts from "./Alerts"
-import Loading from "./Loading"
+import StoryCard from "./StoryCard"
 
 export {
-    Loading,
+    StoryCard,
     Alerts,
     Logout,
     SelectPosts,
@@ -48,6 +47,5 @@ export {
     GroupCard,
     FriendRequest,
     FriendSuggest,
-    DragToScroll,
     Story
 }

@@ -1,18 +1,28 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import { Box, CircularProgress, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
-import { useSelector } from "react-redux";
-import { Button, CreatePost, DialogCustom, TopBar } from "~/components";
+import { useDispatch, useSelector } from "react-redux";
+import { Alerts, Button, CreatePost, DialogCustom, TopBar } from "~/components";
 import { RxLockClosed } from "react-icons/rx";
 import { RiEyeOffLine } from "react-icons/ri";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import { IoIosArrowForward } from "react-icons/io";
 import { useLocation } from "react-router-dom";
+import * as UserService from "~/services/UserService";
+import { updateStatus } from "~/redux/Slices/userSlice";
 
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const [value, setValue] = useState(0);
   const user = useSelector((state) => state.user);
-  const location = useLocation();
+  const token = localStorage.getItem("token");
+  const dispatch = useDispatch();
+  const [message, setMessage] = useState("");
+  const [open, setOpen] = useState(false);
+  const [type, setType] = useState("");
+  const [icon, setIcon] = useState("");
+  const [openDialog, setOpenDialog] = useState(false);
+
+  const handleClose = () => setOpen(false);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -46,10 +56,44 @@ const SettingPage = () => {
     setIsOpenDelete(false);
   };
 
+  //change status
+  const handleToggle = async () => {
+    try {
+      const newStatus = user?.status === "ONLINE" ? "OFFLINE" : "ONLINE";
+      const res = await UserService.updateStatus({ status: newStatus, token });
+      if (res?.code === 1000) {
+        dispatch(updateStatus(res?.result?.status));
+      } else {
+        setMessage("Something went wrong!");
+        setType("error");
+        setOpen(true);
+      }
+    } catch (error) {
+      setMessage("Something went wrong!");
+      setType("error");
+      setOpen(true);
+    } finally {
+      setOpen(false);
+    }
+  };
+
+  //verify email
+  const handleCloseDialog = () => setOpenDialog(false);
+  // const handleVerifyEmail = () => {};
+
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={"Settings"} iconBack />
       <CreatePost />
+      <Alerts
+        message={message}
+        type={type}
+        icon={icon}
+        open={open}
+        handleClose={handleClose}
+        position={{ vertical: "bottom", horizontal: "center" }}
+        duration={3000}
+      />
       <div className="w-full h-full flex justify-center">
         <div className="w-[680px] flex flex-col h-full bg-primary p-5 rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
           <Box sx={{ width: "100%" }}>
@@ -92,8 +136,8 @@ const SettingPage = () => {
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
-                        // checked={theme === "dark" ? true : false}
-                        // onChange={handleToggle}
+                        // checked={}
+                        // onChange={}
                         className="sr-only peer"
                       />
                       <div className="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0444A4] hover:peer-checked:bg-[#0444A4]"></div>
@@ -111,8 +155,8 @@ const SettingPage = () => {
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
-                        // checked={user?.}
-                        // onChange={handleToggle}
+                        checked={user?.status === "ONLINE" ? true : false}
+                        onChange={handleToggle}
                         className="sr-only peer"
                       />
                       <div className="w-9 h-5 bg-gray-200 hover:bg-gray-300 peer-focus:outline-0 peer-focus:ring-transparent rounded-full peer transition-all ease-in-out duration-500 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#0444A4] hover:peer-checked:bg-[#0444A4]"></div>
@@ -181,10 +225,18 @@ const SettingPage = () => {
                   </div>
                 </DialogCustom>
                 {/* 2 */}
-                <div className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer">
+                <div
+                  onClick={() => setOpenDialog(true)}
+                  className="w-full py-3  px-2 h-full flex justify-between items-center cursor-pointer"
+                >
                   <h1 className="text-ascent-1">Verify your email</h1>
                   <IoIosArrowForward size={20} className="cursor-pointer" />
                 </div>
+                <DialogCustom
+                  isOpen={openDialog}
+                  handleCloseDiaLogAdd={handleCloseDialog}
+                ></DialogCustom>
+
                 {/* 3 */}
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer">
                   <h1 className="text-ascent-1">Đã chặn</h1>

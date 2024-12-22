@@ -90,6 +90,16 @@ export const like = async ({ id, emoji, token }) => {
     return res.data
 }
 
+export const dislike = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/unlikes`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+
 export const share = async ({ id, token }) => {
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/share`, {}, {
         headers: {

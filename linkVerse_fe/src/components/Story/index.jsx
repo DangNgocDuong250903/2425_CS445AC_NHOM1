@@ -1,163 +1,76 @@
-import React, { useState } from "react";
-import { DragToScroll } from "..";
-import { BsFillPlusCircleFill } from "react-icons/bs";
+import { useEffect, useState } from "react";
+import { GoPlus } from "react-icons/go";
 import CreateStory from "../CreateStory";
+import { BiDotsHorizontalRounded } from "react-icons/bi";
+import { StoryCard } from "..";
+import * as StoryService from "~/services/StoryService";
 
 const Story = () => {
   const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
+  const handleClose = () => setOpen(false);
+  const [stories, setStories] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const token = localStorage.getItem("token");
+  const [page, setPage] = useState(1);
+
+  const fetchAllStories = async ({ page, token }) => {
+    setLoading(true);
+    try {
+      const res = await StoryService.getAllStory({ page, token });
+      if (res?.code === 200) {
+        setStories(res?.result?.data);
+      }
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchAllStories({ page, token });
+  }, []);
+
+  //refresh
+  const hanldeSuccess = () => {
+    fetchAllStories({ page, token });
+  };
+
   return (
-    <>
-      {/* story */}
-      <CreateStory open={open} handleClose={handleClose} />
-
-      <div className="flex w-full px-1 justify-center items-center">
-        <div className="w-20 h-full flex justify-center relative mr-4">
-          {/* <img
-            src={BlankAvatar}
-            alt="User Image"
-            className="w-14 h-14 rounded-full object-cover shadow-newFeed"
-          />
-          <BsFillPlusCircleFill
-            className="absolute rounded-full cursor-pointer bottom-2 right-2"
-            color="#0444A4"
-            onClick={() => {
-              setOpen(true);
-            }}
-          /> */}
-          {/* <ul class="flex space-x-6">
-            <li class="flex flex-col items-center space-y-1 ">
-              <div class="relative bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-14 h-14 rounded-full"
-                    src="https://placekitten.com/200/200"
-                  />
-                </a>
-                <button class="absolute bg-blue-500 text-white text-2xl font-medium w-8 h-8 rounded-full bottom-0 right-1 border-4 border-white flex justify-center items-center font-mono hover:bg-blue-700 focus:outline-none">
-                  <div class="transform -translate-y-px">
-                    <BsFillPlusCircleFill
-                      color="blue"
-                      onClick={() => {
-                        setOpen(true);
-                      }}
-                    />
-                  </div>
-                </button>
-              </div>
-
-              <a href="#">kitty_one</a>
-            </li>
-          </ul> */}
-        </div>
-        <DragToScroll className={"gap-5 flex "}>
-          {/* <div class="max-w-2xl mx-auto p-8"> */}
-          {/* <ul class="flex space-x-6">
-            <li class="flex flex-col items-center space-y-1 ">
-              <div class="relative bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-24 h-24 rounded-full"
-                    src="https://placekitten.com/200/200"
-                    alt="cute kitty"
-                  />
-                </a>
-                <button class="absolute bg-blue-500 text-white text-2xl font-medium w-8 h-8 rounded-full bottom-0 right-1 border-4 border-white flex justify-center items-center font-mono hover:bg-blue-700 focus:outline-none">
-                  <div class="transform -translate-y-px">
-                    <BsFillPlusCircleFill color="blue" />
-                  </div>
-                </button>
-              </div>
-
-              <a href="#">kitty_one</a>
-            </li>
-          </ul> */}
-          <ul class="flex space-x-6">
-            {/* <li class="flex flex-col items-center space-y-1 ">
-              <div class="relative bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-24 h-24 rounded-full"
-                    src="https://placekitten.com/200/200"
-                    alt="cute kitty"
-                  />
-                </a>
-                <button class="absolute bg-blue-500 text-white text-2xl font-medium w-8 h-8 rounded-full bottom-0 right-1 border-4 border-white flex justify-center items-center font-mono hover:bg-blue-700 focus:outline-none">
-                  <div class="transform -translate-y-px">
-                    <BsFillPlusCircleFill color="blue" />
-                  </div>
-                </button>
-              </div>
-
-              <a href="#">kitty_one</a>
-            </li> */}
-
-            {/* <li class="flex flex-col items-center space-y-1 ">
-              <div class="bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-24 h-24 rounded-full"
-                    src="https://placekitten.com/201/200"
-                    alt="cute kitty"
-                  />
-                </a>
-              </div>
-
-              <a href="#">kitty_two</a>
-            </li>
-
-            <li class="flex flex-col items-center space-y-1 ">
-              <div class="bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-24 h-24 rounded-full"
-                    src="https://placekitten.com/200/203"
-                    alt="cute kitty"
-                  />
-                </a>
-              </div>
-
-              <a href="#">kitty_three</a>
-            </li>
-
-            <li class="flex flex-col items-center space-y-1 ">
-              <div class="bg-gradient-to-tr from-yellow-400 to-purple-600 p-1 rounded-full">
-                <a
-                  href="#"
-                  class="block bg-white p-1 rounded-full transform transition hover:-rotate-6"
-                >
-                  <img
-                    class="w-24 h-24 rounded-full"
-                    src="https://placekitten.com/202/201"
-                    alt="cute kitty"
-                  />
-                </a>
-              </div>
-
-              <a href="#">kitty_four</a>
-            </li> */}
-          </ul>
-          {/* </div> */}
-        </DragToScroll>
+    <div className="w-full bg-primary shadow-newFeed rounded-2xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+      <div className="flex items-center justify-between text-xl text-ascent-1 pb-4 border-b border-[#66666645]">
+        <span className="text-lg font-medium">Stories</span>
+        <span>
+          <BiDotsHorizontalRounded size={25} />
+        </span>
       </div>
-    </>
+      <CreateStory
+        open={open}
+        handleClose={handleClose}
+        onSuccess={hanldeSuccess}
+      />
+
+      <div className="w-full items-center flex flex-col gap-4 pt-4">
+        <div className="flex gap-4 w-full items-center cursor-pointer">
+          <div
+            onClick={() => setOpen(true)}
+            className="w-12 h-12 rounded-full border-1 border-borderNewFeed opacity-100 hover:opacity-80 hover:scale-105 transition-transform shadow-2xl flex items-center justify-center"
+          >
+            <GoPlus size={30} color="#005DFF" />
+          </div>
+          <div className="flex-1">
+            <p className="text-base font-medium text-ascent-1">
+              Create Your Story
+            </p>
+            <span className="text-sm text-ascent-2">
+              Click button beside to create yours.
+            </span>
+          </div>
+        </div>
+
+        {stories.length > 0 &&
+          stories.map((story) => <StoryCard key={story?.id} story={story} />)}
+      </div>
+    </div>
   );
 };
 

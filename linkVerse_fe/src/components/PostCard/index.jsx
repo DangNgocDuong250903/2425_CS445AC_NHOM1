@@ -9,6 +9,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { Alerts, Button, CustomizeMenu, DialogCustom } from "..";
 import { BiCommentDetail } from "react-icons/bi";
 import {
+  CircularProgress,
   Divider,
   FormControl,
   MenuItem,
@@ -39,16 +40,17 @@ import AlertWelcome from "../AlertWelcome";
 
 const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
-  // const user = useSelector((state) => state.user);
+  const userState = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
-  const [react, setReact] = useState("👍");
   const [showReply, setShowReply] = useState(0);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(false);
   const [replyComments, setReplyComments] = useState(0);
   const [showComments, setShowComments] = useState(0);
+  const [likeCount, setLikeCount] = useState(post?.like || 0);
+  const [dislikeCount, setDislikeCount] = useState(post?.unlike || 0);
   const [like, setLike] = useState(false);
   const [disLike, setDisLike] = useState(false);
   const [openComment, setOpenComment] = useState(false);
@@ -58,6 +60,8 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const [openMessage, setOpenMessage] = useState(false);
   const [openAlert, setOpenAlert] = useState(false);
   const [type, setType] = useState("");
+  const [icon, setIcon] = useState(null);
+  const [duration, setDuration] = useState("");
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
@@ -155,7 +159,31 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       setOpenAlert(true);
       return;
     }
-    const res = await PostService.like({ id, emoji, token });
+
+    try {
+      const res = await PostService.like({ id, token });
+      if (res?.code === 200) {
+        setMessage("You liked the post!");
+        setTypeMessage("success");
+        setLike(true);
+        setLikeCount((prev) => prev + 1);
+        setOpenMessage(true);
+      }
+      if (res?.code === 400) {
+        setTypeMessage("error");
+        setMessage("You have already liked this post.");
+        setOpenMessage(true);
+      }
+    } catch (error) {
+      if (error.response?.data?.code === 400) {
+        setTypeMessage("error");
+        setMessage("You have already liked this post.");
+        setOpenMessage(true);
+      } else {
+        setMessage("An error occurred. Please try again.");
+        setOpenMessage(true);
+      }
+    }
   };
 
   //dislike
@@ -165,7 +193,31 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       setOpenAlert(true);
       return;
     }
-    // const res = await PostService.({ id, emoji, token });
+
+    try {
+      const res = await PostService.dislike({ id, token });
+      if (res?.code === 200) {
+        setMessage("You disliked the post!");
+        setTypeMessage("success");
+        setDisLike(true);
+        setDislikeCount((prev) => prev + 1);
+        setOpenMessage(true);
+      }
+      if (res?.code === 400) {
+        setTypeMessage("error");
+        setMessage("You have already disliked this post.");
+        setOpenMessage(true);
+      }
+    } catch (error) {
+      if (error.response?.data?.code === 400) {
+        setTypeMessage("error");
+        setMessage("You have already liked this post.");
+        setOpenMessage(true);
+      } else {
+        setMessage("An error occurred. Please try again.");
+        setOpenMessage(true);
+      }
+    }
   };
 
   const handleCloseMessage = () => {
@@ -187,43 +239,103 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       setOpenAlert(true);
       return;
     }
-    const res = await PostService.share({ id, token });
-    if (res?.code === 200) {
-      setMessage("Share post success!");
+    try {
+      setIcon(<CircularProgress size={20} color="white" />);
+      setMessage("Share post...");
+      setTypeMessage("warning");
+      setOpenMessage(true);
+      const res = await PostService.share({ id, token });
+      if (res?.code === 200) {
+        setDuration(3000);
+        setIcon();
+        setMessage("Share post success!");
+        setTypeMessage("success");
+        setOpenMessage(true);
+      }
+    } catch (error) {
+      setDuration(3000);
+      setIcon();
+      setMessage("Something went wrong!");
+      setTypeMessage("error");
       setOpenMessage(true);
     }
   };
 
   //delete post
   const handleDeletePost = async (id) => {
-    const res = await PostService.deletePost({ id, token });
-    if (res?.code === 200) {
+    // const res = await PostService.deletePost({ id, token });
+    // if (res?.code === 200) {
+    //   handleClose();
+    //   setOpenMessage(true);
+    //   setMessage("Delete post success!");
+    //   fetchPosts();
+    // }
+
+    try {
       handleClose();
+      setIcon(<CircularProgress size={20} color="white" />);
+      setMessage("Delete post...");
+      setTypeMessage("warning");
       setOpenMessage(true);
-      setMessage("Delete post success!");
+      const res = await PostService.deletePost({ id, token });
+      if (res?.code === 400) {
+        setDuration(3000);
+        setIcon();
+        setMessage("Post already saved!");
+        setTypeMessage("error");
+        setOpenMessage(true);
+        return;
+      }
       fetchPosts();
+      setDuration(3000);
+      setIcon();
+      setMessage("Delete post success!");
+      setTypeMessage("success");
+      setOpenMessage(true);
+    } catch (error) {
+      setDuration(3000);
+      setIcon();
+      setMessage("Something went wrong!");
+      setTypeMessage("error");
+      setOpenMessage(true);
     }
   };
 
   //save post
   const handleSavePost = async (id) => {
-    const res = await PostService.save({ id, token });
-    if (res?.code === 200) {
-      setOpenMessage(true);
-      setMessage("Save post success!");
+    try {
       handleClose();
-      fetchPosts();
-    }
-    if (res?.code === 400) {
+      setIcon(<CircularProgress size={20} color="white" />);
+      setMessage("Save post...");
+      setTypeMessage("warning");
+      setOpenMessage(true);
+      const res = await PostService.save({ id, token });
+      if (res?.code === 400) {
+        setDuration(3000);
+        setIcon();
+        setMessage("Post already saved!");
+        setTypeMessage("error");
+        setOpenMessage(true);
+        return;
+      }
+      setDuration(3000);
+      setIcon();
+      setMessage("Save post success!");
+      setTypeMessage("success");
+      setOpenMessage(true);
+    } catch (error) {
+      setDuration(3000);
+      setIcon();
+      setMessage("Something went wrong!");
       setTypeMessage("error");
       setOpenMessage(true);
-      setMessage("Post already saved!");
-      handleClose();
-      fetchPosts();
     }
   };
 
   //block user
+
+  console.log(user);
+  console.log(post);
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -234,6 +346,8 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       />
       <Alerts
         type={typeMessage}
+        icon={icon}
+        duration={duration}
         message={message}
         open={openMessage}
         position={{ vertical: "bottom", horizontal: "center" }}
@@ -321,7 +435,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                         </MenuItem>
                       </div>
                     )}
-                    {user?.id === post?.userId && (
+                    {userState?.id === post?.userId && (
                       <div>
                         {/* <MenuItem onClick={handleClose} disableRipple>
                       <div className="flex items-center justify-between w-full">
@@ -414,17 +528,33 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div class="relative group">
-              <BiLike size={20} onClick={() => handleLike(post?.id)} />
+            <div className="relative group">
+              {like ? (
+                <BiSolidLike
+                  size={20}
+                  onClick={() => handleLike(post?.id)}
+                  className="text-blue-500"
+                />
+              ) : (
+                <BiLike size={20} onClick={() => handleLike(post?.id)} />
+              )}
             </div>
-            {post?.like}
+            <span>{likeCount}</span>
           </div>
 
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
             <div class="relative group">
-              <BiDislike size={20} onClick={() => handleDisLike(post?.id)} />
+              {disLike ? (
+                <BiSolidDislike
+                  size={20}
+                  onClick={() => handleDisLike(post?.id)}
+                  className="text-blue-500"
+                />
+              ) : (
+                <BiDislike size={20} onClick={() => handleDisLike(post?.id)} />
+              )}
             </div>
-            {post?.unlike}
+            <span>{dislikeCount}</span>
           </div>
 
           <p className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform">

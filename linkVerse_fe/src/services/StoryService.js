@@ -17,3 +17,12 @@ export const createStory = async ({ data, token }) => {
     })
     return res.data
 }
+
+export const getAllStory = async ({ page, token }) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/stories?page=${page}&size=10`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}

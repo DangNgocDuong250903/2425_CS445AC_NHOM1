@@ -11,10 +11,11 @@ const initialState = {
     emailVerified: false,
     createdAt: "",
     token: "",
+    phoneNumber: "",
     dob: "",
     status: "",
     roles: [],
-    friends: ""
+    friends: 0
 };
 
 const userSlice = createSlice({
@@ -29,6 +30,7 @@ const userSlice = createSlice({
                 lastName = "",
                 email = "",
                 username = "",
+                phoneNumber = "",
                 createdAt = "",
                 city = null,
                 token = "",
@@ -37,7 +39,6 @@ const userSlice = createSlice({
                 status = "",
                 roles = [],
                 imageUrl = "",
-                friends = ""
             } = action.payload
 
             state.lastName = lastName
@@ -49,12 +50,12 @@ const userSlice = createSlice({
             state.createdAt = createdAt
             state.dob = dob
             state.username = username
+            state.phoneNumber = phoneNumber
             state.city = city
             state.emailVerified = emailVerified
             state.token = token
             state.status = status
             state.roles = roles
-            state.friends = friends
         },
         resetUser(state, action) {
             state.lastName = ""
@@ -64,15 +65,23 @@ const userSlice = createSlice({
             state.dob = ""
             state.avatar = ""
             state.createdAt = ""
+            state.phoneNumber = ""
             state.emailVerified = false
             state.city = null
             state.token = ""
             state.username = ""
             state.roles = []
+        },
+        updateStatus(state, action) {
+            state.status = action.payload
+        },
+        updateFriends(state, action) {
+
+            state.friends = action.payload
         }
     },
 });
 
-export const { updateUser, resetUser } = userSlice.actions
+export const { updateUser, resetUser, updateFriends, updateStatus } = userSlice.actions
 
 export default userSlice.reducer;

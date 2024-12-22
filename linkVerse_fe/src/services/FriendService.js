@@ -36,8 +36,12 @@ export const reject = async ({ id, token }) => {
     return res.data
 }
 
-export const unfriend = async () => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/unfriend`)
+export const unfriend = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/unfriend?recipientUserId=${id}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
     return res.data
 }
 

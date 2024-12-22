@@ -1,3 +1,4 @@
+// FriendRequest.js
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as FriendService from "~/services/FriendService";
@@ -6,6 +7,7 @@ import { Link } from "react-router-dom";
 import { BlankAvatar } from "~/assets";
 import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
+import useGetMyFriend from "~/hooks/useGetMyFriend";
 
 const FriendRequest = () => {
   const { t } = useTranslation();
@@ -16,6 +18,7 @@ const FriendRequest = () => {
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("success");
+  const { friends, reload } = useGetMyFriend();
 
   //close message
   const handleClose = () => {
@@ -30,7 +33,7 @@ const FriendRequest = () => {
         setRequests(res);
       }
     } catch (error) {
-      clg("Error fetching friend requests:", error);
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -44,10 +47,8 @@ const FriendRequest = () => {
   const handleAccept = async (id) => {
     try {
       const res = await FriendService.accept({ id, token });
-      if (res?.code === 9999 || res?.status === "ACCEPTED") {
-        setMessage("Đã chấp nhận lời mời kết bạn");
-        setType(res?.code === 9999 ? "error" : "success");
-        setOpen(true);
+      if (res) {
+        reload(); // Refetch the friends list after accepting the request
       }
     } catch (error) {
       setMessage("Something went wrong!");
@@ -61,9 +62,7 @@ const FriendRequest = () => {
     try {
       const res = await FriendService.reject({ id, token });
       if (res?.code === 9999 || res?.status === "REJECTED") {
-        setMessage("Đã từ chối lời mời kết bạn");
-        setType(res?.code === 9999 ? "error" : "success");
-        setOpen(true);
+        reload();
       }
     } catch (error) {
       setMessage("Something went wrong!");
@@ -73,7 +72,7 @@ const FriendRequest = () => {
   };
 
   return (
-    <div className="w-full bg-primary shadow-newFeed rounded-xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+    <div className="w-full bg-primary shadow-newFeed rounded-2xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-2 border-b border-[#66666645]">
         <span>{t("Lời mời kết bạn")}</span>
         <span>{requests.length}</span>
@@ -111,7 +110,7 @@ const FriendRequest = () => {
                     {request?.firstName + " " + request?.lastName}
                   </p>
                   <span id="text-ellipsis" className="text-sm text-ascent-2">
-                    {request?.username ?? "No profession"}
+                    {request?.username ?? "No username"}
                   </span>
                 </div>
               </Link>

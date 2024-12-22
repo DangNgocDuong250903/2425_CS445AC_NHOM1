@@ -17,7 +17,7 @@ const ProfileCard = () => {
   const user = useSelector((state) => state?.user);
 
   return (
-    <div className="w-full bg-primary flex flex-col items-center rounded-xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
+    <div className="w-full bg-primary flex flex-col items-center rounded-2xl px-6 py-4 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed ">
       <div className="w-full flex items-center justify-between border-b pb-5 border-[#66666645]">
         <Link to={`/profile/${user?.id}`} className="flex gap-2">
           <div className="relative">
@@ -65,7 +65,7 @@ const ProfileCard = () => {
       </div>
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
-          {"0"} {t("Bạn bè")}
+          {user?.friends} {t("Bạn bè")}
         </p>
 
         <span className="text-base text-blue">

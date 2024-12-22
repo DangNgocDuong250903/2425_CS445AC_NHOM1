@@ -21,13 +21,15 @@ import * as UserService from "~/services/UserService";
 import { BsFillPlusCircleFill } from "react-icons/bs";
 import { useParams } from "react-router-dom";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
+import useGetFriendRequest from "~/hooks/useGetFriendRequest";
+import * as FriendService from "~/services/FriendService";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
   const userPrimary = useSelector((state) => state.user);
-  const { user, loading, reload: fetchUser } = useGetDetailUser();
+  // const { user, loading, reload: fetchUser } = useGetDetailUser();
   const token = localStorage.getItem("token");
   const [loadingPost, setLoadingPost] = useState(false);
   const [posts, setPosts] = useState([]);
@@ -38,8 +40,9 @@ const ProfilePage = () => {
   const { id } = useParams();
   const [page, setPage] = useState(1);
   const { friends } = useGetMyFriend();
+  const { request } = useGetFriendRequest();
+  const [user, setUser] = useState({});
 
-  console.log(friends);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -71,6 +74,7 @@ const ProfilePage = () => {
     };
   };
 
+  //fetch post
   const fetchMyPosts = async ({ id, token, page }) => {
     setLoadingPost(true);
     try {
@@ -89,8 +93,23 @@ const ProfilePage = () => {
     fetchMyPosts({ id, token, page });
   }, []);
 
+  //fetch detail user
+  const fetchDetailUser = async ({ id, token }) => {
+    try {
+      const res = await UserService.getDetailUserByUserId({ id, token });
+      if (res?.code === 1000) {
+        setUser(res?.result);
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchDetailUser({ id, token });
+  }, []);
+
   const handleSuccess = () => {
     setPosts([]);
+    fetchDetailUser({ id, token });
     fetchMyPosts({ id, token, page });
   };
 
@@ -101,7 +120,7 @@ const ProfilePage = () => {
     try {
       const res = await UserService.setAvatar({ file, token });
       if (res) {
-        fetchUser();
+        handleSuccess();
       }
       setTypeMessage("success");
       setMessage(res);
@@ -114,6 +133,16 @@ const ProfilePage = () => {
       setLoadingUpdateAvatar(false);
     }
   };
+
+  //unfriend
+  const handleUnfriend = async (id) => {
+    const res = await FriendService.unfriend({ id, token });
+    if (res) {
+      fetchUser();
+    }
+  };
+
+  //request
 
   return (
     <>
@@ -190,7 +219,7 @@ const ProfilePage = () => {
               </div>
               {/* 3 */}
               <div className="flex justify-between items-center">
-                <span>0 friends</span>
+                <span>{userState.friends} friends</span>
                 <div className="flex gap-2">
                   <FaInstagram
                     color={theme === "dark" ? "#fff" : "#000"}
@@ -208,7 +237,7 @@ const ProfilePage = () => {
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   {friends?.find((friend) => friend?.userId === user?.id) ? (
                     <Button
-                      onClick={() => setIsOpenDialogEdit(true)}
+                      onClick={() => handleUnfriend(user?.id)}
                       title="Hủy kết bạn"
                       containerStyles={
                         "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
@@ -234,7 +263,7 @@ const ProfilePage = () => {
                 </div>
               ) : (
                 <div className="w-full text-center items-center justify-center flex ">
-                  <UpdateUser profile />
+                  <UpdateUser profile onSuccess={handleSuccess} />
                 </div>
               )}
             </div>

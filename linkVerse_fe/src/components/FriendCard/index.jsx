@@ -1,30 +1,18 @@
+// FriendCard.js
 import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { BlankAvatar } from "~/assets/index";
+import useGetMyFriend from "~/hooks/useGetMyFriend";
+import { updateFriends } from "~/redux/Slices/userSlice";
 import * as FriendService from "~/services/FriendService";
 
 const FriendCard = () => {
-  const [loading, setLoading] = useState(false);
-  const [friends, setFriends] = useState([]);
-  const token = localStorage.getItem("token");
-
-  const fetchMyFriends = async (token) => {
-    setLoading(true);
-    const res = await FriendService.getMyFriends(token);
-    if (res) {
-      setLoading(false);
-      setFriends(res);
-    }
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    fetchMyFriends(token);
-  }, []);
+  const { friends, loading } = useGetMyFriend();
 
   return (
-    <div className="w-full bg-primary rounded-lg px-6 py-5 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+    <div className="w-full bg-primary rounded-2xl px-6 py-5 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-ascent-1 pb-2 border-b border-[#66666645]">
         <span>Friends</span>
         <span>{friends?.length}</span>

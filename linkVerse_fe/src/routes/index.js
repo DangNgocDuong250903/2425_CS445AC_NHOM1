@@ -34,4 +34,8 @@ export const route = [
         path: '/saveds',
         element: SavedsPage,
     },
+    // {
+    //     path: '/verify',
+    //     element: SavedsPage,
+    // },
 ]

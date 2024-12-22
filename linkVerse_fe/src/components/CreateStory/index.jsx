@@ -19,7 +19,7 @@ import { useMutationHook } from "~/hooks/useMutationHook";
 import * as StoryService from "~/services/StoryService";
 import useDragAndDrop from "~/hooks/useDragAndDrop";
 
-const CreateStory = ({ handleClose, open }) => {
+const CreateStory = ({ handleClose, open, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const [status, setStatus] = useState("");
@@ -57,12 +57,13 @@ const CreateStory = ({ handleClose, open }) => {
   useEffect(() => {
     if (isSuccess) {
       if (data?.code === 200) {
-        // onSuccess();
+        handleClose();
+        onSuccess();
       } else if (data?.code === 400) {
         setOpen(false);
       }
     } else if (isError) {
-      setMessage("Something went wrong!");
+      console.log("loi");
     }
   }, [isSuccess, isError]);
 
@@ -248,15 +249,15 @@ const CreateStory = ({ handleClose, open }) => {
                   title="Đăng"
                   onClick={handleSubmitPost}
                   containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                  // disable={isPending || (files.length === 0 && !status.trim())}
+                  disable={isPending || (files.length === 0 && !status.trim())}
                 />
 
-                {/* {isPending && (
+                {isPending && (
                   <CircularProgress
                     className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
                     size={20}
                   />
-                )} */}
+                )}
               </div>
             </div>
           </div>
