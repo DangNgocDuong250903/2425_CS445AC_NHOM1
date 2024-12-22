@@ -16,6 +16,5 @@ public interface IdentityServiceClient {
     void updateImage(@PathVariable("userId") String userId, @RequestParam("imageFile") String imageFile);
 
     @GetMapping("/groups/{groupId}/isUserInGroup")
-    ResponseEntity<ApiResponse<Boolean>> isUserInGroup(@PathVariable String groupId);
-
+    boolean isUserInGroup(@PathVariable String groupId);
 }
