@@ -5,13 +5,14 @@ import com.LinkVerse.identity.dto.request.GroupRequest;
 import com.LinkVerse.identity.dto.response.GroupResponse;
 import com.LinkVerse.identity.entity.Group;
 import com.LinkVerse.identity.entity.GroupMember;
-import com.LinkVerse.identity.entity.GroupVisibility;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.repository.GroupMemberRepository;
 import com.LinkVerse.identity.repository.GroupRepository;
 import com.LinkVerse.identity.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -53,7 +57,7 @@ public class GroupService {
         Group group = Group.builder()
                 .name(request.getName())
                 .description(request.getDescription())
-                .visibility(GroupVisibility.valueOf(request.getVisibility()))
+                .visibility(request.getVisibility())
                 .memberCount(1)
                 .owner(user)
                 .build();
@@ -169,6 +173,19 @@ public class GroupService {
                 .result(groupResponse)
                 .build();
     }
+
+    @Transactional
+    public boolean isUserInGroup(String groupId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+        return groupMemberRepository.findByGroupAndUser(group, userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))).isPresent();
+    }
+
 
 
 }

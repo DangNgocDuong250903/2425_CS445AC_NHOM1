@@ -16,15 +16,14 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(value = "post")
+@Document(value = "post_group")
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Post {
+public class PostGroup {
     @MongoId
     String id;
     String userId;
     String content;
-    @DBRef
-    User user;
+
     @ElementCollection
     List<String> imageUrl;
     String imgAvatarUrl;

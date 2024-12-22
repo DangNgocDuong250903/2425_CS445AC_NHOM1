@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
 import java.util.Set;
 
 @Getter
@@ -41,6 +42,5 @@ public class Group {
 
     @Column(name = "member_count", nullable = false)
     int memberCount; // Thêm field memberCount
-
 
 }

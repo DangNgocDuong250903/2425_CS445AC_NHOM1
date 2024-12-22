@@ -8,6 +8,7 @@ import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.service.PostService;
 import com.LinkVerse.post.service.TranslationService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -51,12 +52,11 @@ public class PostController {
     }
 
     // Create a new post
-    @PostMapping("/post-file")
+    @PostMapping(value = "/post-file")
     public ResponseEntity<ApiResponse<PostResponse>> createPostWithImage(
-            @RequestParam("request") String requestJson,
-            @RequestParam("files") List<MultipartFile> files) throws IOException {
+            @RequestPart("request") String requestJson,
+            @RequestPart("files") List<MultipartFile> files) throws IOException {
 
-        // Chuyển String JSON thành PostRequest
         ObjectMapper objectMapper = new ObjectMapper();
         PostRequest request = objectMapper.readValue(requestJson, PostRequest.class);
 
@@ -89,6 +89,8 @@ public class PostController {
                 .result(response.getResult())
                 .build();
     }
+
+
 
 
     // Delete a post
@@ -137,6 +139,24 @@ public class PostController {
     public ApiResponse<PostResponse> getPostById(@PathVariable String postId) {
         return postService.getPostById(postId);
     }
+
+    @PostMapping("/{postId}/change-visibility")
+    public ResponseEntity<ApiResponse<PostResponse>> changePostVisibility(
+            @PathVariable String postId,
+            @RequestParam String visibility) {
+        try {
+            PostVisibility newVisibility = PostVisibility.valueOf(visibility.toUpperCase());
+            ApiResponse<PostResponse> response = postService.changePostVisibility(postId, newVisibility);
+            return ResponseEntity.ok(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.<PostResponse>builder()
+                            .code(HttpStatus.FORBIDDEN.value())
+                            .message(e.getMessage())
+                            .build());
+        }
+    }
+
 
     @GetMapping("/all")
     public ApiResponse<PageResponse<PostResponse>> getAllPost(

@@ -30,6 +30,8 @@ public enum ErrorCode {
     USER_NOT_IN_GROUP(1021, "User not in group", HttpStatus.FORBIDDEN),
     STORY_NOT_EXISTED(1022, "Story not existed", HttpStatus.NOT_FOUND),
     FORBIDDEN(1023, "Forbidden", HttpStatus.FORBIDDEN),
+    JSON_PROCESSING_FAILED(1024, "JSON processing failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    POST_CREATION_FAILED(1025, "Post creation failed", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -12,13 +12,11 @@ import java.time.Instant;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
 @Document(value = "image_violations")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ImageViolation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
     @Column(nullable = false)

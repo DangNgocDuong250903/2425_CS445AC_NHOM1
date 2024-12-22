@@ -1,5 +1,6 @@
 package com.LinkVerse.identity.dto.request;
 
+import com.LinkVerse.identity.entity.GroupVisibility;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,8 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GroupRequest {
-
     String name;
     String description;
-    String visibility;
+    GroupVisibility visibility;
 }
