@@ -20,6 +20,5 @@ public interface IdentityServiceClient {
     void getUser(@PathVariable("userId") String userId);
 
     @GetMapping("/groups/{groupId}/isUserInGroup")
-    ResponseEntity<ApiResponse<Boolean>> isUserInGroup(@PathVariable String groupId);
-
+    boolean isUserInGroup(@PathVariable String groupId);
 }

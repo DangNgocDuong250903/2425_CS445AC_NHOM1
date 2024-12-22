@@ -32,15 +32,10 @@ public class GroupController {
     }
 
     @GetMapping("/{groupId}/isUserInGroup")
-    public ApiResponse<Boolean> isUserInGroup(@PathVariable String groupId) {
+    public ResponseEntity<Boolean> isUserInGroup(@PathVariable String groupId) {
         boolean isInGroup = groupService.isUserInGroup(groupId);
-        return ApiResponse.<Boolean>builder()
-                .code(200)
-                .message("User is in group")
-                .result(isInGroup)
-                .build();
+        return ResponseEntity.ok(isInGroup);
     }
-
 
     @PostMapping("/{groupId}/members/{memberId}")
     public ResponseEntity<ApiResponse<GroupResponse>> addMemberToGroup(

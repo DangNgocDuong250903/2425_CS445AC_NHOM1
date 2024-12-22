@@ -55,15 +55,13 @@ public class PostGroupService {
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     IdentityServiceClient identityServiceClient;
-    TagProcessor tagProcessor;
-    HashtagRepository hashtagRepository;
 
     public ApiResponse<PostGroupResponse> createPostGroup(PostGroupRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
-        var response = identityServiceClient.isUserInGroup(request.getGroupId());
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        boolean isInGroup = identityServiceClient.isUserInGroup(request.getGroupId());
+        if (!isInGroup) {
             return ApiResponse.<PostGroupResponse>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .message("User is not in the group.")
@@ -148,8 +146,8 @@ public class PostGroupService {
             throw new RuntimeException("Not authorized to delete this post");
         }
 
-        var response = identityServiceClient.isUserInGroup(post.getGroupId());
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        boolean isInGroup = identityServiceClient.isUserInGroup(post.getGroupId());
+        if (!isInGroup) {
             return ApiResponse.<Void>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .message("User is not in the group.")
@@ -180,8 +178,8 @@ public class PostGroupService {
     public ApiResponse<PageResponse<PostGroupResponse>> getAllPost(int page, int size, String groupId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.asc("createdDate")));
 
-        var response = identityServiceClient.isUserInGroup(groupId);
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        boolean isInGroup = identityServiceClient.isUserInGroup(groupId);
+        if (!isInGroup) {
             return ApiResponse.<PageResponse<PostGroupResponse>>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .message("User is not in the group.")
@@ -212,13 +210,14 @@ public class PostGroupService {
     public ApiResponse<PageResponse<PostGroupResponse>> getUserPost(int page, int size, String userId, String groupId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.asc("createdDate")));
 
-        var response = identityServiceClient.isUserInGroup(groupId);
-        if (!response.getStatusCode().equals(HttpStatus.OK)) {
+        boolean isInGroup = identityServiceClient.isUserInGroup(groupId);
+        if (!isInGroup) {
             return ApiResponse.<PageResponse<PostGroupResponse>>builder()
                     .code(HttpStatus.BAD_REQUEST.value())
                     .message("User is not in the group.")
                     .build();
         }
+
         Page<PostGroup> pageData = postGroupRepository.findPostByUserId(userId, pageable);
 
         List<PostGroup> posts = pageData.getContent().stream()

@@ -186,6 +186,4 @@ public class GroupService {
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))).isPresent();
     }
 
-
-
 }
