@@ -1,21 +1,11 @@
 package com.LinkVerse.notification.service;
 
-import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
-
-import com.LinkVerse.notification.dto.response.IntrospectResponse;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-
-import com.LinkVerse.notification.dto.request.*;
+import com.LinkVerse.notification.dto.request.AuthenticationRequest;
+import com.LinkVerse.notification.dto.request.IntrospectRequest;
+import com.LinkVerse.notification.dto.request.LogoutRequest;
+import com.LinkVerse.notification.dto.request.RefreshRequest;
 import com.LinkVerse.notification.dto.response.AuthenticationResponse;
+import com.LinkVerse.notification.dto.response.IntrospectResponse;
 import com.LinkVerse.notification.entity.InvalidatedToken;
 import com.LinkVerse.notification.entity.User;
 import com.LinkVerse.notification.exception.AppException;
@@ -27,12 +17,23 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.text.ParseException;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
+import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -56,11 +57,37 @@ public class AuthenticationService {
     protected long REFRESHABLE_DURATION;
 
     public String generatePasswordResetToken(User user) {
-            return generateToken(user);
+        return generateToken(user);
+    }
+
+    public String generateEmailVerificationToken(User user) {
+        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
+
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(user.getId())
+                .issuer("LinkVerse.com")
+                .issueTime(new Date())
+                .expirationTime(new Date(
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()))
+                .jwtID(UUID.randomUUID().toString())
+                .claim("email", user.getEmail())
+                .build();
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(header, payload);
+
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            log.error("Cannot create token", e);
+            throw new RuntimeException(e);
+        }
     }
 
     //vo hieu hoa token khi reset
-        public void invalidateToken(String tokenId) {
+    public void invalidateToken(String tokenId) {
         Date expiryTime = new Date(); // Đánh dấu thời điểm token bị vô hiệu hóa
 
         InvalidatedToken invalidatedToken = InvalidatedToken.builder()
@@ -171,11 +198,11 @@ public class AuthenticationService {
 
         Date expiryTime = (isRefresh)
                 ? new Date(signedJWT
-                        .getJWTClaimsSet()
-                        .getIssueTime()
-                        .toInstant()
-                        .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                        .toEpochMilli())
+                .getJWTClaimsSet()
+                .getIssueTime()
+                .toInstant()
+                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                .toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
 
         var verified = signedJWT.verify(verifier);
@@ -201,5 +228,6 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
-    private record TokenInfo(String token, Date expiryDate) {}
+    private record TokenInfo(String token, Date expiryDate) {
+    }
 }
