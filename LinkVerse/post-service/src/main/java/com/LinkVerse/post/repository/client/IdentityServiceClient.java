@@ -3,10 +3,7 @@ package com.LinkVerse.post.repository.client;
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.post.configuration.AuthenticationRequestInterceptor;
 import org.springframework.cloud.openfeign.FeignClient;
-<<<<<<< HEAD
-=======
 import org.springframework.http.ResponseEntity;
->>>>>>> DangNgocDuong250903-2425_MangXaHoiLinkVerse/build
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,12 +15,11 @@ public interface IdentityServiceClient {
     @PutMapping("/users/{userId}")
     void updateImage(@PathVariable("userId") String userId, @RequestParam("imageFile") String imageFile);
 
-<<<<<<< HEAD
+
     @GetMapping("/identity/users/{userId}")
     void getUser(@PathVariable("userId") String userId);
-=======
+
     @GetMapping("/groups/{groupId}/isUserInGroup")
     ResponseEntity<ApiResponse<Boolean>> isUserInGroup(@PathVariable String groupId);
->>>>>>> DangNgocDuong250903-2425_MangXaHoiLinkVerse/build
 
 }
