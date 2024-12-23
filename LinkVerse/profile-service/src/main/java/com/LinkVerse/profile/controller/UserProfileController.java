@@ -3,6 +3,7 @@ package com.LinkVerse.profile.controller;
 import com.LinkVerse.profile.dto.ApiResponse;
 import com.LinkVerse.profile.dto.response.UserProfileResponse;
 import com.LinkVerse.profile.exception.AppException;
+import com.LinkVerse.profile.repository.UserProfileRepository;
 import com.LinkVerse.profile.service.UserProfileService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,10 +11,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,7 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class UserProfileController {
     UserProfileService userProfileService;
-
+    UserProfileRepository userProfileRepository;
 
     @GetMapping("/users/{profileId}")
     ApiResponse<UserProfileResponse> getProfile(@PathVariable String profileId) {
@@ -53,6 +51,21 @@ public class UserProfileController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             log.error("Failed to delete user profile for ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @DeleteMapping("/profile")
+    public ResponseEntity<Void> deleteUserProfileByUsers(@RequestHeader("Authorization") String token) {
+        try {
+            userProfileService.deleteUserProfileByUsers(token);
+            log.info("Successfully deleted user profile for token: {}", token);
+            return ResponseEntity.noContent().build();
+        } catch (AppException e) {
+            log.error("Error deleting user profile for token: {}", token, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Failed to delete user profile for token: {}", token, e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

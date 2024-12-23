@@ -74,4 +74,13 @@ public class UserProfileService {
         userProfileRepository.delete(userProfile);
     }
 
+
+    public void deleteUserProfileByUsers(String token) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+
+        UserProfile userProfile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userProfileRepository.delete(userProfile);
+    }
 }

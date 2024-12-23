@@ -226,13 +226,14 @@ public class UserService {
                 throw new AppException(ErrorCode.USER_DELETED);
             }
         }
-        profileClient.deleteUserProfile(user.getId());
+        profileClient.deleteUserProfileByToken(token);
         return userMapper.toUserResponse(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUserByAdmin(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        profileClient.deleteUserProfile(user.getId());
         userRepository.delete(user);
     }
 
