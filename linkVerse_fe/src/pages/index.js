@@ -11,7 +11,8 @@ import ReplyPage from "./ReplyPage"
 import SettingPage from "./SettingPage";
 import ResetPassword from "./ResetPasswordPage";
 import SavedsPage from "./SavedsPage";
+import VerifyPage from "./VerifyPage";
 
 export {
-    ChatPage, SavedsPage, SettingPage, ResetPassword, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ForgotPasswordpage, ProfilePage
+    ChatPage, VerifyPage, SavedsPage, SettingPage, ResetPassword, Admin, ReplyPage, GroupPage, HomePage, LoginPage, NotFoundPage, RegisterPage, ForgotPasswordpage, ProfilePage
 }

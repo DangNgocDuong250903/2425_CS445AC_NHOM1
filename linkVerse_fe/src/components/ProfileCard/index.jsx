@@ -26,8 +26,10 @@ const ProfileCard = () => {
               alt={"avatar"}
               className="w-14 h-14 object-cover rounded-full"
             />
-            {user?.status === "ONLINE" && (
+            {user?.status === "ONLINE" ? (
               <div className="absolute top-1 right-1 w-3 h-3 bg-[#53C259] rounded-full border-2 border-[#392629]" />
+            ) : (
+              <div className="absolute top-1 right-1 w-3 h-3 bg-[#ccc] rounded-full border-2 border-[#000]" />
             )}
           </div>
           <div className="flex flex-col justify-center">

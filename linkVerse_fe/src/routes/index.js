@@ -1,4 +1,4 @@
-import { Admin, ChatPage, GroupPage, NotFoundPage, ProfilePage, ReplyPage, SavedsPage, SettingPage } from "~/pages";
+import { Admin, ChatPage, GroupPage, NotFoundPage, ProfilePage, ReplyPage, SavedsPage, SettingPage, VerifyPage } from "~/pages";
 
 export const route = [
     {
@@ -34,8 +34,8 @@ export const route = [
         path: '/saveds',
         element: SavedsPage,
     },
-    // {
-    //     path: '/verify',
-    //     element: SavedsPage,
-    // },
+    {
+        path: '/verify-email',
+        element: VerifyPage,
+    },
 ]

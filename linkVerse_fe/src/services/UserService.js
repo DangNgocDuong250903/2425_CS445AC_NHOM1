@@ -1,5 +1,4 @@
 import axios from 'axios'
-
 export const axiosJWT = axios.create()
 
 export const register = async (data) => {
@@ -25,6 +24,33 @@ export const update = async ({ token, data }) => {
         }
     })
 
+    return res.data
+}
+
+export const block = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/block?targetUserId=${id}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const unBlock = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/unblock?targetUserId=${id}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const blockList = async (token) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/block-list`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
     return res.data
 }
 
@@ -76,13 +102,17 @@ export const resetPassword = async ({ token, password }) => {
     return res.data;
 }
 
-export const verifyEmail = async () => {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND_2}/notification/email/send-verification?email=${email}`);
+export const verifyEmail = async (data) => {
+    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND_2}/notification/email/send-verification?email=${data}`);
     return res.data;
 }
 
-export const verify = async (token) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND_2}/notification/email/verify?token=${token}`);
+export const verify = async ({ data, token }) => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND_2}/notification/email/verify?token=${data}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    });
     return res.data;
 }
 

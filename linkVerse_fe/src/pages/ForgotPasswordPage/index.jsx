@@ -89,7 +89,6 @@ const ForgotPasswordPage = () => {
                 errors.email ? "border-red-600" : ""
               }`}
               labelStyles="ml-2"
-              // error={errors.email ? errors.email.message : ""}
               iconRight={
                 errors.email ? <FaCircleExclamation color="red" /> : ""
               }

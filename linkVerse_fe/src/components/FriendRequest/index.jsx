@@ -48,7 +48,7 @@ const FriendRequest = () => {
     try {
       const res = await FriendService.accept({ id, token });
       if (res) {
-        reload(); // Refetch the friends list after accepting the request
+        reload();
       }
     } catch (error) {
       setMessage("Something went wrong!");
