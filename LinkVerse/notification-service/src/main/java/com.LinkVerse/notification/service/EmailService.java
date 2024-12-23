@@ -23,6 +23,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,10 +34,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class EmailService {
-    EmailClient emailClient;
+    final EmailClient emailClient;
     final JavaMailSender javaMailSender;
-    UserRepository userRepository;
-    AuthenticationService authenticationService;
+    final UserRepository userRepository;
+    final TokenService tokenService;
 
     @Value("${notification.email.brevo-apikey}")
     @NonFinal
@@ -53,37 +55,27 @@ public class EmailService {
                 .build();
 
         try {
-            // Gửi email qua dịch vụ Brevo
             return emailClient.sendEmail(apiKey, emailRequest);
         } catch (FeignException e) {
-            // Nếu có lỗi, gọi phương thức fallback
             return sendEmailFallback(request);
         }
     }
 
     private EmailResponse sendEmailFallback(SendEmailRequest request) {
         try {
-            // Tạo một đối tượng MimeMessage
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            // Thiết lập thông tin email
             helper.setTo(request.getTo().getEmail());
             helper.setSubject(request.getSubject());
             helper.setText(request.getHtmlContent(), true);
-
-            // Gửi email
             javaMailSender.send(message);
-
-            // Trả về phản hồi thành công
             return new EmailResponse("Email sent successfully via fallback method");
         } catch (MessagingException e) {
-            // Xử lý ngoại lệ nếu gửi email qua JavaMailSender thất bại
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
 
-    public void sendEmailForgetPass(String email, String token) {
+    public void sendEmailForgetPass(String email, User user) {
         if (!userRepository.existsByEmail(email)) {
             log.error("Email {} does not exist in the system", email);
             throw new RuntimeException("Email does not exist in the system");
@@ -92,15 +84,12 @@ public class EmailService {
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
-            String resetLink = "http://localhost:5173/reset-password?token=" + token;
+            String resetLink = "http://localhost:5173/reset-password?token=" + tokenService.generateToken(user);
             String htmlContent = "<p>Click vao de thay doi mat khau:</p>" +
                     "<a href=\"" + resetLink + "\">Reset Password</a>";
-
             helper.setTo(email);
             helper.setSubject("Password Reset");
             helper.setText(htmlContent, true);
-
             javaMailSender.send(message);
             log.info("Email sent successfully to {}", email);
         } catch (MailException | MessagingException e) {
@@ -111,16 +100,13 @@ public class EmailService {
 
     public ApiResponse<Void> verifyEmail(String token) {
         try {
-            SignedJWT signedJWT = authenticationService.verifyToken(token, false);
+            SignedJWT signedJWT = tokenService.verifyToken(token, false);
             String userId = signedJWT.getJWTClaimsSet().getSubject();
-
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
             user.setEmailVerified(true);
             userRepository.save(user);
-
-            authenticationService.invalidateToken(signedJWT.getJWTClaimsSet().getJWTID());
+            tokenService.invalidateToken(signedJWT.getJWTClaimsSet().getJWTID());
             return ApiResponse.<Void>builder()
                     .code(1000)
                     .message("Email verified successfully")
@@ -136,26 +122,37 @@ public class EmailService {
     public void sendEmailVerification(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
-
-        String token = authenticationService.generateEmailVerificationToken(user);
+        String token = tokenService.generateToken(user);
 
         try {
             MimeMessage message = javaMailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, true);
-
             String verificationLink = "http://localhost:5173/verify-email?token=" + token;
             String htmlContent = "<p>Click the link to verify your email:</p>" +
                     "<a href=\"" + verificationLink + "\">Verify Email</a>";
-
             helper.setTo(email);
             helper.setSubject("Email Verification");
             helper.setText(htmlContent, true);
-
             javaMailSender.send(message);
             log.info("Verification email sent successfully to {}", email);
         } catch (MailException | MessagingException e) {
             log.error("Failed to send verification email to {}: {}", email, e.getMessage());
             throw new RuntimeException("Cannot send email", e);
+        }
+    }
+
+    public void resetPassword(String token, String newPassword) {
+        try {
+            SignedJWT signedJWT = tokenService.verifyToken(token, false);
+            String userId = signedJWT.getJWTClaimsSet().getSubject();
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_FOUND));
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+            user.setPassword(passwordEncoder.encode(newPassword));
+            userRepository.save(user);
+            tokenService.invalidateToken(signedJWT.getJWTClaimsSet().getJWTID());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to reset password: " + e.getMessage(), e);
         }
     }
 }
