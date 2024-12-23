@@ -226,7 +226,7 @@ public class UserService {
                 throw new AppException(ErrorCode.USER_DELETED);
             }
         }
-
+        profileClient.deleteUserProfile(user.getId());
         return userMapper.toUserResponse(user);
     }
 

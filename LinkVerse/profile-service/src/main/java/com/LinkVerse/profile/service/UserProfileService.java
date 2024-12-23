@@ -6,7 +6,6 @@ import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.exception.AppException;
 import com.LinkVerse.profile.exception.ErrorCode;
 import com.LinkVerse.profile.mapper.UserProfileMapper;
-import com.LinkVerse.profile.repository.SearchRepository.SearchRepository;
 import com.LinkVerse.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -69,5 +68,10 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileReponse(profile);
     }
 
+    public void deleteUserProfile(String userId) {
+        UserProfile userProfile = userProfileRepository.findByUserId(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userProfileRepository.delete(userProfile);
+    }
 
 }
