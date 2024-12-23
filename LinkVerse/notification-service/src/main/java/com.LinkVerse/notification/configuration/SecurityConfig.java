@@ -24,6 +24,7 @@ public class SecurityConfig {
             "/email/send",
             "/email/send-forget-pass",
             "/email/reset-password",
+            "/email/send-verification",
             "/api/v1/notification/**",
             "/v3/.*"
     };
