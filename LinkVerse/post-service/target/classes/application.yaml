@@ -24,8 +24,8 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-#  elasticsearch:
-#    uris: http://localhost:9200
+  elasticsearch:
+    uris: http://localhost:9200
 
 cloud:
   aws:

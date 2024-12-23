@@ -32,6 +32,7 @@ public enum ErrorCode {
     FORBIDDEN(1023, "Forbidden", HttpStatus.FORBIDDEN),
     JSON_PROCESSING_FAILED(1024, "JSON processing failed", HttpStatus.INTERNAL_SERVER_ERROR),
     POST_CREATION_FAILED(1025, "Post creation failed", HttpStatus.INTERNAL_SERVER_ERROR),
+    USER_DELETED(1026, "User deleted", HttpStatus.BAD_REQUEST),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

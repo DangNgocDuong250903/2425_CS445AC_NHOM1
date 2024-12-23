@@ -74,10 +74,14 @@ public class UserController {
     }
 
 
-    @DeleteMapping("/{userId}")
-    ApiResponse<String> deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
-        return ApiResponse.<String>builder().result("User has been deleted").build();
+    @DeleteMapping("/delete")
+    public void deleteUser(@RequestParam String token) {
+        userService.deleteUser(token);
+    }
+
+    @DeleteMapping("/admin/delete/{userId}")
+    public void deleteUserByAdmin(@PathVariable String userId) {
+        userService.deleteUserByAdmin(userId);
     }
 
     @PatchMapping("/my-profile/status")
@@ -105,5 +109,9 @@ public class UserController {
                 .build();
     }
 
+    @PostMapping("/login")
+    public UserResponse login(@RequestParam String token) {
+        return userService.login(token);
+    }
 
 }

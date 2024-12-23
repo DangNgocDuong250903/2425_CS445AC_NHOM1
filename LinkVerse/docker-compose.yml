@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   kafka:
     image: 'bitnami/kafka:3.7.0'
@@ -14,3 +14,46 @@ services:
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092,EXTERNAL://localhost:9094
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,EXTERNAL:PLAINTEXT,PLAINTEXT:PLAINTEXT
       - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+
+  mysql:
+    image: mysql:8.0.36-debian
+    container_name: mysql
+    hostname: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  mongodb:
+    image: bitnami/mongodb:7.0.11
+    container_name: mongodb-7.0.11
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGODB_ROOT_USER=root
+      - MONGODB_ROOT_PASSWORD=root
+    volumes:
+      - mongodb_data:/bitnami/mongodb
+
+  elastic-search:
+    image: elasticsearch:8.16.0
+    container_name: elasticsearch
+    restart: always
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+
+
+
+networks:
+  default:
+    name: api-network
+
+volumes:
+  mysql_data:
+  data:
+  mongodb_data:
+    driver: local
