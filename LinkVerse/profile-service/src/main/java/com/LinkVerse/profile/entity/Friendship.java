@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -19,15 +20,14 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_profile_id_1", nullable = false)
+    @ManyToMany
+    @JoinTable(
+            name = "friendship_user_profiles",
+            joinColumns = @JoinColumn(name = "friendship_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_profile_id")
+    )
     @JsonBackReference
-    UserProfile userProfile1;
-
-    @ManyToOne
-    @JoinColumn(name = "user_profile_id_2", nullable = false)
-    @JsonBackReference
-    UserProfile userProfile2;
+    Set<UserProfile> userProfiles;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

@@ -44,7 +44,8 @@ public class BlockService {
             throw new RuntimeException("Cannot block a user who has already blocked you");
         }
 
-        Optional<Friendship> friendshipOpt = friendshipRepository.findByUserProfile1AndUserProfile2(currentUser, targetUser);
+        Optional<Friendship> friendshipOpt = friendshipRepository.findByUserProfiles(currentUser, targetUser);
+
         if (friendshipOpt.isPresent()) {
             Friendship friendship = friendshipOpt.get();
             friendship.setStatus(FriendshipStatus.BLOCKED);
@@ -52,8 +53,7 @@ public class BlockService {
             friendshipRepository.save(friendship);
         } else {
             Friendship newFriendship = Friendship.builder()
-                    .userProfile1(currentUser)
-                    .userProfile2(targetUser)
+                    .userProfiles(Set.of(currentUser, targetUser))
                     .status(FriendshipStatus.BLOCKED)
                     .blockedAt(LocalDateTime.now())
                     .build();
@@ -76,7 +76,8 @@ public class BlockService {
         UserProfile targetUser = userRepository.findByUserId(targetUserId)
                 .orElseThrow(() -> new RuntimeException("Target user not found"));
 
-        Optional<Friendship> friendshipOpt = friendshipRepository.findByUserProfile1AndUserProfile2(currentUser, targetUser);
+        Optional<Friendship> friendshipOpt = friendshipRepository.findByUserProfiles(currentUser, targetUser);
+
         if (friendshipOpt.isPresent()) {
             Friendship friendship = friendshipOpt.get();
             if (friendship.getStatus() == FriendshipStatus.BLOCKED) {
@@ -95,6 +96,7 @@ public class BlockService {
                 .build();
     }
 
+
     public Set<UserProfileResponse> getBlockedUsers() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
@@ -102,17 +104,24 @@ public class BlockService {
         UserProfile currentUser = userRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new RuntimeException("Current user not found"));
 
-        List<Friendship> blockedFriendships = friendshipRepository.findByUserProfile1AndStatus(currentUser, FriendshipStatus.BLOCKED);
-        return blockedFriendships.stream()
-                .map(Friendship::getUserProfile2)
+        List<Friendship> blockedFriendships = friendshipRepository.findUsersBlocked(currentUser);
+
+        Set<UserProfile> blockedUsers = blockedFriendships.stream()
+                .flatMap(friendship -> friendship.getUserProfiles().stream()
+                        .filter(user -> !user.equals(currentUser))
+                )
+                .collect(Collectors.toSet());
+        return blockedUsers.stream()
                 .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
     }
 
-    public boolean isBlocked(String userIdSend, String userIdReceive) {
-        UserProfile user1 = userRepository.findByUserId(userIdSend).orElseThrow(() -> new RuntimeException("User not found"));
-        UserProfile user2 = userRepository.findByUserId(userIdReceive).orElseThrow(() -> new RuntimeException("User not found"));
-        Optional<Friendship> friendship = friendshipRepository.findByUserProfile1AndUserProfile2(user1, user2);
-        return friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.BLOCKED;
+    private boolean isBlocked(String targetUserId, String currentUserId) {
+        Optional<Friendship> friendshipOpt = friendshipRepository.findByUserProfiles(
+                userRepository.findByUserId(targetUserId).orElseThrow(() -> new RuntimeException("Target user not found")),
+                userRepository.findByUserId(currentUserId).orElseThrow(() -> new RuntimeException("Current user not found"))
+        );
+        return friendshipOpt.isPresent() && friendshipOpt.get().getStatus() == FriendshipStatus.BLOCKED;
+
     }
 }

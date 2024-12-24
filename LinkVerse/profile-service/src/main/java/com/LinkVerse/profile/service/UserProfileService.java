@@ -75,8 +75,7 @@ public class UserProfileService {
     public void deleteUserProfile(String userId) {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        friendshipRepository.deleteByUserProfile1(userProfile);
-        friendshipRepository.deleteByUserProfile2(userProfile);
+        friendshipRepository.deleteByUserProfilesContaining(userProfile);
         userProfileRepository.delete(userProfile);
 
     }
