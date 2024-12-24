@@ -75,13 +75,15 @@ public class UserController {
 
 
     @DeleteMapping("/delete")
-    public void deleteUser(@RequestParam String token) {
-        userService.deleteUser(token);
+    public ResponseEntity<String> deleteUser(@RequestParam String password) {
+        userService.deleteUser(password);
+        return ResponseEntity.ok("User has been temporarily deleted. If you do not log in within 30 days, your account will be permanently deleted.");
     }
 
     @DeleteMapping("/admin/delete/{userId}")
-    public void deleteUserByAdmin(@PathVariable String userId) {
+    public ResponseEntity<String> deleteUserByAdmin(@PathVariable String userId) {
         userService.deleteUserByAdmin(userId);
+        return ResponseEntity.ok("User has been permanently deleted by admin.");
     }
 
     @PatchMapping("/my-profile/status")
@@ -109,9 +111,5 @@ public class UserController {
                 .build();
     }
 
-    @PostMapping("/login")
-    public UserResponse login(@RequestParam String token) {
-        return userService.login(token);
-    }
 
 }

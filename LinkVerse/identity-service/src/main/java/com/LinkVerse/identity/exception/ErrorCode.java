@@ -33,6 +33,7 @@ public enum ErrorCode {
     JSON_PROCESSING_FAILED(1024, "JSON processing failed", HttpStatus.INTERNAL_SERVER_ERROR),
     POST_CREATION_FAILED(1025, "Post creation failed", HttpStatus.INTERNAL_SERVER_ERROR),
     USER_DELETED(1026, "User deleted", HttpStatus.BAD_REQUEST),
+    PROFILE_DELETION_FAILED(1027, "Profile deletion failed", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

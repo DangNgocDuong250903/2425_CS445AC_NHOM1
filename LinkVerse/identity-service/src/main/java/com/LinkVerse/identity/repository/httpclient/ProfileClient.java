@@ -6,6 +6,7 @@ import com.LinkVerse.identity.dto.request.ProfileCreationRequest;
 import com.LinkVerse.identity.dto.response.UserProfileResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 // Connection to profile-service
@@ -18,9 +19,6 @@ public interface ProfileClient {
     ApiResponse<UserProfileResponse> createProfile(@RequestBody ProfileCreationRequest request);
 
     @DeleteMapping("/{userId}")
-    ApiResponse<Void> deleteUserProfile(@PathVariable String userId);
-
-    @DeleteMapping("/profile")
-    ApiResponse<Void> deleteUserProfileByToken(@RequestHeader("Authorization") String token);
+    ResponseEntity<Void> deleteUserProfile(@PathVariable String userId);
 
 }
