@@ -80,6 +80,12 @@ public class UserController {
         return ResponseEntity.ok("User has been temporarily deleted. If you do not log in within 30 days, your account will be permanently deleted.");
     }
 
+    @DeleteMapping("/delete-permanently")
+    public ResponseEntity<String> deleteUserPermanently(@RequestParam String password) {
+        userService.deleteUserPermanent(password);
+        return ResponseEntity.ok("User has been deleted forever.");
+    }
+
     @DeleteMapping("/admin/delete/{userId}")
     public ResponseEntity<String> deleteUserByAdmin(@PathVariable String userId) {
         userService.deleteUserByAdmin(userId);

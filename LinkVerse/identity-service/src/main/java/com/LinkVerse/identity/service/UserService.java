@@ -168,7 +168,7 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-
+    // xoá tạm thời sau 30 ngày nếu không đăng nhập -> xoá vĩnh viễn
     public void deleteUser(String password) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userID = authentication.getName();
@@ -180,8 +180,33 @@ public class UserService {
         boolean authenticated = passwordEncoder.matches(password, user.getPassword());
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
-        user.setDeletedAt(LocalDateTime.now());
+        user.setDeletedAt(LocalDateTime.now()); // đã có service xử lý xoá vĩnh viễn sau 30 ngày
+        // nếu login lại trước 30 ngày thì xoá deletedAt -> authentication service
         userRepository.save(user);
+    }
+
+    // xoá vĩnh viễn trong vòng 30 ngày
+    public void deleteUserPermanent(String password) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userID = authentication.getName();
+
+        User user = userRepository.findUserById(userID);
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        boolean authenticated = passwordEncoder.matches(password, user.getPassword());
+        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (user.getDeletedAt() != null) {
+            try {
+                profileClient.deleteUserProfile(user.getId()); // xoá profile
+            } catch (FeignException e) {
+                log.error("Failed to delete user profile for user ID: {}", userID, e);
+                throw new AppException(ErrorCode.PROFILE_DELETION_FAILED);
+            }
+            userRepository.delete(user);
+            throw new AppException(ErrorCode.USER_DELETED);
+        }
     }
 
     @PreAuthorize("hasRole('ADMIN')")

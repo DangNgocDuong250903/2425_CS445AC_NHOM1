@@ -21,14 +21,13 @@ public class UserCleanupTask {
     UserRepository userRepository;
     ProfileClient profileClient;
 
-
     @Scheduled(cron = "0 0 0 * * ?")
     public void deleteMarkedUsers() {
         LocalDateTime thirtyDaysAgo = LocalDateTime.now().minusDays(30);
 
         List<User> users = userRepository.findUserByDeletedAtBefore(thirtyDaysAgo);
         for (User user : users) {
-            profileClient.deleteUserProfile(user.getId()); // xoá bên profile service
+            profileClient.deleteUserProfile(user.getId()); // xoá profile
         }
 
         userRepository.deleteAllByDeletedAtBefore(thirtyDaysAgo);
