@@ -20,44 +20,40 @@ const FriendSuggest = () => {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("success");
   const { friends } = useGetMyFriend();
-  const [send, setSend] = useState(false);
+  const [sendStatus, setSendStatus] = useState({});
 
-  //close message
-  const handleClose = () => {
-    setOpen(false);
-  };
+  // Close message
+  const handleClose = () => setOpen(false);
 
-  //fetch user suggest
-  const fetchUsers = async (token) => {
+  // Fetch user suggestions
+  const fetchUsers = async () => {
     setLoading(true);
     try {
       const res = await FriendService.friendSuggesstion(token);
-      if (res?.code === 1000) {
-        setUsers(res?.result || []);
-      } else {
-        setUsers([]);
+      if (res?.code === 1000 && res?.result.length > 0) {
+        setUsers(res?.result);
       }
     } catch (error) {
       console.error("Error fetching friend suggestions:", error);
-      setUsers([]);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchUsers(token);
+    fetchUsers();
   }, []);
 
   const handleRequest = async (id) => {
     try {
-      setSend(true);
+      setSendStatus((prev) => ({ ...prev, [id]: true }));
       const res = await FriendService.request({ id, token });
-      if (res?.code === 9999 || res?.status === "PENDING") {
+      console.log(res);
+      if (res?.status === "PENDING") {
         fetchUsers();
-        setMessage("Đã gửi lời mời kết bạn");
-        setType(res?.code === 9999 ? "error" : "success");
-        setOpen(true);
+        // setMessage("Đã gửi lời mời kết bạn");
+        // setType(res?.code === 9999 ? "error" : "success");
+        // setOpen(true);
       }
     } catch (error) {
       console.error("Error sending friend request:", error);
@@ -80,7 +76,7 @@ const FriendSuggest = () => {
       <div className="flex items-center justify-between text-lg pb-2 text-ascent-1 border-[#66666645] border-b">
         <span className="text-xl font-medium">{t("Bạn bè đề xuất")}</span>
       </div>
-      <div className="w-full flex flex-col gap-4 pt-4 overflow-y-auto">
+      <div className="w-full flex max-h-48 flex-col gap-4 pt-4 overflow-y-auto">
         {loading ? (
           <div className="flex w-full h-full items-center justify-center">
             <CircularProgress />
@@ -114,7 +110,7 @@ const FriendSuggest = () => {
                 </Link>
 
                 <div className="flex gap-1">
-                  {send ? (
+                  {sendStatus[item?.userId] ? (
                     <button className="text-sm text-white p-1 rounded">
                       <FaUserCheck size={20} className="text-[#0444A4]" />
                     </button>

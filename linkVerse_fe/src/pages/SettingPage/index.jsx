@@ -1,17 +1,25 @@
 import { Box, CircularProgress, Tab, Tabs } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Alerts, Button, CreatePost, DialogCustom, TopBar } from "~/components";
+import {
+  Alerts,
+  Button,
+  CreatePost,
+  DialogCustom,
+  TextInput,
+  TopBar,
+} from "~/components";
 import { RxLockClosed } from "react-icons/rx";
 import { RiEyeOffLine } from "react-icons/ri";
-import { FaArrowUpRightFromSquare } from "react-icons/fa6";
+import { FaArrowUpRightFromSquare, FaCircleExclamation } from "react-icons/fa6";
 import { IoIosArrowForward } from "react-icons/io";
-import { useLocation } from "react-router-dom";
 import * as UserService from "~/services/UserService";
 import { updateStatus } from "~/redux/Slices/userSlice";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import useGetBlockList from "~/hooks/useGetBlockList";
 import { BlankAvatar } from "~/assets";
+import { FaArrowLeft } from "react-icons/fa";
+import { useForm } from "react-hook-form";
 
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -29,6 +37,11 @@ const SettingPage = () => {
   const [loadingBlockList, setLoadingBlockList] = useState(false);
   const [blocks, setBlocks] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [valueInput, setValueInput] = useState(false);
+
+  const handleChangeValue = (e) => {
+    setValueInput(e.target.value);
+  };
 
   const handleClose = () => setOpen(false);
   const handleCloseBlockList = () => setOpenBlockList(false);
@@ -133,6 +146,10 @@ const SettingPage = () => {
     }
   };
 
+  const [step, setStep] = useState(1);
+  const handleDeleteClick = () => setStep(2);
+  const handleBackClick = () => setStep(1);
+
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={"Settings"} iconBack />
@@ -223,57 +240,95 @@ const SettingPage = () => {
                 {/* 1 */}
                 <div
                   onClick={() => setIsOpenDelete(true)}
-                  className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer"
+                  className="w-full py-2 px-4 h-full flex justify-between items-center cursor-pointer"
                 >
                   <h1 className="text-ascent-1">
                     Vô hiệu hóa hoặc xóa tài khoản
                   </h1>
                   <IoIosArrowForward size={20} className="cursor-pointer" />
                 </div>
+
                 <DialogCustom
                   isOpen={isOpenDelete}
+                  width={step === 2 ? "400px" : "548px"}
                   handleCloseDiaLogAdd={hanleCloseDelete}
                 >
-                  <div className="w-full h-auto p-5 bg-primary flex flex-col">
-                    {/* header */}
-                    <div className="w-full flex font-bold items-center py-3 justify-center">
-                      Vô hiệu hóa hoặc xóa
-                    </div>
-                    {/* body */}
-                    <div className="h-full flex flex-col gap-5 w-full py-2">
-                      <div className="w-full flex flex-col gap-2">
-                        <h2 className="font-bold text-base">
-                          Vô hiệu hóa trang cá nhân chỉ mang tính tạm thời
-                        </h2>
-                        <p className="text-sm text-ascent-2">
-                          Trang cá nhân, nội dung, lượt thích và người theo dõi
-                          trên LinkVerse của bạn sẽ không hiển thị với bất kỳ ai
-                          cho đến khi bạn đăng nhập lại để kích hoạt trang cá
-                          nhân
-                        </p>
-                      </div>
-                      <div className="w-full flex flex-col gap-2">
-                        <h2 className="font-bold text-base">
-                          Xóa trang cá nhân là mang tính vĩnh viễn
-                        </h2>
-                        <p className="text-sm text-ascent-2">
-                          Trước khi bị gỡ vĩnh viễn, trang cá nhân, nội dung,
-                          lượt thích và người theo dõi trên LinkVerse của bạn sẽ
-                          ẩn trong 30 ngày.
-                        </p>
-                      </div>
-                    </div>
-                    {/* footer */}
-                    <div className="w-full  flex flex-col gap-y-2  items-center justify-between">
-                      <Button
-                        title="Vô hiệu hóa tài khoản"
-                        containerStyles="w-full text-white bg-bgStandard flex items-center border-1 justify-center py-3 rounded-2xl border-borderNewFeed border-1"
-                      />
-                      <Button
-                        title="Xóa tài khoản"
-                        containerStyles="border-borderNewFeed border-1 py-3 rounded-2xl text-red-600  bg-primary w-full flex items-center justify-center"
-                      />
-                    </div>
+                  <div className="w-full h-auto p-4 bg-primary flex flex-col">
+                    {step === 1 && (
+                      <>
+                        <div className="w-full flex font-semibold items-center py-2 justify-center">
+                          Vô hiệu hóa hoặc xóa
+                        </div>
+                        <div className="h-full flex flex-col gap-5 w-full py-2">
+                          <div className="w-full flex py-2 flex-col gap-2">
+                            <span className="font-semibold text-sm">
+                              Vô hiệu hóa trang cá nhân chỉ mang tính tạm thời
+                            </span>
+                            <p className="text-sm text-ascent-2">
+                              Trang cá nhân, nội dung, lượt thích và người theo
+                              dõi trên LinkVerse của bạn sẽ không hiển thị với
+                              bất kỳ ai cho đến khi bạn đăng nhập lại để kích
+                              hoạt trang cá nhân
+                            </p>
+                          </div>
+                          <div className="w-full flex py-2 flex-col gap-2">
+                            <h2 className="font-semibold text-sm">
+                              Xóa trang cá nhân là mang tính vĩnh viễn
+                            </h2>
+                            <p className="text-sm text-ascent-2">
+                              Trước khi bị gỡ vĩnh viễn, trang cá nhân, nội
+                              dung, lượt thích và người theo dõi trên LinkVerse
+                              của bạn sẽ ẩn trong 30 ngày.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="w-full flex flex-col gap-y-2 items-center justify-between">
+                          <Button
+                            title="Vô hiệu hóa tài khoản"
+                            containerStyles="w-full text-white bg-bgStandard flex items-center border-1 justify-center py-3 rounded-2xl border-borderNewFeed border-1"
+                          />
+                          <Button
+                            title="Xóa tài khoản"
+                            containerStyles="border-borderNewFeed border-1 py-3 rounded-2xl text-red-600 bg-primary w-full flex items-center justify-center"
+                            onClick={handleDeleteClick}
+                          />
+                        </div>
+                      </>
+                    )}
+                    {step === 2 && (
+                      <>
+                        <div className="flex w-full items-center justify-between">
+                          <div
+                            className="w-8 h-8 rounded-lg bg-blue flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
+                            // onClick={() => navigate("/")}
+                          >
+                            <FaArrowLeft color="#fff" />
+                          </div>
+                          <p className="text-ascent-1 text-lg font-semibold">
+                            Deleting account
+                          </p>
+                          <div />
+                        </div>
+
+                        <span className="text-sm text-ascent-2">
+                          Verify your email
+                        </span>
+                        <div className="flex flex-col">
+                          <span>To confirm this, type "DELETE"</span>
+                          <div className="flex">
+                            <input
+                              className="px-3 py-2 border rounded-lg"
+                              value={valueInput === "DELETE"}
+                              onChange={handleChangeValue}
+                            />
+                            <Button
+                              containerStyles="px-3 py-2 "
+                              title="Xac nhan"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </DialogCustom>
                 {/* 2 */}
@@ -286,6 +341,7 @@ const SettingPage = () => {
                 </div>
                 <DialogCustom
                   isOpen={openDialog}
+                  width="600px"
                   handleCloseDiaLogAdd={handleCloseDialog}
                 >
                   <div className="max-w-xl p-8 text-center text-gray-800 bg-white shadow-xl lg:max-w-3xl rounded-3xl lg:p-12">

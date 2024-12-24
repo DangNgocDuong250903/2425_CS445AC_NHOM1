@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "~/components";
 import { FaArrowLeft } from "react-icons/fa";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import * as UserService from "~/services/UserService";
 import { CircularProgress } from "@mui/material";
 import { IoCheckmarkCircleSharp } from "react-icons/io5";

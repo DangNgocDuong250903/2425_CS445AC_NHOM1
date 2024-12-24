@@ -334,9 +334,6 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
 
   //block user
 
-  console.log(user);
-  console.log(post);
-
   return (
     <div className="bg-primary p-2 rounded-xl">
       <AlertWelcome
@@ -534,6 +531,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                   size={20}
                   onClick={() => handleLike(post?.id)}
                   className="text-blue-500"
+                  color="#0444A4"
                 />
               ) : (
                 <BiLike size={20} onClick={() => handleLike(post?.id)} />
@@ -547,6 +545,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
               {disLike ? (
                 <BiSolidDislike
                   size={20}
+                  color="#0444A4"
                   onClick={() => handleDisLike(post?.id)}
                   className="text-blue-500"
                 />

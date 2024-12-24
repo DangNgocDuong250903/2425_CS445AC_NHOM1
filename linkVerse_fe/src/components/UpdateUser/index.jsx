@@ -110,6 +110,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex flex-col">
                 <h1 className="text-ascent-2 font-medium">First name</h1>
                 <input
+                  className="border-none focus:outline-none"
                   value={firstName}
                   onChange={handleChangeFirstName}
                   multiline
@@ -126,6 +127,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex flex-col">
                 <h1 className="text-ascent-2 font-medium">Last name</h1>
                 <input
+                  className="border-none focus:outline-none"
                   value={lastName}
                   onChange={handleChangeLastName}
                   multiline
@@ -142,6 +144,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex w-full flex-col">
                 <h1 className="text-ascent-2 font-medium">Email</h1>
                 <input
+                  className="border-none focus:outline-none"
                   value={email}
                   onChange={handleChangeEmail}
                   multiline
@@ -158,6 +161,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex w-full flex-col">
                 <h1 className="text-ascent-2 font-medium">Phone number</h1>
                 <input
+                  className="border-none focus:outline-none"
                   value={phoneNumber}
                   placeholder="Thêm số điện thoại"
                   onChange={handleChangePhoneNumber}
@@ -175,6 +179,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex w-full flex-col">
                 <h1 className="text-ascent-2 font-medium">City</h1>
                 <input
+                  className="border-none focus:outline-none"
                   value={city}
                   placeholder="Thêm thành phố"
                   onChange={handleChangeCity}
@@ -190,7 +195,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
                 title={"Xong"}
                 disable={isPending}
                 onClick={handleSubmitChange}
-                containerStyles="w-full  bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
+                containerStyles="w-full hover:bg-[#F3F8FE] hover:text-black bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
               />
               {isPending && (
                 <CircularProgress

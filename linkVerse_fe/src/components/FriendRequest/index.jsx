@@ -25,7 +25,7 @@ const FriendRequest = () => {
     setOpen(false);
   };
 
-  const fetchRequests = async (token) => {
+  const fetchRequests = async () => {
     setLoading(true);
     try {
       const res = await FriendService.getFriendRequests(token);
@@ -40,7 +40,7 @@ const FriendRequest = () => {
   };
 
   useEffect(() => {
-    fetchRequests(token);
+    fetchRequests();
   }, []);
 
   //accept
@@ -48,7 +48,7 @@ const FriendRequest = () => {
     try {
       const res = await FriendService.accept({ id, token });
       if (res) {
-        reload();
+        fetchRequests();
       }
     } catch (error) {
       setMessage("Something went wrong!");
@@ -62,7 +62,7 @@ const FriendRequest = () => {
     try {
       const res = await FriendService.reject({ id, token });
       if (res?.code === 9999 || res?.status === "REJECTED") {
-        reload();
+        fetchRequests();
       }
     } catch (error) {
       setMessage("Something went wrong!");

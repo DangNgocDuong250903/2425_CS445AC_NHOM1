@@ -2,52 +2,56 @@ import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Alerts, Button, DialogCustom } from "..";
 import { BlankAvatar } from "~/assets";
-import {
-  CircularProgress,
-  Fab,
-  FormControl,
-  MenuItem,
-  Select,
-  TextField,
-} from "@mui/material";
+import { CircularProgress, TextField } from "@mui/material";
 import { BsImages } from "react-icons/bs";
-import { IoIosAdd } from "react-icons/io";
 import { FaPhotoVideo } from "react-icons/fa";
 import { PiGifThin } from "react-icons/pi";
 import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
 
-const CreateComment = ({ open, handleClose, id, onSuccess }) => {
+const CreateComment = ({ handleClose, open, id }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
-  const [content, setContent] = useState("");
+  const [status, setStatus] = useState("");
+  // const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [type, setType] = useState("");
+  const token = localStorage.getItem("token");
+
+  // const handleClose = () => {
+  //   handleClear();
+  //   setOpen(false);
+  // };
+
+  const handleCloseMessage = () => {
+    setShowMessage(false);
+  };
 
   const handleClear = () => {
     setStatus("");
     setFiles([]);
   };
 
-  const handleChangeContent = useCallback((e) => {
-    setContent(e.target.value);
-  }, []);
-
-  // delete
-  //   const handleDeleteFile = (index) => {
-  //     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  //   };
-
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
     setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
   };
 
-  const mutation = useMutationHook(({ id, token, content }) =>
-    PostService.comment({ id, token, content })
+  const handleChangeStatus = useCallback((e) => {
+    setStatus(e.target.value);
+  }, []);
+
+  // delete
+  const handleDeleteFile = (index) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
+  //create comment
+  const mutation = useMutationHook(({ id, token, data }) =>
+    PostService.comment({ id, token, data })
   );
   const { data, isPending, isError, isSuccess } = mutation;
 
@@ -55,7 +59,7 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
     if (isSuccess) {
       if (data?.code === 200) {
         handleClear();
-        handleClose();
+        setOpen(false);
         setType("success");
         setMessage("Create comment success!");
         setShowMessage(true);
@@ -65,7 +69,7 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
         setMessage(data?.message);
         setShowMessage(true);
         handleClear();
-        handleClose();
+        setOpen(false);
       }
     } else if (isError) {
       setMessage("Something went wrong!");
@@ -73,12 +77,9 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
   }, [isSuccess, isError]);
 
   const handleSubmitPost = () => {
-    const token = localStorage.getItem("token");
-    mutation.mutate({ id, token, content });
-  };
-
-  const handleCloseMessage = () => {
-    setShowMessage(false);
+    const request = { content: status };
+    const data = { request, files: files };
+    mutation.mutate({ id, token, data });
   };
 
   return (
@@ -94,6 +95,7 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
       <DialogCustom
         isOpen={open}
         theme={theme}
+        width="640px"
         handleCloseDiaLogAdd={handleClose}
       >
         <div
@@ -116,7 +118,7 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
                 theme === "dark" ? "text-white" : "text-black"
               }`}
             >
-              Create comment
+              Trả lời mới
             </span>
             <div />
           </div>
@@ -126,19 +128,21 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
           <div className=" w-full flex flex-col px-5 py-4 justify-center gap-y-2">
             {/* 1 */}
             <div className="flex flex-col w-full gap-y-3">
+              {/* 1 */}
               <div className="w-full flex gap-x-3">
                 <img
-                  src={user?.profileUrl ?? BlankAvatar}
+                  src={user?.avatar ?? BlankAvatar}
                   alt="User Image"
                   className="w-14 h-14 rounded-full object-cover shadow-newFeed"
                 />
+                {/* 2 */}
                 <TextField
                   label="Trả lời"
                   multiline
                   id="content"
-                  onChange={handleChangeContent}
+                  onChange={handleChangeStatus}
                   maxRows={5}
-                  value={content}
+                  value={status}
                   variant="standard"
                   fullWidth
                   sx={{
@@ -244,22 +248,20 @@ const CreateComment = ({ open, handleClose, id, onSuccess }) => {
 
             {/* 4 */}
             <div className="w-full flex justify-end">
-              <div className="relative py-1">
-                <Button
-                  type="submit"
-                  title="Đăng"
-                  onClick={handleSubmitPost}
-                  containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                  //   disable={isPending || (files.length === 0 && !status.trim())}
-                />
+              <Button
+                type="submit"
+                title="Trả lời"
+                onClick={handleSubmitPost}
+                containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                disable={isPending || (files.length === 0 && !status.trim())}
+              />
 
-                {/* {isPending && (
-                  <CircularProgress
-                    className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
-                    size={20}
-                  />
-                )} */}
-              </div>
+              {isPending && (
+                <CircularProgress
+                  className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
+                  size={20}
+                />
+              )}
             </div>
           </div>
         </div>

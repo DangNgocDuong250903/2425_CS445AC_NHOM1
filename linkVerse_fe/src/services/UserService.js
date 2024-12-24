@@ -132,5 +132,23 @@ export const setAvatar = async ({ file, token }) => {
     return res.data
 }
 
+export const disableAcount = async (token) => {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/delete?token=${token}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const deleteAccount = async (token) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/login?token=${token}`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
 
 

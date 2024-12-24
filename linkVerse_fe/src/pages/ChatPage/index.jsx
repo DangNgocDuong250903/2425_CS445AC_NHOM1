@@ -1,14 +1,11 @@
 import {
   FriendCard,
   ProfileCard,
-  Button,
   TopBar,
   GroupCard,
-  DialogCustom,
   TextInput,
   CustomizeMenu,
 } from "~/components";
-import { user, posts, messages } from "~/assets/mockData/data";
 import { useEffect, useRef, useState } from "react";
 import { BsImages } from "react-icons/bs";
 import { FaPhotoVideo } from "react-icons/fa";
@@ -145,7 +142,7 @@ const ChatPage = () => {
               </div>
 
               <div className="gap-y-2 flex flex-col">
-                {messages.map((item, i) => (
+                {/* {messages.map((item, i) => (
                   <Message
                     onClick={() => handleClickMessage(i)}
                     key={i}
@@ -154,7 +151,7 @@ const ChatPage = () => {
                     message={item?.message}
                     avatar={item?.profileUrl}
                   />
-                ))}
+                ))} */}
               </div>
             </div>
 

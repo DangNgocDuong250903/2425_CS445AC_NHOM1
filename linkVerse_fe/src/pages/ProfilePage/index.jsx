@@ -31,6 +31,7 @@ const ProfilePage = () => {
   const userPrimary = useSelector((state) => state.user);
   // const { user, loading, reload: fetchUser } = useGetDetailUser();
   const token = localStorage.getItem("token");
+  const [isUnfriend, setIsUnFriend] = useState(false);
   const [loadingPost, setLoadingPost] = useState(false);
   const [posts, setPosts] = useState([]);
   const [typeMessage, setTypeMessage] = useState("");
@@ -136,9 +137,18 @@ const ProfilePage = () => {
 
   //unfriend
   const handleUnfriend = async (id) => {
-    const res = await FriendService.unfriend({ id, token });
-    if (res) {
-      fetchUser();
+    try {
+      const res = await FriendService.unfriend({ id, token });
+      if (res) {
+        setIsUnFriend(true);
+        setMessage("Unfriend successful");
+        setTypeMessage("success");
+      }
+    } catch (error) {
+      setMessage("User not existing!");
+      setTypeMessage("error");
+    } finally {
+      setOpenMessage(true);
     }
   };
 
@@ -236,13 +246,25 @@ const ProfilePage = () => {
               {userState?.id !== user?.id ? (
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   {friends?.find((friend) => friend?.userId === user?.id) ? (
-                    <Button
-                      onClick={() => handleUnfriend(user?.id)}
-                      title="Hủy kết bạn"
-                      containerStyles={
-                        "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                      }
-                    />
+                    <>
+                      {isUnfriend ? (
+                        <Button
+                          onClick={() => setIsOpenDialogEdit(true)}
+                          title="Kết bạn"
+                          containerStyles={
+                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                      ) : (
+                        <Button
+                          onClick={() => handleUnfriend(user?.id)}
+                          title="Hủy kết bạn"
+                          containerStyles={
+                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                      )}
+                    </>
                   ) : (
                     <Button
                       onClick={() => setIsOpenDialogEdit(true)}

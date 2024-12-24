@@ -49,7 +49,7 @@ const Story = () => {
         onSuccess={hanldeSuccess}
       />
 
-      <div className="w-full items-center flex flex-col gap-4 pt-4">
+      <div className="w-full items-center max-h-[360px] flex flex-col gap-4 pt-4 overflow-hidden">
         <div className="flex gap-4 w-full items-center cursor-pointer">
           <div
             onClick={() => setOpen(true)}
@@ -67,8 +67,10 @@ const Story = () => {
           </div>
         </div>
 
-        {stories.length > 0 &&
-          stories.map((story) => <StoryCard key={story?.id} story={story} />)}
+        <div className="w-full flex flex-col gap-4 overflow-y-auto">
+          {stories.length > 0 &&
+            stories.map((story) => <StoryCard key={story?.id} story={story} />)}
+        </div>
       </div>
     </div>
   );

@@ -13,7 +13,7 @@ const StoryCard = ({ story }) => {
       <PreviewStory story={story} open={open} handleClose={handleClose} />
       <div
         onClick={() => setOpen(true)}
-        className="bg-gradient-to-tr from-pink-600 to-yellow-500 p-[4px] rounded-full cursor-pointer"
+        className="bg-gradient-to-tr from-[#449BFF] to-[#9db106e3] p-[3px] rounded-full cursor-pointer"
       >
         <img
           class="w-12 h-12 rounded-full block object-cover bg-white p-[2px] transform transition hover:-rotate-6"

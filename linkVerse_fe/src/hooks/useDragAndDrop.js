@@ -29,12 +29,27 @@ function useDragAndDrop(onDropCallback) {
         [onDropCallback]
     );
 
+    const handleFileInputClick = () => {
+        document.getElementById("file-upload-input").click();
+    };
+
+    const handleFileSelect = (event) => {
+        const selectedFiles = Array.from(event.target.files);
+        setFiles(selectedFiles);
+
+        if (onDropCallback) {
+            onDropCallback(selectedFiles);
+        }
+    };
+
     return {
         isDragging,
         files,
         handleDragOver,
         handleDragLeave,
         handleDrop,
+        handleFileInputClick,
+        handleFileSelect,
     };
 }
 

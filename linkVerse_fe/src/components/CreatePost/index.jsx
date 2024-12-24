@@ -127,6 +127,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
       <DialogCustom
         isOpen={open}
         theme={theme}
+        width="640px"
         handleCloseDiaLogAdd={handleClose}
       >
         <div
