@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+              xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+              xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+              name="user_report" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20"
+              topMargin="20" bottomMargin="20" uuid="e6b8b6a1-3b6e-4b8b-8b6a-1b6e4b8b8b6a">
+    <queryString>
+        <![CDATA[]]>
+    </queryString>
+    <field name="id" class="java.lang.String"/>
+    <field name="username" class="java.lang.String"/>
+    <field name="email" class="java.lang.String"/>
+    <title>
+        <band height="50">
+            <staticText>
+                <reportElement x="0" y="0" width="555" height="50"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font size="24" isBold="true"/>
+                </textElement>
+                <text><![CDATA[User Report]]></text>
+            </staticText>
+        </band>
+    </title>
+    <columnHeader>
+        <band height="20">
+            <staticText>
+                <reportElement x="0" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[ID]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="185" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Username]]></text>
+            </staticText>
+            <staticText>
+                <reportElement x="370" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle">
+                    <font isBold="true"/>
+                </textElement>
+                <text><![CDATA[Email]]></text>
+            </staticText>
+        </band>
+    </columnHeader>
+    <detail>
+        <band height="20">
+            <textField>
+                <reportElement x="0" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{id}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="185" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{username}]]></textFieldExpression>
+            </textField>
+            <textField>
+                <reportElement x="370" y="0" width="185" height="20"/>
+                <textElement textAlignment="Center" verticalAlignment="Middle"/>
+                <textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+            </textField>
+        </band>
+    </detail>
+</jasperReport>
