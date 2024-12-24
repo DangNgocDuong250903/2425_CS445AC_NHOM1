@@ -47,6 +47,11 @@ public class FriendController {
         return ResponseEntity.ok(friendService.getAllFriendsRequest());
     }
 
+    @GetMapping("/request-sent")
+    public ResponseEntity<Set<UserProfileResponse>> getRequestFriend() {
+        return ResponseEntity.ok(friendService.getSentFriendRequests());
+    }
+
     @GetMapping("/my-friends")
     public ResponseEntity<Set<UserProfileResponse>> getMyFriend() {
         return ResponseEntity.ok(friendService.getAllFriendsOfCurrentUser());

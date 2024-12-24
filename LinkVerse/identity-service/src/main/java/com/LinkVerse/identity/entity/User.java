@@ -53,6 +53,7 @@ public class User {
     Gender gender;
 
     String imageUrl;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 

@@ -44,7 +44,6 @@ public class UserProfileController {
         try {
             userProfileService.deleteUserProfile(userId);
             log.info("Successfully deleted user profile for ID: {}", userId);
-
             return ResponseEntity.noContent().build();
         } catch (AppException e) {
             log.error("Error deleting user profile for ID: {}", userId, e);
@@ -55,20 +54,6 @@ public class UserProfileController {
         }
     }
 
-    @DeleteMapping("/profile")
-    public ResponseEntity<Void> deleteUserProfileByUsers(@RequestHeader("Authorization") String token) {
-        try {
-            userProfileService.deleteUserProfileByUsers(token);
-            log.info("Successfully deleted user profile for token: {}", token);
-            return ResponseEntity.noContent().build();
-        } catch (AppException e) {
-            log.error("Error deleting user profile for token: {}", token, e);
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        } catch (Exception e) {
-            log.error("Failed to delete user profile for token: {}", token, e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
 
     @GetMapping("/users/my-profile")
     ApiResponse<UserProfileResponse> getMyProfile() {

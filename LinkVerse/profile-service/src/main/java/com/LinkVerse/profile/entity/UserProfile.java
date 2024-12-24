@@ -38,8 +38,7 @@ public class UserProfile implements Serializable {
     @Column(name = "email_verified", nullable = false)
     boolean emailVerified;
 
-    @OneToMany(mappedBy = "userProfile1", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany(mappedBy = "userProfiles")
     @JsonManagedReference
-    Set<Friendship> friends;
-
+    Set<Friendship> friendships;
 }

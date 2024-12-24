@@ -6,7 +6,6 @@ import com.LinkVerse.identity.dto.request.UserCreationRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequest;
 import com.LinkVerse.identity.dto.request.UserUpdateRequestAdmin;
 import com.LinkVerse.identity.dto.response.UserResponse;
-import com.LinkVerse.identity.entity.DeletedUser;
 import com.LinkVerse.identity.entity.Role;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.entity.UserStatus;
@@ -14,11 +13,11 @@ import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
 import com.LinkVerse.identity.mapper.ProfileMapper;
 import com.LinkVerse.identity.mapper.UserMapper;
-import com.LinkVerse.identity.repository.DeletedUserRepository;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
 import com.nimbusds.jwt.SignedJWT;
+import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,6 @@ public class UserService {
     ProfileClient profileClient;
     KafkaTemplate<String, Object> kafkaTemplate;
     AuthenticationService authenticationService;
-    DeletedUserRepository deletedUserRepository;
 
     public void updateImage(String userId, String imageUrl) {
         User user = userRepository.findUserById(userId);
@@ -169,71 +169,30 @@ public class UserService {
     }
 
 
-//    public void deleteUser(String userId) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//        user.setDeletedAt(LocalDateTime.now());
-//        userRepository.save(user);
-//    }
+    public void deleteUser(String password) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userID = authentication.getName();
 
-    public void deleteUser(String token) {
-        SignedJWT signedJWT;
-        try {
-            signedJWT = authenticationService.verifyToken(token);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
+        User user = userRepository.findUserById(userID);
 
-        String username;
-        try {
-            username = signedJWT.getJWTClaimsSet().getSubject();
-        } catch (ParseException e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        boolean authenticated = passwordEncoder.matches(password, user.getPassword());
+        if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
         user.setDeletedAt(LocalDateTime.now());
         userRepository.save(user);
-
-        DeletedUser deletedUser = new DeletedUser();
-        deletedUser.setId(user.getId());
-        deletedUser.setUsername(user.getUsername());
-        deletedUser.setDeletedAt(user.getDeletedAt());
-        deletedUserRepository.save(deletedUser);
-    }
-
-    public UserResponse login(String token) {
-        SignedJWT signedJWT;
-        try {
-            signedJWT = authenticationService.verifyToken(token);
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        String username;
-        try {
-            username = signedJWT.getJWTClaimsSet().getSubject();
-        } catch (ParseException e) {
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-
-        User user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        if (user.getDeletedAt() != null) {
-            DeletedUser deletedUser = deletedUserRepository.findById(user.getId()).orElse(null);
-            if (deletedUser != null) {
-                userRepository.delete(user);
-                deletedUserRepository.delete(deletedUser);
-                throw new AppException(ErrorCode.USER_DELETED);
-            }
-        }
-        profileClient.deleteUserProfileByToken(token);
-        return userMapper.toUserResponse(user);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUserByAdmin(String userId) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        profileClient.deleteUserProfile(user.getId());
+        try {
+            profileClient.deleteUserProfile(user.getId());
+        } catch (FeignException e) {
+            log.error("Failed to delete user profile for user ID: {}", userId, e);
+            throw new AppException(ErrorCode.PROFILE_DELETION_FAILED);
+        }
         userRepository.delete(user);
     }
 

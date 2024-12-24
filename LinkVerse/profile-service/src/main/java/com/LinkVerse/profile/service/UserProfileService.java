@@ -6,6 +6,7 @@ import com.LinkVerse.profile.entity.UserProfile;
 import com.LinkVerse.profile.exception.AppException;
 import com.LinkVerse.profile.exception.ErrorCode;
 import com.LinkVerse.profile.mapper.UserProfileMapper;
+import com.LinkVerse.profile.repository.FriendshipRepository;
 import com.LinkVerse.profile.repository.UserProfileRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -23,6 +25,7 @@ import java.util.List;
 public class UserProfileService {
     UserProfileRepository userProfileRepository;
     UserProfileMapper userProfileMapper;
+    FriendshipRepository friendshipRepository;
 
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
@@ -68,19 +71,13 @@ public class UserProfileService {
         return userProfileMapper.toUserProfileReponse(profile);
     }
 
+    @Transactional
     public void deleteUserProfile(String userId) {
         UserProfile userProfile = userProfileRepository.findByUserId(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        friendshipRepository.deleteByUserProfilesContaining(userProfile);
         userProfileRepository.delete(userProfile);
+
     }
 
-
-    public void deleteUserProfileByUsers(String token) {
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userId = authentication.getName();
-
-        UserProfile userProfile = userProfileRepository.findByUserId(userId)
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        userProfileRepository.delete(userProfile);
-    }
 }
