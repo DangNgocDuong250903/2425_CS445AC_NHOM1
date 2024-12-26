@@ -44,27 +44,24 @@ public class FriendService {
                 .orElseThrow(() -> new RuntimeException("Recipient user not found"));
 
         if (isBlocked(senderProfile.getUserId(), recipientProfile.getUserId())) {
-            throw new RuntimeException("Cannot send friend request to a blocked user");
+            throw new RuntimeException("Cannot send a friend request to a blocked user");
         }
 
-        // Kiểm tra xem Friendship giữa hai UserProfiles đã tồn tại chưa
         Optional<Friendship> existingFriendship = friendshipRepository.findByUserProfiles(senderProfile, recipientProfile);
         if (existingFriendship.isPresent()) {
             throw new RuntimeException("Friend request already exists or friendship relationship already exists.");
         }
 
-        // Tạo một mối quan hệ bạn bè mới
-        Set<UserProfile> userProfiles = new HashSet<>();
-        userProfiles.add(senderProfile);
-        userProfiles.add(recipientProfile);
-
         Friendship friendship = Friendship.builder()
-                .userProfiles(userProfiles)
+                .sender(senderProfile)
+                .recipient(recipientProfile)
                 .status(FriendshipStatus.PENDING)
                 .build();
+
         friendshipRepository.save(friendship);
 
-        kafkaTemplate.send("friendship-requests", "Friend request sent from " + senderProfile.getUsername() + " to " + recipientProfile.getUsername());
+        kafkaTemplate.send("friendship-requests",
+                "Friend request sent from " + senderProfile.getUsername() + " to " + recipientProfile.getUsername());
 
         return FriendshipResponse.builder()
                 .senderUsername(senderProfile.getUsername())
@@ -72,6 +69,7 @@ public class FriendService {
                 .status(FriendshipStatus.PENDING)
                 .build();
     }
+
 
 
     public FriendshipResponse acceptFriendRequest(String senderUserId) {

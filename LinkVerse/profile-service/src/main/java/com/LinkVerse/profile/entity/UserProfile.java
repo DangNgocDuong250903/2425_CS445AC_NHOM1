@@ -29,6 +29,8 @@ public class UserProfile implements Serializable {
     Date dateOfBirth;
     String city;
     String phoneNumber;
+
+    @Enumerated(EnumType.STRING)
     Gender gender;
 
     @Enumerated(EnumType.STRING)
@@ -38,7 +40,11 @@ public class UserProfile implements Serializable {
     @Column(name = "email_verified", nullable = false)
     boolean emailVerified;
 
-    @ManyToMany(mappedBy = "userProfiles")
+    @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    Set<Friendship> friendships;
+    Set<Friendship> sentFriendships;
+
+    @OneToMany(mappedBy = "recipient", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    Set<Friendship> receivedFriendships;
 }

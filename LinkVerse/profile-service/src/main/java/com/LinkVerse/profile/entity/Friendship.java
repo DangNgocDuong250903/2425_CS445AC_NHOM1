@@ -20,14 +20,13 @@ public class Friendship {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-    @ManyToMany
-    @JoinTable(
-            name = "friendship_user_profiles",
-            joinColumns = @JoinColumn(name = "friendship_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_profile_id")
-    )
-    @JsonBackReference
-    Set<UserProfile> userProfiles;
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
+    UserProfile sender;
+
+    @ManyToOne
+    @JoinColumn(name = "recipient_id", nullable = false)
+    UserProfile recipient;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
