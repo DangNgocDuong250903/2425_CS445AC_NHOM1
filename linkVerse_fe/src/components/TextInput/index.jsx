@@ -20,12 +20,13 @@ const TextInput = React.forwardRef(
       iconLeftStyles,
       toolTip,
       toolTipInput,
+      stylesContainer,
       ...rest
     },
     ref
   ) => {
     return (
-      <div className="w-full flex-col flex mt-2">
+      <div className={`w-full flex-col flex mt-2 ${stylesContainer}`}>
         {label && (
           <p className={`text-ascent-2 text-sm mb-2 ${labelStyles}`}>{label}</p>
         )}

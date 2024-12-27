@@ -21,6 +21,7 @@ const FriendSuggest = () => {
   const [type, setType] = useState("success");
   const { friends } = useGetMyFriend();
   const [sendStatus, setSendStatus] = useState({});
+  const [requests, setRequests] = useState([]);
 
   // Close message
   const handleClose = () => setOpen(false);
@@ -44,22 +45,35 @@ const FriendSuggest = () => {
     fetchUsers();
   }, []);
 
+  //fetch request sent
+  const fetchRequestSend = async () => {
+    try {
+      const res = await FriendService.getRequestSend(token);
+      if (res && res?.length > 0) {
+        setRequests(res);
+      }
+    } catch (error) {}
+  };
+
+  useEffect(() => {
+    fetchRequestSend();
+  }, []);
+
+  //request
   const handleRequest = async (id) => {
     try {
       setSendStatus((prev) => ({ ...prev, [id]: true }));
       const res = await FriendService.request({ id, token });
-      console.log(res);
       if (res?.status === "PENDING") {
-        fetchUsers();
-        // setMessage("Đã gửi lời mời kết bạn");
-        // setType(res?.code === 9999 ? "error" : "success");
-        // setOpen(true);
+        setRequests((prev) => [...prev, { userId: id }]);
       }
     } catch (error) {
       console.error("Error sending friend request:", error);
       setMessage("Không thể gửi lời mời kết bạn");
       setType("error");
       setOpen(true);
+    } finally {
+      setSendStatus((prev) => ({ ...prev, [id]: false }));
     }
   };
 
@@ -110,10 +124,10 @@ const FriendSuggest = () => {
                 </Link>
 
                 <div className="flex gap-1">
-                  {sendStatus[item?.userId] ? (
-                    <button className="text-sm text-white p-1 rounded">
-                      <FaUserCheck size={20} className="text-[#0444A4]" />
-                    </button>
+                  {requests.some(
+                    (request) => request?.userId === item?.userId
+                  ) ? (
+                    <span>Pending</span>
                   ) : (
                     <button
                       className="text-sm text-white p-1 rounded"

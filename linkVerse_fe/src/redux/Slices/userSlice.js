@@ -58,6 +58,8 @@ const userSlice = createSlice({
             state.roles = roles
         },
         resetUser(state, action) {
+            localStorage?.removeItem("token");
+            localStorage.removeItem("sentiment");
             state.lastName = ""
             state.userId = ""
             state.firstName = ""
@@ -76,7 +78,6 @@ const userSlice = createSlice({
             state.status = action.payload
         },
         updateFriends(state, action) {
-
             state.friends = action.payload
         }
     },

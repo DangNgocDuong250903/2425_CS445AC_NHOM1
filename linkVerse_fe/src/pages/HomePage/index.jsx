@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSelector } from "react-redux";
 import * as PostService from "~/services/PostService";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, SpeedDial, SpeedDialIcon } from "@mui/material";
 import {
   FriendCard,
   ProfileCard,
@@ -13,6 +13,7 @@ import {
   CreatePost,
   Welcome,
   Story,
+  Group,
 } from "~/components";
 import { BlankAvatar } from "~/assets/index";
 
@@ -89,8 +90,9 @@ const HomePage = () => {
           {token && (
             <>
               <ProfileCard />
+              <Group />
               <FriendCard />
-              <GroupCard />
+              {/* <GroupCard /> */}
             </>
           )}
         </div>

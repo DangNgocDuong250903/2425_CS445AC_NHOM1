@@ -8,15 +8,7 @@ import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { Alerts, Button, CustomizeMenu, DialogCustom } from "..";
 import { BiCommentDetail } from "react-icons/bi";
-import {
-  CircularProgress,
-  Divider,
-  FormControl,
-  MenuItem,
-  Select,
-  styled,
-  TextField,
-} from "@mui/material";
+import { CircularProgress, Divider, MenuItem, styled } from "@mui/material";
 import { PiShareFat } from "react-icons/pi";
 import { FiBookmark } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
@@ -263,14 +255,6 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
 
   //delete post
   const handleDeletePost = async (id) => {
-    // const res = await PostService.deletePost({ id, token });
-    // if (res?.code === 200) {
-    //   handleClose();
-    //   setOpenMessage(true);
-    //   setMessage("Delete post success!");
-    //   fetchPosts();
-    // }
-
     try {
       handleClose();
       setIcon(<CircularProgress size={20} color="white" />);
@@ -333,6 +317,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   };
 
   //block user
+  const handleBlockUser = async (id) => {};
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -424,7 +409,10 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                             <TbMessageReport color="red" />
                           </div>
                         </MenuItem>
-                        <MenuItem onClick={handleClose} disableRipple>
+                        <MenuItem
+                          onClick={() => handleClose(post?.id)}
+                          disableRipple
+                        >
                           <div className="flex items-center justify-between w-full">
                             <span className="text-red-600">Block</span>
                             <ImUserMinus color="red" />
@@ -469,7 +457,11 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       </div>
 
       <div>
-        <p className="text-ascent-2">
+        <p
+          className={`text-ascent-2 ${
+            post.content.startsWith("#") && "text-red-700"
+          }`}
+        >
           {showAll === post?.id
             ? post?.content || ""
             : post?.content?.slice(0, 300) || ""}
@@ -478,7 +470,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
             post.content.length > 301 &&
             (showAll === post?.id ? (
               <span
-                className="text-blue ml-2 font-medium cursor-pointer"
+                className="text-blue ml-2 font-medium  cursor-pointer"
                 onClick={() => setShowAll(0)}
               >
                 Show less

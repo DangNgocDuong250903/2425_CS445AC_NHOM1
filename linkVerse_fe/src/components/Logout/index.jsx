@@ -22,10 +22,7 @@ const Logout = ({ second, primary }) => {
   const handleLogOut = () => {
     const token = localStorage.getItem("token");
     mutation.mutate(token);
-    // await UserService.logout(user?.token);
     dispatch(resetUser());
-    localStorage.removeItem("token");
-    localStorage.removeItem("sentiment");
     navigate("/login");
   };
   return (

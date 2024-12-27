@@ -118,10 +118,7 @@ export const verify = async ({ data, token }) => {
 
 export const setAvatar = async ({ file, token }) => {
     const formData = new FormData
-    formData.append("request", JSON.stringify({
-        "content": "Set avatar",
-        "visibility": "PRIVATE"
-    }));
+    formData.append("request", { content: "Update avatar" });
     formData.append("avatar", file);
 
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/set-avatar`, formData, {
@@ -132,8 +129,8 @@ export const setAvatar = async ({ file, token }) => {
     return res.data
 }
 
-export const disableAcount = async (token) => {
-    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/delete?token=${token}`, {
+export const disableAcount = async ({ token, password }) => {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/delete?password=${password}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -141,8 +138,8 @@ export const disableAcount = async (token) => {
     return res.data
 }
 
-export const deleteAccount = async (token) => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/login?token=${token}`, {}, {
+export const deleteAccount = async ({ token, password }) => {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/identity/users/delete-permanently?password=${password}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

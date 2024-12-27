@@ -59,17 +59,18 @@ const CreateComment = ({ handleClose, open, id }) => {
     if (isSuccess) {
       if (data?.code === 200) {
         handleClear();
-        setOpen(false);
+        // setOpen(false);
+        handleClose();
         setType("success");
         setMessage("Create comment success!");
         setShowMessage(true);
-        onSuccess();
+        // onSuccess();
       } else if (data?.code === 400) {
         setType("error");
         setMessage(data?.message);
         setShowMessage(true);
         handleClear();
-        setOpen(false);
+        handleClose();
       }
     } else if (isError) {
       setMessage("Something went wrong!");

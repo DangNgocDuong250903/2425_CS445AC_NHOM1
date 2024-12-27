@@ -59,6 +59,15 @@ export const getFriendRequests = async (token) => {
     return res.data
 }
 
+export const getRequestSend = async (token) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/request-sent`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
 export const getMyFriends = async (token) => {
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/my-friends`, {
         headers: {

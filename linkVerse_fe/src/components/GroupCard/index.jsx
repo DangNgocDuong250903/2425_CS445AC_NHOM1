@@ -2,7 +2,7 @@ const GroupCard = () => {
   return (
     <div className="w-full bg-primary rounded-2xl px-6 py-5 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-ascent-1 pb-2 border-b border-[#66666645]">
-        <span>Group</span>
+        <span>Groups you like</span>
         <span>0</span>
       </div>
 

@@ -22,8 +22,16 @@ import SelectPosts from "./SelectPosts"
 import Logout from "./Logout"
 import Alerts from "./Alerts"
 import StoryCard from "./StoryCard"
+import DeleteAccount from "./DeleteAccount"
+import VerifyEmail from "./VerifyEmail"
+import BlockList from "./BlockList"
+import Group from "./Group"
 
 export {
+    Group,
+    BlockList,
+    VerifyEmail,
+    DeleteAccount,
     StoryCard,
     Alerts,
     Logout,

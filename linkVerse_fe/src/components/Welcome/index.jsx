@@ -18,7 +18,11 @@ const Welcome = () => {
   }, []);
 
   return (
-    <DialogCustom isOpen={show} handleCloseDiaLogAdd={handleClose}>
+    <DialogCustom
+      width="600px"
+      isOpen={show}
+      handleCloseDiaLogAdd={handleClose}
+    >
       <div className="w-full px-2 py-14 text-center gap-y-7 flex-col rounded-2xl flex items-center justify-center">
         <div>
           <h1 className="text-ascent-1 px-3 tracking-tight text-3xl font-extrabold">

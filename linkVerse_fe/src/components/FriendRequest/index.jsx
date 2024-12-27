@@ -1,4 +1,3 @@
-// FriendRequest.js
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as FriendService from "~/services/FriendService";
@@ -8,17 +7,18 @@ import { BlankAvatar } from "~/assets";
 import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
+import useGetRequestSend from "~/hooks/useGetRequestSend";
 
 const FriendRequest = () => {
   const { t } = useTranslation();
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const user = useSelector((state) => state?.user);
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("success");
   const { friends, reload } = useGetMyFriend();
+  const { requestsSend } = useGetRequestSend();
 
   //close message
   const handleClose = () => {

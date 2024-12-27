@@ -117,6 +117,7 @@ const ProfilePage = () => {
   //change avatar
   const handleChangeAvatar = async (e) => {
     const file = e.target.files[0];
+
     setLoadingUpdateAvatar(true);
     try {
       const res = await UserService.setAvatar({ file, token });
