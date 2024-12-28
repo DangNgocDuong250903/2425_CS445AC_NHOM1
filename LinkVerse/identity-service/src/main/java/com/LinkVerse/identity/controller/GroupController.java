@@ -49,4 +49,9 @@ public class GroupController {
     public ApiResponse<GroupResponse> getGroup(@PathVariable String groupId) {
         return groupService.getGroupById(groupId);
     }
+
+    @GetMapping("/all")
+    public ApiResponse<List<GroupResponse>> getAllGroup() {
+        return groupService.getAllGroup();
+    }
 }

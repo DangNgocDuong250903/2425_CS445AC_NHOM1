@@ -20,7 +20,7 @@ public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",
-            "/internal/users", "/internal/users/**", "/profile/users"
+            "/internal/users", "/internal/users/**", "/profile/users", "/groups/all",
     };
 
     private final CustomJwtDecoder customJwtDecoder;

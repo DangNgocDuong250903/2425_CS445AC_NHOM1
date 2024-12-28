@@ -3,6 +3,7 @@ package com.LinkVerse.identity.service;
 import com.LinkVerse.identity.dto.request.ApiResponse;
 import com.LinkVerse.identity.dto.request.GroupRequest;
 import com.LinkVerse.identity.dto.response.GroupResponse;
+import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Group;
 import com.LinkVerse.identity.entity.GroupMember;
 import com.LinkVerse.identity.entity.User;
@@ -90,11 +91,9 @@ public class GroupService {
 
     @Transactional
     public ApiResponse<GroupResponse> addMemberToGroup(String groupId, String memberId) {
-        // Lấy thông tin xác thực hiện tại từ SecurityContext
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String requesterId = authentication.getName();
 
-        // Kiểm tra requester tồn tại
         User requester = userRepository.findById(requesterId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         Group group = groupRepository.findById(groupId).orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
@@ -109,14 +108,11 @@ public class GroupService {
             throw new AppException(ErrorCode.PERMISSION_DENIED);
         }
 
-        // Kiểm tra xem người dùng cần thêm có tồn tại không
         User member = userRepository.findById(memberId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
-        // Kiểm tra xem người dùng đã là thành viên của nhóm chưa
         if (groupMemberRepository.findByGroupAndUser(group, member).isPresent()) {
             throw new AppException(ErrorCode.ALREADY_MEMBER);
         }
-
         // Đặt vai trò cho thành viên mới: nếu là OWNER thêm vào thì gán vai trò LEADER, nếu LEADER hoặc MEMBER thêm thì gán vai trò MEMBER
         GroupMember.MemberRole newMemberRole = (requesterMember.getRole() == GroupMember.MemberRole.OWNER)
                 ? GroupMember.MemberRole.LEADER
@@ -130,13 +126,11 @@ public class GroupService {
                 .build();
         groupMemberRepository.save(newMember);
 
-        // Cập nhật số lượng thành viên của nhóm
         group.setMemberCount(group.getMemberCount() + 1);
         groupRepository.save(group);
 
         groupEventProducer.publishMemberAddedEvent(groupId, newMemberRole.name());
 
-        // Trả về thông tin chi tiết của nhóm
         GroupResponse groupResponse = GroupResponse.builder()
                 .id(group.getId())
                 .name(group.getName())
@@ -153,11 +147,9 @@ public class GroupService {
 
     @Transactional
     public ApiResponse<GroupResponse> getGroupById(String groupId) {
-        // Lấy thông tin nhóm từ database
         Group group = groupRepository.findById(groupId)
                 .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
 
-        // Tạo phản hồi từ thông tin nhóm
         GroupResponse groupResponse = GroupResponse.builder()
                 .id(group.getId())
                 .name(group.getName())
@@ -169,10 +161,33 @@ public class GroupService {
         // Trả về API Response
         return ApiResponse.<GroupResponse>builder()
                 .code(200)
-                .message("Group found successfully")
+                .message("Tìm nhóm thành công")
                 .result(groupResponse)
                 .build();
     }
+
+    @Transactional
+    public ApiResponse<List<GroupResponse>> getAllGroup() {
+        List<Group> groups = groupRepository.findAll();
+
+        // chưa tạo mapper
+        List<GroupResponse> groupResponses = groups.stream()
+                .map(group -> GroupResponse.builder()
+                        .id(group.getId())
+                        .name(group.getName())
+                        .description(group.getDescription())
+                        .memberCount(group.getMemberCount())
+                        .visibility(group.getVisibility().name())
+                        .build())
+                .toList();
+
+        return ApiResponse.<List<GroupResponse>>builder()
+                .code(200)
+                .message("Lấy danh sách nhóm thành công")
+                .result(groupResponses)
+                .build();
+    }
+
 
     @Transactional
     public boolean isUserInGroup(String groupId) {
