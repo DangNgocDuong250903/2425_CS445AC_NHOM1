@@ -11,9 +11,11 @@ import moment from "moment";
 import { useTranslation } from "react-i18next";
 import { useSelector } from "react-redux";
 import { UpdateUser } from "..";
+import useGetFriendOfUser from "~/hooks/useGetFriendOfUser";
 
 const ProfileCard = () => {
   const { t } = useTranslation();
+  const { friendOfUser } = useGetFriendOfUser();
   const user = useSelector((state) => state?.user);
 
   return (
@@ -27,9 +29,9 @@ const ProfileCard = () => {
               className="w-14 h-14 object-cover rounded-full"
             />
             {user?.status === "ONLINE" ? (
-              <div className="absolute top-1 right-1 w-3 h-3 bg-[#53C259] rounded-full border-2 border-[#392629]" />
+              <div className="absolute top-1 right-0 w-4 h-4 bg-[#53C259] rounded-full border-2 border-primary" />
             ) : (
-              <div className="absolute top-1 right-1 w-3 h-3 bg-[#ccc] rounded-full border-2 border-[#000]" />
+              <div className="absolute top-1 right-1 w-4 h-4 bg-[#ccc] rounded-full border-2 border-primary" />
             )}
           </div>
           <div className="flex flex-col justify-center">
@@ -57,7 +59,7 @@ const ProfileCard = () => {
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <div className="flex gap-2 items-center text-ascent-2">
           <CiLocationOn className="text-xl text-ascent-1" />
-          <span>{user?.address || "Thêm địa chỉ"}</span>
+          <span>{user?.city || "Thêm địa chỉ"}</span>
         </div>
 
         <div className="flex gap-2 items-center text-ascent-2">
@@ -67,7 +69,7 @@ const ProfileCard = () => {
       </div>
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
-          {user?.friends} {t("Bạn bè")}
+          {friendOfUser?.length} {t("Bạn bè")}
         </p>
 
         <span className="text-base text-blue">

@@ -97,11 +97,19 @@ const FriendRequest = () => {
                 to={`/profile/${request?.userId}`}
                 className="w-full flex gap-4 items-center cursor-pointer"
               >
-                <img
-                  src={BlankAvatar}
-                  alt={request?.userId}
-                  className="w-10 h-10 object-cover rounded-full"
-                />
+                <div className="relative">
+                  <img
+                    src={BlankAvatar}
+                    alt={request?.userId}
+                    className="w-10 h-10 object-cover rounded-full"
+                  />
+                  {request?.status === "ONLINE" ? (
+                    <div className="absolute right-0 top-7 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
+                  ) : (
+                    <div className="absolute right-0 top-7 w-2 h-2 bg-[#ccc] rounded-full border-2 border-primary" />
+                  )}
+                </div>
+
                 <div className="flex-1 w-full">
                   <p
                     id="text-ellipsis"

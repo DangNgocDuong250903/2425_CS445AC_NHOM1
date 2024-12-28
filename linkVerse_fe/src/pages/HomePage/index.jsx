@@ -1,13 +1,12 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import * as PostService from "~/services/PostService";
-import { CircularProgress, SpeedDial, SpeedDialIcon } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import {
   FriendCard,
   ProfileCard,
   PostCard,
   TopBar,
-  GroupCard,
   FriendRequest,
   FriendSuggest,
   CreatePost,
@@ -19,15 +18,14 @@ import { BlankAvatar } from "~/assets/index";
 
 const HomePage = () => {
   const user = useSelector((state) => state?.user);
-  let sentiment = useSelector((state) => state?.post?.sentiment);
+  let sentiment = useSelector((state) => state.post.sentiment);
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const [hasMore, setHasMore] = useState(true);
 
   const fetchPosts = async () => {
-    if (isLoading || !hasMore) return;
+    if (isLoading) return;
 
     setIsLoading(true);
     try {
@@ -49,8 +47,6 @@ const HomePage = () => {
         const { data: dataPost, currentPage, totalPage } = result;
 
         setPosts((prev) => [...prev, ...dataPost]);
-        setPage(currentPage + 1);
-        setHasMore(currentPage < totalPage);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -59,18 +55,9 @@ const HomePage = () => {
     }
   };
 
-  const handleScroll = (e) => {
-    const bottom =
-      e.target.scrollHeight - e.target.scrollTop - e.target.clientHeight < 60;
-    if (bottom) {
-      fetchPosts();
-    }
-  };
-
   useEffect(() => {
     setPosts([]);
     setPage(1);
-    setHasMore(true);
     fetchPosts();
   }, [sentiment]);
 
@@ -87,24 +74,20 @@ const HomePage = () => {
       <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
         {/* Left */}
         <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
-          {token && (
+          {user?.token && (
             <>
               <ProfileCard />
-              <Group />
               <FriendCard />
+              <Group />
               {/* <GroupCard /> */}
             </>
           )}
         </div>
 
         {/* Center */}
-        <div
-          onScroll={handleScroll}
-          className="flex-1 h-full bg-primary px-3 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed"
-        >
-          <div className="flex h-full flex-col gap-6 ">
+        <div className="flex-1 h-full bg-primary px-3 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto rounded-tl-3xl rounded-tr-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
+          <div className="flex h-full flex-col gap-6">
             {token ? (
-              // <div className="w-full h-24 flex justify-center bg-primary rounded-lg overflow-x-auto overflow-y-hidden">
               <div className="w-full flex items-center justify-between gap-3 py-4 px-2 border-b border-[#66666645]">
                 <div className="flex items-center gap-4">
                   <img
@@ -123,24 +106,22 @@ const HomePage = () => {
                 />
               </div>
             ) : (
-              // </div>
               <div />
             )}
 
-            {posts.length > 0 &&
+            {posts.length > 0 ? (
               posts
                 .filter((post) => post?.visibility === "PUBLIC")
-                .map((post, i) => <PostCard key={i} post={post} />)}
+                .map((post, i) => <PostCard key={i} post={post} />)
+            ) : (
+              <div className="flex w-full h-full items-center justify-center">
+                <p className="text-lg text-ascent-2">Không có bài viết nào</p>
+              </div>
+            )}
 
             {isLoading && (
               <div className="w-full h-full flex items-center justify-center">
                 <CircularProgress />
-              </div>
-            )}
-
-            {!hasMore && (
-              <div className="flex w-full h-full items-center justify-center">
-                <p className="text-lg text-ascent-2">Không có bài viết nào</p>
               </div>
             )}
           </div>
@@ -148,7 +129,7 @@ const HomePage = () => {
 
         {/* Right */}
         <div className="hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto">
-          {token && (
+          {user?.token && (
             <>
               <Story />
               <FriendRequest />

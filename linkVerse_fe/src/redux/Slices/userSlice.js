@@ -60,6 +60,7 @@ const userSlice = createSlice({
         resetUser(state, action) {
             localStorage?.removeItem("token");
             localStorage.removeItem("sentiment");
+            localStorage.removeItem("showedSplashscreen");
             state.lastName = ""
             state.userId = ""
             state.firstName = ""

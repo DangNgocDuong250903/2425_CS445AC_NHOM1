@@ -8,7 +8,7 @@ import { CircularProgress } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Alerts } from "..";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
-import { FaUserCheck } from "react-icons/fa";
+import { FaUserClock } from "react-icons/fa6";
 
 const FriendSuggest = () => {
   const { t } = useTranslation();
@@ -20,7 +20,7 @@ const FriendSuggest = () => {
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("success");
   const { friends } = useGetMyFriend();
-  const [sendStatus, setSendStatus] = useState({});
+  const [pendingUsers, setPendingUsers] = useState([]);
   const [requests, setRequests] = useState([]);
 
   // Close message
@@ -45,27 +45,32 @@ const FriendSuggest = () => {
     fetchUsers();
   }, []);
 
-  //fetch request sent
+  // Fetch sent requests
   const fetchRequestSend = async () => {
     try {
       const res = await FriendService.getRequestSend(token);
       if (res && res?.length > 0) {
         setRequests(res);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error fetching sent requests:", error);
+    }
   };
 
   useEffect(() => {
     fetchRequestSend();
   }, []);
 
-  //request
+  // Request
   const handleRequest = async (id) => {
     try {
-      setSendStatus((prev) => ({ ...prev, [id]: true }));
+      setPendingUsers((prev) => [...prev, id]);
       const res = await FriendService.request({ id, token });
       if (res?.status === "PENDING") {
         setRequests((prev) => [...prev, { userId: id }]);
+        setMessage("Gửi lời mời kết bạn thành công");
+        setType("success");
+        setOpen(true);
       }
     } catch (error) {
       console.error("Error sending friend request:", error);
@@ -73,7 +78,7 @@ const FriendSuggest = () => {
       setType("error");
       setOpen(true);
     } finally {
-      setSendStatus((prev) => ({ ...prev, [id]: false }));
+      setPendingUsers((prev) => prev.filter((userId) => userId !== id));
     }
   };
 
@@ -95,52 +100,64 @@ const FriendSuggest = () => {
           <div className="flex w-full h-full items-center justify-center">
             <CircularProgress />
           </div>
-        ) : users.length > 0 ? (
-          users
-            ?.filter(
+        ) : (
+          (() => {
+            const filteredUsers = users?.filter(
               (item) =>
                 item?.userId !== user?.id &&
-                !friends.some((friend) => friend.userId === item.userId)
-            )
-            .map((item, index) => (
-              <div key={index} className="flex items-center justify-between">
-                <Link
-                  to={"/profile/" + item?.userId}
-                  className="flex w-full gap-4 items-center cursor-pointer"
-                >
-                  <img
-                    src={item?.imageUrl ?? BlankAvatar}
-                    alt={item?.firstName}
-                    className="w-10 h-10 object-cover rounded-full"
-                  />
-                  <div className="flex-1">
-                    <p className="text-base font-medium text-ascent-1">
-                      {item?.firstName + " " + item?.lastName ?? "No name"}
-                    </p>
-                    <span className="text-sm text-ascent-2">
-                      {item.username ?? "No name"}
-                    </span>
+                !friends.some((friend) => friend.userId === item?.userId)
+            );
+            if (filteredUsers.length > 0) {
+              return filteredUsers.map((item, index) => (
+                <div key={index} className="flex items-center justify-between">
+                  <Link
+                    to={"/profile/" + item?.userId}
+                    className="flex w-full gap-4 items-center cursor-pointer"
+                  >
+                    <div className="relative">
+                      <img
+                        src={item?.imageUrl ?? BlankAvatar}
+                        alt={item?.firstName}
+                        className="w-10 h-10 object-cover rounded-full"
+                      />
+                      {item?.status === "ONLINE" ? (
+                        <div className="absolute right-0 top-7 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
+                      ) : (
+                        <div className="absolute right-0 top-7 w-2 h-2 bg-[#ccc] rounded-full border-2 border-primary" />
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-base font-medium text-ascent-1">
+                        {item?.firstName + " " + item?.lastName ?? "No name"}
+                      </p>
+                      <span className="text-sm text-ascent-2">
+                        {item.username ?? "No name"}
+                      </span>
+                    </div>
+                  </Link>
+                  <div className="flex gap-1">
+                    {pendingUsers.includes(item.userId) ||
+                    requests.some(
+                      (request) => request?.userId === item?.userId
+                    ) ? (
+                      <FaUserClock size={20} className="text-[#0444A4]" />
+                    ) : (
+                      <button
+                        className="text-sm text-white p-1 rounded"
+                        onClick={() => handleRequest(item?.userId)}
+                      >
+                        <BsPersonFillAdd size={20} className="text-[#0444A4]" />
+                      </button>
+                    )}
                   </div>
-                </Link>
-
-                <div className="flex gap-1">
-                  {requests.some(
-                    (request) => request?.userId === item?.userId
-                  ) ? (
-                    <span>Pending</span>
-                  ) : (
-                    <button
-                      className="text-sm text-white p-1 rounded"
-                      onClick={() => handleRequest(item?.userId)}
-                    >
-                      <BsPersonFillAdd size={20} className="text-[#0444A4]" />
-                    </button>
-                  )}
                 </div>
-              </div>
-            ))
-        ) : (
-          <span className="text-center">Không có bạn bè đề xuất nào</span>
+              ));
+            } else {
+              return (
+                <span className="text-center">Không có bạn bè đề xuất nào</span>
+              );
+            }
+          })()
         )}
       </div>
     </div>

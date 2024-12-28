@@ -64,28 +64,9 @@ function App() {
     }
   };
 
-  //protected route
   const isLoggedIn = !!localStorage.getItem("token");
 
   return (
-    // <div>
-    //   <div data-theme={theme} className="w-full min-h-[100vh] antialiased">
-    //     <Routes>
-    //       {route.map((route, i) => {
-    //         const Page = route.element;
-    //         const isCheckAuth =
-    //           !route.isPrivate || user.roles.includes("ADMIN");
-    //         return (
-    //           <Route
-    //             key={i}
-    //             element={<Page />}
-    //             path={isCheckAuth ? route.path : ""}
-    //           />
-    //         );
-    //       })}
-    //     </Routes>
-    //   </div>
-    // </div>
     <div>
       <div data-theme={theme} className="w-full min-h-[100vh] antialiased">
         <Routes>

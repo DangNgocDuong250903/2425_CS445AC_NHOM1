@@ -39,7 +39,7 @@ const SelectPosts = () => {
   };
 
   return (
-    <>
+    <div>
       <div
         onClick={handleClick}
         aria-controls={open ? "demo-customized-menu" : undefined}
@@ -64,6 +64,7 @@ const SelectPosts = () => {
               onClick={(e) => handleMenuItemClick(e, i)}
               selected={selectsPost[i] === sentiment}
             >
+              {/* For you", "Positive", "Negative", "Neutral", "Mixed" */}
               <div className="flex items-center justify-between w-full">
                 <span className={theme === "light" && "text-black"}>
                   {option}
@@ -75,7 +76,7 @@ const SelectPosts = () => {
           </div>
         ))}
       </CustomizeMenu>
-    </>
+    </div>
   );
 };
 

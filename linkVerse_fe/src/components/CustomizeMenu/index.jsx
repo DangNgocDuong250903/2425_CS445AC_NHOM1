@@ -58,6 +58,7 @@ const CustomizeMenu = ({
     <div>
       <StyledMenu
         sx={styles}
+        aria-hidden={!open}
         transformOrigin={anchor}
         id="demo-customized-menu"
         MenuListProps={{

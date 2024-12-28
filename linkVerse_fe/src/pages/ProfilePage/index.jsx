@@ -16,20 +16,21 @@ import { BlankAvatar } from "~/assets";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import * as PostService from "~/services/PostService";
-import useGetDetailUser from "~/hooks/useGetDetailUser";
 import * as UserService from "~/services/UserService";
 import { BsFillPlusCircleFill } from "react-icons/bs";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
 import useGetFriendRequest from "~/hooks/useGetFriendRequest";
 import * as FriendService from "~/services/FriendService";
+import useGetRequestSend from "~/hooks/useGetRequestSend";
+import useGetFriendOfUser from "~/hooks/useGetFriendOfUser";
+import { BsCameraFill } from "react-icons/bs";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const [value, setValue] = useState(0);
   const userPrimary = useSelector((state) => state.user);
-  // const { user, loading, reload: fetchUser } = useGetDetailUser();
   const token = localStorage.getItem("token");
   const [isUnfriend, setIsUnFriend] = useState(false);
   const [loadingPost, setLoadingPost] = useState(false);
@@ -42,7 +43,12 @@ const ProfilePage = () => {
   const [page, setPage] = useState(1);
   const { friends } = useGetMyFriend();
   const { request } = useGetFriendRequest();
+  const { requestsSend } = useGetRequestSend();
+  const { friendOfUser } = useGetFriendOfUser();
   const [user, setUser] = useState({});
+  const navigate = useNavigate();
+  const [requests, setRequests] = useState([]);
+  const [pendingRequests, setPendingRequests] = useState([]);
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -74,6 +80,21 @@ const ProfilePage = () => {
       "aria-controls": `simple-tabpanel-${index}`,
     };
   };
+
+  const fetchRequestSend = async () => {
+    try {
+      const res = await FriendService.getRequestSend(token);
+      if (res && res?.length > 0) {
+        setRequests(res);
+      }
+    } catch (error) {
+      console.error("Error fetching sent requests:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchRequestSend();
+  }, []);
 
   //fetch post
   const fetchMyPosts = async ({ id, token, page }) => {
@@ -154,6 +175,20 @@ const ProfilePage = () => {
   };
 
   //request
+  const handleRequest = async (id) => {
+    try {
+      const res = await FriendService.request({ id, token });
+      if (res?.status === "PENDING") {
+        // Cập nhật trạng thái PENDING
+        setPendingRequests((prev) => [...prev, id]);
+      }
+    } catch (error) {
+      console.error("Error sending friend request:", error);
+      setMessage("Không thể gửi lời mời kết bạn");
+      setTypeMessage("error");
+      setOpenMessage(true);
+    }
+  };
 
   return (
     <>
@@ -199,7 +234,7 @@ const ProfilePage = () => {
                     <div className="flex items-center justify-center w-full h-full absolute top-0">
                       <label
                         htmlFor="imgUpload"
-                        className="flex items-center gap-1 text-base text-ascent-2 hover:text-ascent-1 cursor-pointer"
+                        className="flex items-center gap-1 text-ascent-2 hover:text-ascent-1 cursor-pointer"
                       >
                         <input
                           type="file"
@@ -230,7 +265,7 @@ const ProfilePage = () => {
               </div>
               {/* 3 */}
               <div className="flex justify-between items-center">
-                <span>{userState.friends} friends</span>
+                <span>{friendOfUser?.length} friends</span>
                 <div className="flex gap-2">
                   <FaInstagram
                     color={theme === "dark" ? "#fff" : "#000"}
@@ -247,28 +282,35 @@ const ProfilePage = () => {
               {userState?.id !== user?.id ? (
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   {friends?.find((friend) => friend?.userId === user?.id) ? (
-                    <>
-                      {isUnfriend ? (
-                        <Button
-                          onClick={() => setIsOpenDialogEdit(true)}
-                          title="Kết bạn"
-                          containerStyles={
-                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                          }
-                        />
-                      ) : (
-                        <Button
-                          onClick={() => handleUnfriend(user?.id)}
-                          title="Hủy kết bạn"
-                          containerStyles={
-                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                          }
-                        />
-                      )}
-                    </>
+                    isUnfriend ? (
+                      <Button
+                        onClick={() => handleRequest(user?.id)}
+                        title="Kết bạn"
+                        containerStyles={
+                          "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                        }
+                      />
+                    ) : (
+                      <Button
+                        onClick={() => handleUnfriend(user?.id)}
+                        title="Hủy kết bạn"
+                        containerStyles={
+                          "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                        }
+                      />
+                    )
+                  ) : pendingRequests.includes(user?.id) ||
+                    requests.some((request) => request?.userId === user?.id) ? (
+                    <Button
+                      title="Pending"
+                      containerStyles={
+                        "text-ascent-2 bg-borderNewFeed w-full py-2 rounded-xl border border-borderNewFeed flex items-center justify-center font-medium cursor-default"
+                      }
+                      disabled
+                    />
                   ) : (
                     <Button
-                      onClick={() => setIsOpenDialogEdit(true)}
+                      onClick={() => handleRequest(user?.id)}
                       title="Kết bạn"
                       containerStyles={
                         "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
@@ -276,8 +318,9 @@ const ProfilePage = () => {
                     />
                   )}
 
+                  {/* Button nhắn tin */}
                   <Button
-                    onClick={() => setIsOpenDialogEdit(true)}
+                    onClick={() => navigate("/chat")}
                     title="Nhắn tin"
                     containerStyles={
                       "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"

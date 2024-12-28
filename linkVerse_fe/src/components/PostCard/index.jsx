@@ -1,34 +1,26 @@
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BiComment, BiLike } from "react-icons/bi";
+import { Link, useNavigate } from "react-router-dom";
+import { BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
-import { MdOutlineDelete } from "react-icons/md";
-import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Alerts, Button, CustomizeMenu, DialogCustom } from "..";
+import { Alerts, CustomizeMenu, DialogCustom } from "..";
 import { BiCommentDetail } from "react-icons/bi";
 import { CircularProgress, Divider, MenuItem, styled } from "@mui/material";
-import { PiShareFat } from "react-icons/pi";
-import { FiBookmark } from "react-icons/fi";
 import { TbMessageReport } from "react-icons/tb";
 import { RiAttachment2 } from "react-icons/ri";
 import { ImUserMinus } from "react-icons/im";
 import { useSelector } from "react-redux";
 import { copyToClipboard, getBase64 } from "~/utils";
-import { PiGifThin } from "react-icons/pi";
-import { FaPhotoVideo } from "react-icons/fa";
-import { BsImages } from "react-icons/bs";
-import { IoCloseCircle } from "react-icons/io5";
-import { FaRegTrashCan, FaEarthAmericas } from "react-icons/fa6";
-import { FaRegEdit } from "react-icons/fa";
-import { IoPaperPlaneOutline } from "react-icons/io5";
 import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
-import { FaRegGrinStars } from "react-icons/fa";
-import * as UserService from "~/services/UserService";
 import CreateComment from "../CreateComment";
 import * as PostService from "~/services/PostService";
 import AlertWelcome from "../AlertWelcome";
+import { BlankAvatar } from "~/assets";
+import { FaEarthAmericas, FaRegTrashCan } from "react-icons/fa6";
+import { FiBookmark } from "react-icons/fi";
+import { IoPaperPlaneOutline } from "react-icons/io5";
+import PostMenu from "../PostMenu";
 
 const PostCard = ({ post, isShowImage, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -76,6 +68,21 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       borderColor: theme.colorSchemes.dark.border,
     }),
   }));
+
+  const renderContentWithHashtags = (content) => {
+    if (!content) return "";
+    const parts = content.split(/(\s+)/);
+    return parts.map((part, index) => {
+      if (/^#[A-Za-z0-9_]+$/.test(part)) {
+        return (
+          <span key={index} className="text-blue font-semibold cursor-pointer">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
   //preview img
   const imgRef = useRef(null);
@@ -422,12 +429,6 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                     )}
                     {userState?.id === post?.userId && (
                       <div>
-                        {/* <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Edit post</span>
-                        <FaRegEdit color="red" />
-                      </div>
-                    </MenuItem> */}
                         <MenuItem
                           onClick={() => handleDeletePost(post?.id)}
                           disableRipple
@@ -457,14 +458,10 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
       </div>
 
       <div>
-        <p
-          className={`text-ascent-2 ${
-            post.content.startsWith("#") && "text-red-700"
-          }`}
-        >
+        <p className="text-ascent-2">
           {showAll === post?.id
-            ? post?.content || ""
-            : post?.content?.slice(0, 300) || ""}
+            ? renderContentWithHashtags(post?.content) || ""
+            : renderContentWithHashtags(post?.content?.slice(0, 300)) || ""}
 
           {post?.content &&
             post.content.length > 301 &&

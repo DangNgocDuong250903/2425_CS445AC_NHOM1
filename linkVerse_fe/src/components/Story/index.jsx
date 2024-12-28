@@ -39,9 +39,6 @@ const Story = () => {
     <div className="w-full bg-primary shadow-newFeed rounded-2xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-4 border-b border-[#66666645]">
         <span className="text-lg font-medium">Stories</span>
-        <span>
-          <BiDotsHorizontalRounded size={25} />
-        </span>
       </div>
       <CreateStory
         open={open}

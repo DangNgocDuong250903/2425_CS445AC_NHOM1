@@ -23,7 +23,16 @@ export const createPost = async ({ data, token }) => {
 };
 
 export const getAllPosts = async ({ id, token, page, size }) => {
-    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/group/all?page=1&size=10&groupId=${id}`, {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/group/all?page=${page}&size=${size}&groupId=${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const getAllGroup = async (token) => {
+    const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups/all`, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -41,7 +50,7 @@ export const getUserPosts = async ({ userId, groupId, token }) => {
 }
 
 export const createGroup = async ({ data, token }) => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/group/post-file`, data, {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

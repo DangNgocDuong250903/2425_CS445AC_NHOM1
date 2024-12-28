@@ -45,8 +45,12 @@ export const unfriend = async ({ id, token }) => {
     return res.data
 }
 
-export const getFriendOfUser = async () => {
-    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends`)
+export const getFriendOfUser = async ({ id, token }) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/friends/friend?userId=${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
     return res.data
 }
 

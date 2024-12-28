@@ -11,7 +11,7 @@ export const route = [
         isPrivate: true
     },
     {
-        path: '/group',
+        path: '/group/:id',
         element: GroupPage,
     },
     {

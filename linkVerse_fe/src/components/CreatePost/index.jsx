@@ -4,7 +4,6 @@ import { Alerts, Button, DialogCustom } from "..";
 import { BlankAvatar } from "~/assets";
 import {
   CircularProgress,
-  Fab,
   FormControl,
   MenuItem,
   Select,
@@ -17,6 +16,7 @@ import { PiGifThin } from "react-icons/pi";
 import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
+import { IoEarthOutline } from "react-icons/io5";
 
 const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -96,9 +96,9 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         <div className="absolute bottom-5 right-5">
           <div
             onClick={() => setOpen(user?.token ? true : false)}
-            className="bg-bgStandard w-[70px] h-[70px] shadow-newFeed hover:scale-105 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
+            className="bg-primary w-[70px] h-[70px] border-1 border-borderNewFeed shadow-2xl hover:scale-105 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
           >
-            <IoIosAdd className="text-primary" size={35} />
+            <IoIosAdd className="text-bgStandard" size={35} />
           </div>
         </div>
       )}
@@ -134,6 +134,11 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
           className={`w-full ${
             theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
           } shadow-newFeed`}
+          style={{
+            backgroundImage: "url(/group.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
         >
           {/* header */}
           <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
@@ -152,7 +157,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
             >
               Bài viết mới
             </span>
-            <div />
+            <div className="w-7" />
           </div>
           <div className="w-full border-t-[0.1px] border-borderNewFeed" />
 
@@ -261,7 +266,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
                     file?.type.includes("gif")
                   ) {
                     return (
-                      <div key={index} className="w-full h-80 relative">
+                      <div key={index} className="w-full h-full relative">
                         <img
                           src={fileURL}
                           className="w-full h-full rounded-xl border-1 object-cover bg-no-repeat shadow-newFeed border-borderNewFeed"
