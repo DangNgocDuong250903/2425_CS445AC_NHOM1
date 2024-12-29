@@ -15,6 +15,7 @@ import {
   Group,
 } from "~/components";
 import { BlankAvatar } from "~/assets/index";
+import useGetBlockList from "~/hooks/useGetBlockList";
 
 const HomePage = () => {
   const user = useSelector((state) => state?.user);
@@ -23,6 +24,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
+  const { blocks } = useGetBlockList();
 
   const fetchPosts = async () => {
     if (isLoading) return;
@@ -73,13 +75,12 @@ const HomePage = () => {
       <Welcome />
       <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
         {/* Left */}
-        <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
+        <div className="hidden w-1/4 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
           {user?.token && (
             <>
               <ProfileCard />
               <FriendCard />
               <Group />
-              {/* <GroupCard /> */}
             </>
           )}
         </div>
@@ -99,11 +100,7 @@ const HomePage = () => {
                     Có gì mới?
                   </span>
                 </div>
-                <CreatePost
-                  homePage
-                  onSuccess={handleSuccess}
-                  fetchPosts={handleSuccess}
-                />
+                <CreatePost homePage onSuccess={handleSuccess} />
               </div>
             ) : (
               <div />
@@ -111,7 +108,13 @@ const HomePage = () => {
 
             {posts.length > 0 ? (
               posts
-                .filter((post) => post?.visibility === "PUBLIC")
+                .filter(
+                  (post) =>
+                    post?.visibility === "PUBLIC" &&
+                    !blocks.some(
+                      (blockedUser) => blockedUser?.userId === post?.userId
+                    )
+                )
                 .map((post, i) => <PostCard key={i} post={post} />)
             ) : (
               <div className="flex w-full h-full items-center justify-center">
@@ -128,7 +131,7 @@ const HomePage = () => {
         </div>
 
         {/* Right */}
-        <div className="hidden w-1/4 h-full lg:flex flex-col gap-8 overflow-y-auto">
+        <div className="hidden w-1/4 h-full lg:flex flex-col gap-6 overflow-y-auto">
           {user?.token && (
             <>
               <Story />

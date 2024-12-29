@@ -1,20 +1,19 @@
-import { useState } from "react";
-import { BlankAvatar } from "~/assets";
+import { Link } from "react-router-dom";
+import { GroupAvatar } from "~/assets";
 
 const GroupCard = ({ group }) => {
   return (
-    <div className="flex gap-4 w-full justify-center items-center cursor-pointer">
-      <div className="rounded-full cursor-pointer">
-        <img
-          class="w-12 h-12 rounded-full block object-cover bg-white p-[2px] transform transition hover:-rotate-6"
-          src={group?.imageUrl || BlankAvatar}
-        />
+    <Link to={"/group/" + group?.id} className="w-full">
+      <div className="w-full flex items-center gap-3 justify-between">
+        <img src={GroupAvatar} alt="group" className="w-12 h-12" />
+        <div className="w-full flex flex-col gap-y-1">
+          <span className="text-sm font-semibold">{group?.name}</span>
+          <span className="text-xs text-ascent-2">
+            {group?.memberCount} members
+          </span>
+        </div>
       </div>
-      <div className="flex-1">
-        <p className="text-base font-medium text-ascent-1">{group?.name}</p>
-        <span className="text-sm text-ascent-2">{group?.description}</span>
-      </div>
-    </div>
+    </Link>
   );
 };
 

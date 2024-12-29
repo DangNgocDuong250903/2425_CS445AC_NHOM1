@@ -1,44 +1,35 @@
 import moment from "moment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { BiSolidLike } from "react-icons/bi";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { BiCommentDetail } from "react-icons/bi";
-import { Divider, styled } from "@mui/material";
-import { useSelector } from "react-redux";
 import { BiSolidLockAlt, BiSolidDislike } from "react-icons/bi";
 import { BlankAvatar } from "~/assets";
 import { FaEarthAmericas } from "react-icons/fa6";
 import { IoPaperPlaneOutline } from "react-icons/io5";
+import * as UserService from "~/services/UserService";
+import { CustomizeMenu } from "..";
+import { MenuItem } from "@mui/material";
+import { FiBookmark } from "react-icons/fi";
+import { useSelector } from "react-redux";
+import { GoBookmarkSlash } from "react-icons/go";
 
-const SavedCard = ({ post, isShowImage, fetchPosts }) => {
-  const theme = useSelector((state) => state.theme.theme);
-  const userState = useSelector((state) => state.user);
+const SavedCard = ({ post }) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
+  const theme = useSelector((state) => state?.theme);
   const [showAll, setShowAll] = useState(0);
-  const [showReply, setShowReply] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [replyComments, setReplyComments] = useState(0);
-  const [showComments, setShowComments] = useState(0);
-  const [likeCount, setLikeCount] = useState(post?.like || 0);
-  const [dislikeCount, setDislikeCount] = useState(post?.unlike || 0);
-  const [like, setLike] = useState(false);
-  const [disLike, setDisLike] = useState(false);
-  const [openComment, setOpenComment] = useState(false);
-  const [url, setUrl] = useState("");
-  const [typeMessage, setTypeMessage] = useState("success");
-  const [message, setMessage] = useState("");
-  const [openMessage, setOpenMessage] = useState(false);
-  const [openAlert, setOpenAlert] = useState(false);
-  const [type, setType] = useState("");
-  const [icon, setIcon] = useState(null);
-  const [duration, setDuration] = useState("");
+  const [user, setUser] = useState(null);
 
-  const handleCloseAlert = () => {
-    setOpenAlert(false);
+  const fetchDetailUser = async ({ id, token }) => {
+    const res = await UserService.getDetailUserByUserId({ id, token });
+    setUser(res?.result);
   };
+
+  useEffect(() => {
+    fetchDetailUser({ id: post?.userId, token });
+  }, []);
 
   //Menu
   const [anchorEl, setAnchorEl] = useState(null);
@@ -49,14 +40,6 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const StyledDivider = styled(Divider)(({ theme }) => ({
-    borderColor: theme.colorSchemes.light.border,
-    margin: `${theme.spacing(0.5)} 0`,
-    ...theme.applyStyles("dark", {
-      borderColor: theme.colorSchemes.dark.border,
-    }),
-  }));
 
   const renderContentWithHashtags = (content) => {
     if (!content) return "";
@@ -81,7 +64,7 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
       >
         <img
           onClick={(e) => e.stopPropagation()}
-          src={BlankAvatar}
+          src={user?.imageUrl ?? BlankAvatar}
           alt={"avatar"}
           className="w-14 h-14 object-cover rounded-full"
         />
@@ -90,7 +73,9 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
           <div onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 ">
               <Link to={`/profile/${post?.userId}`}>
-                <p className="font-medium text-lg text-ascent-1">{"No name"}</p>
+                <p className="font-medium text-lg text-ascent-1">
+                  {user?.username || "No name"}
+                </p>
               </Link>
             </div>
             <div className="flex items-center gap-1">
@@ -118,9 +103,23 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
                 id="demo-customized-button"
                 aria-controls={open ? "demo-customized-menu" : undefined}
                 aria-haspopup="true"
+                onClick={handleClick}
                 aria-expanded={open ? "true" : undefined}
                 variant="contained"
               />
+              <CustomizeMenu
+                handleClose={handleClose}
+                anchorEl={anchorEl}
+                open={open}
+                anchor={{ vertical: "top", horizontal: "right" }}
+              >
+                <MenuItem onClick={() => handleSavePost(post?.id)}>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-ascent-1">Unsave</span>
+                    <GoBookmarkSlash color="black" />
+                  </div>
+                </MenuItem>
+              </CustomizeMenu>
             </div>
           </div>
         </div>
@@ -149,28 +148,6 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
               </span>
             ))}
         </p>
-
-        {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
-          <>
-            <img
-              src={post?.imageUrl}
-              alt="post image"
-              className="w-full mt-2 rounded-lg cursor-pointer"
-            />
-          </>
-        )}
-
-        {post?.video && !isShowImage && (
-          <div className="relative">
-            <video
-              width="100%"
-              controls
-              className="w-full mt-2 rounded-lg cursor-pointer"
-            >
-              <source src={post?.video} />
-            </video>
-          </div>
-        )}
       </div>
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
@@ -201,7 +178,7 @@ const SavedCard = ({ post, isShowImage, fetchPosts }) => {
           </p>
         </div>
         <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer">
-          <IoPaperPlaneOutline size={20} />2 Shares
+          <IoPaperPlaneOutline size={20} />
         </div>
       </div>
     </div>

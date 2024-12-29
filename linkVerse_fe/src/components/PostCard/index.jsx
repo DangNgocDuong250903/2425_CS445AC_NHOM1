@@ -15,29 +15,24 @@ import { copyToClipboard, getBase64 } from "~/utils";
 import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
 import CreateComment from "../CreateComment";
 import * as PostService from "~/services/PostService";
+import * as UserService from "~/services/UserService";
 import AlertWelcome from "../AlertWelcome";
 import { BlankAvatar } from "~/assets";
 import { FaEarthAmericas, FaRegTrashCan } from "react-icons/fa6";
 import { FiBookmark } from "react-icons/fi";
 import { IoPaperPlaneOutline } from "react-icons/io5";
-import PostMenu from "../PostMenu";
+import { FaRegEdit } from "react-icons/fa";
 
-const PostCard = ({ post, isShowImage, fetchPosts }) => {
+const PostCard = ({ post, isShowImage, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
-  const [showReply, setShowReply] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [replyComments, setReplyComments] = useState(0);
-  const [showComments, setShowComments] = useState(0);
   const [likeCount, setLikeCount] = useState(post?.like || 0);
   const [dislikeCount, setDislikeCount] = useState(post?.unlike || 0);
   const [like, setLike] = useState(false);
   const [disLike, setDisLike] = useState(false);
-  const [openComment, setOpenComment] = useState(false);
   const [url, setUrl] = useState("");
   const [typeMessage, setTypeMessage] = useState("success");
   const [message, setMessage] = useState("");
@@ -61,6 +56,10 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
     setAnchorEl(null);
   };
 
+  const handleCloseMessage = () => {
+    setOpenMessage(false);
+  };
+
   const StyledDivider = styled(Divider)(({ theme }) => ({
     borderColor: theme.colorSchemes.light.border,
     margin: `${theme.spacing(0.5)} 0`,
@@ -75,7 +74,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
     return parts.map((part, index) => {
       if (/^#[A-Za-z0-9_]+$/.test(part)) {
         return (
-          <span key={index} className="text-blue font-semibold cursor-pointer">
+          <span key={index} className="text-blue cursor-pointer">
             {part}
           </span>
         );
@@ -219,10 +218,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
     }
   };
 
-  const handleCloseMessage = () => {
-    setOpenMessage(false);
-  };
-
+  //save url
   const handleSaveUrl = (id) => {
     setUrl(`http://localhost:5173/post/${id}`);
     setMessage("Copy to clipboard success!");
@@ -324,7 +320,31 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
   };
 
   //block user
-  const handleBlockUser = async (id) => {};
+  const handleBlockUser = async (id) => {
+    try {
+      handleClose();
+      setIcon(<CircularProgress size={20} color="white" />);
+      setMessage("Block user...");
+      setTypeMessage("warning");
+      setOpenMessage(true);
+      const res = await UserService.block({ id, token });
+      if (res) {
+        onSuccess();
+        setDuration(3000);
+        setIcon();
+        setMessage("Block user success!");
+        setTypeMessage("success");
+        setOpenMessage(true);
+      }
+    } catch (error) {
+      onSuccess();
+      setDuration(3000);
+      setIcon();
+      setMessage("Something went wrong!");
+      setTypeMessage("error");
+      setOpenMessage(true);
+    }
+  };
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -417,7 +437,7 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                           </div>
                         </MenuItem>
                         <MenuItem
-                          onClick={() => handleClose(post?.id)}
+                          onClick={() => handleBlockUser(post?.userId)}
                           disableRipple
                         >
                           <div className="flex items-center justify-between w-full">
@@ -436,6 +456,15 @@ const PostCard = ({ post, isShowImage, fetchPosts }) => {
                           <div className="flex items-center justify-between w-full">
                             <span className="text-red-600">Delete</span>
                             <FaRegTrashCan color="red" />
+                          </div>
+                        </MenuItem>
+                        <MenuItem
+                          onClick={() => handleDeletePost(post?.id)}
+                          disableRipple
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-red-600">Edit post</span>
+                            <FaRegEdit color="red" />
                           </div>
                         </MenuItem>
                       </div>

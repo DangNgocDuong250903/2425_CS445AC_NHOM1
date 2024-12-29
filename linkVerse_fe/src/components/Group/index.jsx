@@ -34,9 +34,6 @@ const Group = () => {
       <CreateGroup open={open} handleClose={handleClose} />
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-4 border-b border-[#66666645]">
         <span className="text-lg font-medium">Groups</span>
-        <span>
-          <BiDotsHorizontalRounded size={25} />
-        </span>
       </div>
 
       <div className="w-full items-center max-h-[360px] flex flex-col gap-4 pt-4 overflow-hidden">
@@ -58,8 +55,6 @@ const Group = () => {
         </div>
         {groups.length > 0 &&
           groups.map((group) => <GroupCard key={group.id} group={group} />)}
-
-        <div className="w-full flex flex-col gap-4 overflow-y-auto"></div>
       </div>
     </div>
   );

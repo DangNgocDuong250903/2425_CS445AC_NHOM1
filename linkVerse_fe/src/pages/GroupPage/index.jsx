@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import { BlankAvatar } from "~/assets";
 import { IoIosArrowDown } from "react-icons/io";
 import {
@@ -12,14 +11,14 @@ import {
 import GroupDesc from "~/components/GroupDesc";
 import PostGroup from "~/components/PostGroup";
 import { Dropdown, Space } from "antd";
-import * as PostService from "~/services/PostService";
+import * as GroupService from "~/services/GroupService";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
+import useGetDetailGroup from "~/hooks/useGetDetailGroup";
 
 const GroupPage = () => {
-  const user = useSelector((state) => state?.user);
   const token = localStorage.getItem("token");
-  const theme = useSelector((state) => state.theme);
+  const { groupDetail } = useGetDetailGroup();
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,14 +90,14 @@ const GroupPage = () => {
 
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
-      <TopBar title="Group" />
+      <TopBar title={groupDetail?.name} />
       <Welcome />
       <div className="w-full flex gap-2 pb-10 lg:gap-4 h-full">
         {/* Left */}
         <div className="hidden w-1/3 md:mx-2 lg:w-1/4 h-full md:flex flex-col gap-6 overflow-y-auto">
           {token && (
             <>
-              <GroupDesc />
+              <GroupDesc groupDetail={groupDetail} />
               <Group />
             </>
           )}
@@ -125,23 +124,26 @@ const GroupPage = () => {
             </div>
           </div>
           {/* 3 */}
-          <div className="w-full flex gap-2 items-center">
-            <div className="border-t  border-borderNewFeed "></div>
-            <span className="text-sm text-ascent-2">Sort by:</span>
-            <Dropdown
-              className="cursor-pointer"
-              menu={{
-                items,
-                selectable: true,
-                onSelect: handleMenuClick,
-              }}
-            >
-              <Space>
-                <span className="text-sm">{items[selectedKey].label}</span>
-                <IoIosArrowDown size={18} />
-              </Space>
-            </Dropdown>
+          <div className="w-full flex gap-2 px-1 items-center">
+            <div className="flex-1 border-1 border-borderNewFeed"></div>
+            <div className="flex-shrink-0">
+              <span className="text-sm text-ascent-2">Sort by: </span>
+              <Dropdown
+                className="cursor-pointer"
+                menu={{
+                  items,
+                  selectable: true,
+                  onSelect: handleMenuClick,
+                }}
+              >
+                <Space>
+                  <span className="text-sm">{items[selectedKey].label}</span>
+                  <IoIosArrowDown size={18} />
+                </Space>
+              </Dropdown>
+            </div>
           </div>
+
           {/* 2 */}
           {posts.length > 0 ? (
             posts

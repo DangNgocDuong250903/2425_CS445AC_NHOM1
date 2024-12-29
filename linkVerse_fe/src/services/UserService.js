@@ -46,7 +46,7 @@ export const unBlock = async ({ id, token }) => {
 }
 
 export const blockList = async (token) => {
-    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/profile/block-list`, {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/profile/block-list`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }

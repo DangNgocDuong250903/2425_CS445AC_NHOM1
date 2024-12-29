@@ -59,6 +59,16 @@ export const createGroup = async ({ data, token }) => {
 
 };
 
+export const getDetailGroup = async ({ id, token }) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups/${id}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return res.data;
+
+};
+
 export const addUserToGroup = async ({ userId, groupId, token }) => {
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups/${groupId}/members/${userId}`, {}, {
         headers: {

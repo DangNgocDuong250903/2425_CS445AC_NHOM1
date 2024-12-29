@@ -3,6 +3,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { Button, DialogCustom } from "..";
 import { CircularProgress } from "@mui/material";
 import * as UserService from "~/services/UserService";
+import { BlankAvatar } from "~/assets";
 
 const BlockList = ({ setting }) => {
   const [open, setOpen] = useState(false);
@@ -12,6 +13,7 @@ const BlockList = ({ setting }) => {
   const [blocks, setBlocks] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
   const [loadingBlockList, setLoadingBlockList] = useState(false);
+  const [loadingUnblock, setLoadingUnblock] = useState(false);
 
   const handleOpenBlockList = () => {
     setOpenBlockList(true);
@@ -37,19 +39,19 @@ const BlockList = ({ setting }) => {
   }, [open]);
 
   //unBlock
-  // const handleUnblock = async (id) => {
-  //   setLoadingUnblock(true);
-  //   try {
-  //     const res = await UserService.unBlock({ id, token });
-  //     if (res?.status === "NONE") {
-  //       setBlocks([]);
-  //       fetchBlockList(token);
-  //     }
-  //   } catch (error) {
-  //   } finally {
-  //     setLoadingUnblock(false);
-  //   }
-  // };
+  const handleUnblock = async (id) => {
+    setLoadingUnblock(true);
+    try {
+      const res = await UserService.unBlock({ id, token });
+      if (res?.status === "NONE") {
+        setBlocks([]);
+        fetchBlockList(token);
+      }
+    } catch (error) {
+    } finally {
+      setLoadingUnblock(false);
+    }
+  };
 
   return (
     <>

@@ -75,7 +75,7 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
     return parts.map((part, index) => {
       if (/^#[A-Za-z0-9_]+$/.test(part)) {
         return (
-          <span key={index} className="text-blue font-medium cursor-pointer">
+          <span key={index} className="text-blue cursor-pointer">
             {part}
           </span>
         );
@@ -212,7 +212,7 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
           </p>
         </div>
         <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer">
-          <IoPaperPlaneOutline size={20} />2 Shares
+          <IoPaperPlaneOutline size={20} />
         </div>
       </div>
       <div className="py-2 w-full flex gap-3 items-center">
@@ -225,7 +225,7 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
           name="username"
           placeholder="Write your comment"
           type="username"
-          styles="w-full rounded-full bg-[#F3F3F3]"
+          styles="w-full rounded-full bg-[#FAFAFA]"
         />
       </div>
     </div>

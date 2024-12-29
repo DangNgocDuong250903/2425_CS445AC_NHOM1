@@ -29,9 +29,9 @@ const ProfileCard = () => {
               className="w-14 h-14 object-cover rounded-full"
             />
             {user?.status === "ONLINE" ? (
-              <div className="absolute top-1 right-0 w-4 h-4 bg-[#53C259] rounded-full border-2 border-primary" />
+              <div className="absolute top-1 right-0 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
             ) : (
-              <div className="absolute top-1 right-1 w-4 h-4 bg-[#ccc] rounded-full border-2 border-primary" />
+              <div className="absolute top-1 right-1 w-3 h-3 bg-[#ccc] rounded-full border-2 border-primary" />
             )}
           </div>
           <div className="flex flex-col justify-center">

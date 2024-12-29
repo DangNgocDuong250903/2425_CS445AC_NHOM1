@@ -13,7 +13,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as StoryService from "~/services/StoryService";
 import useDragAndDrop from "~/hooks/useDragAndDrop";
-import { ColorPicker, Modal } from "antd";
+import { WrapperModal } from "./style";
 
 const CreateStory = ({ handleClose, open, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -278,7 +278,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
     //   </div>
     // </DialogCustom>
 
-    <Modal
+    <WrapperModal
       width="630px"
       closable={false}
       open={open}
@@ -287,7 +287,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
       onCancel={handleClose}
     >
       <div
-        className="shadow-newFeed w-full bg-primary"
+        className="shadow-newFeed w-full bg-primary rounded-3xl"
         style={{
           backgroundImage: "url(/group.png)",
           backgroundSize: "cover",
@@ -298,7 +298,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
         <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
           <button
             onClick={handleClose}
-            className="text-base hover:text-neutral-400 font-medium text-neutral-500 text-ascent-1"
+            className="text-base hover:text-neutral-400 font-medium text-ascent-1"
           >
             Hủy
           </button>
@@ -471,7 +471,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
           </div>
         </div>
       </div>
-    </Modal>
+    </WrapperModal>
   );
 };
 

@@ -58,13 +58,11 @@ const SelectPosts = () => {
         styles={{ marginTop: "8px" }}
       >
         {selectsPost.map((option, i) => (
-          <div>
+          <div key={i}>
             <MenuItem
-              key={i}
               onClick={(e) => handleMenuItemClick(e, i)}
               selected={selectsPost[i] === sentiment}
             >
-              {/* For you", "Positive", "Negative", "Neutral", "Mixed" */}
               <div className="flex items-center justify-between w-full">
                 <span className={theme === "light" && "text-black"}>
                   {option}

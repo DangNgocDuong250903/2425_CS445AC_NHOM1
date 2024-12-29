@@ -17,7 +17,7 @@ const StoryCard = ({ story }) => {
       >
         <img
           class="w-12 h-12 rounded-full block object-cover bg-white p-[2px] transform transition hover:-rotate-6"
-          src={story?.imageUrl || BlankAvatar}
+          src={story?.imageUrl?.length > 0 ? story?.imageUrl : BlankAvatar}
         />
       </div>
       <div className="flex-1">
