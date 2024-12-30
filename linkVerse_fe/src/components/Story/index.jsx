@@ -50,7 +50,7 @@ const Story = () => {
         <div className="flex gap-4 w-full items-center cursor-pointer">
           <div
             onClick={() => setOpen(true)}
-            className="w-12 h-12 rounded-full border-1 border-borderNewFeed opacity-100 hover:opacity-80 hover:scale-105 transition-transform shadow-2xl flex items-center justify-center"
+            className="w-12 h-12 rounded-full border-1 active:scale-90 border-borderNewFeed opacity-100 transition-transform shadow-2xl flex items-center justify-center"
           >
             <GoPlus size={30} color="#005DFF" />
           </div>

@@ -40,7 +40,7 @@ function App() {
       try {
         const { decoded, token } = handleDecoded();
         const currentTimeInSeconds = Math.floor(Date.now() / 1000);
-        if (decoded?.exp - currentTimeInSeconds <= 1000) {
+        if (decoded?.exp - currentTimeInSeconds <= 300) {
           const data = await UserService.handleRefreshToken(token);
           config.headers["Authorization"] = `Bearer ${data?.result?.token}`;
           localStorage.setItem("token", data?.result?.token);

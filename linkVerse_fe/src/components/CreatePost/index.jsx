@@ -96,7 +96,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         <div className="absolute bottom-5 right-5">
           <div
             onClick={() => setOpen(user?.token ? true : false)}
-            className="bg-primary w-[70px] h-[70px] border-1 border-borderNewFeed shadow-2xl hover:scale-105 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
+            className="bg-primary w-[70px] h-[70px] border-1 border-borderNewFeed shadow-2xl hover:scale-105 active:scale-90 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
           >
             <IoIosAdd className="text-bgStandard" size={35} />
           </div>
@@ -113,7 +113,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         <Button
           title="Post"
           onClick={() => setOpen(true)}
-          containerStyles="bg-[#0444a4] text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 transition-transform"
+          containerStyles="bg-bluePrimary text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 active:scale-90 transition-transform"
         />
       )}
       <Alerts
@@ -122,6 +122,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         position={{ vertical: "bottom", horizontal: "center" }}
         handleClose={handleCloseMessage}
         open={showMessage}
+        duration={3000}
       />
 
       <DialogCustom

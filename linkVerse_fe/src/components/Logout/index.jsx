@@ -39,12 +39,12 @@ const Logout = ({ second, primary }) => {
         <div>
           {user?.token ? (
             <>
-              <div className="relative">
+              <div className="relative ">
                 <Button
                   onClick={handleLogOut}
                   title={t("Đăng xuất")}
                   disable={isPending}
-                  containerStyles="text-sm text-ascent-1 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
+                  containerStyles="text-sm text-ascent-1 hover:scale-105 transition-transform active:scale-90 px-4 md:px-6 py-1 md:py-2 border-x-[0.8px] border-y-[0.8px] border-solid shadow-newFeed rounded-full border-borderNewFeed"
                 />
 
                 {isPending && (

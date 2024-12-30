@@ -29,7 +29,7 @@ const ProfileCard = () => {
               className="w-14 h-14 object-cover rounded-full"
             />
             {user?.status === "ONLINE" ? (
-              <div className="absolute top-1 right-0 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
+              <div className="absolute right-1 bottom-0 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
             ) : (
               <div className="absolute top-1 right-1 w-3 h-3 bg-[#ccc] rounded-full border-2 border-primary" />
             )}
@@ -48,7 +48,7 @@ const ProfileCard = () => {
             <UpdateUser profileCard />
           ) : (
             <button
-              className="bg-[#0444a430] text-sm text-white p-1 rounded"
+              className="bg-bluePrimary text-sm text-white p-1 rounded"
               onClick={() => {}}
             >
               <BsPersonFillAdd size={20} className="text-[#0f52b6]" />

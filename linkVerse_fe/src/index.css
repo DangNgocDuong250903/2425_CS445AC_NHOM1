@@ -41,6 +41,7 @@
     --color-ascent2: 89 91 100;
     --color-blue: 6 90 216;
     --color-standard: 255 255 255;
+    --color-bluePrimary: 4 68 164;
   }
   [data-theme="dark"] {
     --color-bg: 10 10 10;
@@ -81,4 +82,3 @@
   justify-content: center;
   margin: 1rem;
 }
-

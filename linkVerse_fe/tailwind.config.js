@@ -9,6 +9,7 @@ export default {
       colors: {
         bgColor: "rgb(var(--color-bg) / <alpha-value>)",
         primary: "rgb(var(--color-primary) / <alpha-value>)",
+        bluePrimary: "rgb(var(--color-bluePrimary) / <alpha-value>)",
         bgStandard: "rgb(var(--color-ascent1) / <alpha-value>)",
         textStandard: "rgb(var(--color-standard) / <alpha-value>)",
         secondary: "rgb(var(--color-secondary) / <alpha-value>)",

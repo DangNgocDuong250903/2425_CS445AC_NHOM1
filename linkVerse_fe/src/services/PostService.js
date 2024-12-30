@@ -147,8 +147,8 @@ export const getPostById = async ({ id, token }) => {
     return res.data
 }
 
-export const changeVisibility = async ({ id, token }) => {
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/change-visibility`, {}, {
+export const changeVisibility = async ({ id, token, visibility }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/change-visibility?postId=${id}&visibility=${visibility}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }

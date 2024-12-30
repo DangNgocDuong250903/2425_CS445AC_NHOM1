@@ -22,6 +22,7 @@ import { FaEarthAmericas, FaRegTrashCan } from "react-icons/fa6";
 import { FiBookmark } from "react-icons/fi";
 import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
+import ChangeVisibility from "../ChangeVisibility";
 
 const PostCard = ({ post, isShowImage, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -273,7 +274,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
         setOpenMessage(true);
         return;
       }
-      fetchPosts();
+      onSuccess();
       setDuration(3000);
       setIcon();
       setMessage("Delete post success!");
@@ -346,12 +347,22 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
     }
   };
 
+  //change visibility
+  const [changeVisibility, setChangeVisibility] = useState(false);
+  const handleCloseChangeVisibility = () => setChangeVisibility(false);
+
   return (
     <div className="bg-primary p-2 rounded-xl">
       <AlertWelcome
         open={openAlert}
         handleClose={handleCloseAlert}
         type={type}
+      />
+      <ChangeVisibility
+        openChange={changeVisibility}
+        handleClose={handleCloseChangeVisibility}
+        closeMenu={handleClose}
+        visibility={post}
       />
       <Alerts
         type={typeMessage}
@@ -459,7 +470,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
                           </div>
                         </MenuItem>
                         <MenuItem
-                          onClick={() => handleDeletePost(post?.id)}
+                          onClick={() => setChangeVisibility(true)}
                           disableRipple
                         >
                           <div className="flex items-center justify-between w-full">
@@ -593,7 +604,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
           className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer"
         >
           <IoPaperPlaneOutline size={20} />
-          {post?.sharedPost}Shares
+          {post?.sharedPost}
         </div>
       </div>
     </div>

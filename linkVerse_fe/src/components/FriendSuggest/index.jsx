@@ -9,11 +9,12 @@ import { useSelector } from "react-redux";
 import { Alerts } from "..";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
 import { FaUserClock } from "react-icons/fa6";
+import useGetBlockList from "~/hooks/useGetBlockList";
+import useGetFriendSuggest from "~/hooks/useGetFriendSuggest";
 
 const FriendSuggest = () => {
   const { t } = useTranslation();
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const { users, loading } = useGetFriendSuggest();
   const token = localStorage.getItem("token");
   const user = useSelector((state) => state?.user);
   const [message, setMessage] = useState("");
@@ -22,30 +23,11 @@ const FriendSuggest = () => {
   const { friends } = useGetMyFriend();
   const [pendingUsers, setPendingUsers] = useState([]);
   const [requests, setRequests] = useState([]);
+  const { blocks } = useGetBlockList();
 
-  // Close message
   const handleClose = () => setOpen(false);
 
-  // Fetch user suggestions
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const res = await FriendService.friendSuggesstion(token);
-      if (res?.code === 1000 && res?.result.length > 0) {
-        setUsers(res?.result);
-      }
-    } catch (error) {
-      console.error("Error fetching friend suggestions:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  // Fetch sent requests
+  // request send
   const fetchRequestSend = async () => {
     try {
       const res = await FriendService.getRequestSend(token);
@@ -61,7 +43,7 @@ const FriendSuggest = () => {
     fetchRequestSend();
   }, []);
 
-  // Request
+  // request
   const handleRequest = async (id) => {
     try {
       setPendingUsers((prev) => [...prev, id]);
@@ -105,8 +87,12 @@ const FriendSuggest = () => {
             const filteredUsers = users?.filter(
               (item) =>
                 item?.userId !== user?.id &&
-                !friends.some((friend) => friend.userId === item?.userId)
+                !friends.some((friend) => friend.userId === item?.userId) &&
+                !blocks.some(
+                  (blockedUser) => blockedUser?.userId === item?.userId
+                )
             );
+
             if (filteredUsers.length > 0) {
               return filteredUsers.map((item, index) => (
                 <div key={index} className="flex items-center justify-between">
@@ -140,13 +126,16 @@ const FriendSuggest = () => {
                     requests.some(
                       (request) => request?.userId === item?.userId
                     ) ? (
-                      <FaUserClock size={20} className="text-[#0444A4]" />
+                      <FaUserClock size={20} className="text-bluePrimary" />
                     ) : (
                       <button
                         className="text-sm text-white p-1 rounded"
                         onClick={() => handleRequest(item?.userId)}
                       >
-                        <BsPersonFillAdd size={20} className="text-[#0444A4]" />
+                        <BsPersonFillAdd
+                          size={20}
+                          className="text-bluePrimary"
+                        />
                       </button>
                     )}
                   </div>

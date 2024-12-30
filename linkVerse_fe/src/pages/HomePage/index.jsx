@@ -24,7 +24,7 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const { blocks } = useGetBlockList();
+  const { blocks, reload } = useGetBlockList();
 
   const fetchPosts = async () => {
     if (isLoading) return;
@@ -63,9 +63,16 @@ const HomePage = () => {
     fetchPosts();
   }, [sentiment]);
 
+  const filteredPosts = posts.filter(
+    (post) =>
+      post?.visibility === "PUBLIC" &&
+      !blocks.some((blockedUser) => blockedUser?.userId === post?.userId)
+  );
+
   const handleSuccess = () => {
     setPosts([]);
     setPage(1);
+    reload();
     fetchPosts();
   };
 
@@ -106,20 +113,18 @@ const HomePage = () => {
               <div />
             )}
 
-            {posts.length > 0 ? (
-              posts
-                .filter(
-                  (post) =>
-                    post?.visibility === "PUBLIC" &&
-                    !blocks.some(
-                      (blockedUser) => blockedUser?.userId === post?.userId
-                    )
-                )
-                .map((post, i) => <PostCard key={i} post={post} />)
-            ) : (
+            {posts.length === 0 ? (
               <div className="flex w-full h-full items-center justify-center">
-                <p className="text-lg text-ascent-2">Không có bài viết nào</p>
+                <p className="text-lg text-ascent-2">Không có bài viết nào.</p>
               </div>
+            ) : filteredPosts.length === 0 ? (
+              <div className="flex w-full h-full items-center justify-center">
+                <p className="text-lg text-ascent-2">Không có bài viết nào.</p>
+              </div>
+            ) : (
+              filteredPosts.map((post, i) => (
+                <PostCard key={i} post={post} onSuccess={handleSuccess} />
+              ))
             )}
 
             {isLoading && (

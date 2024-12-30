@@ -19,7 +19,7 @@ const Notifications = () => {
   };
 
   return (
-    <div className="hidden lg:flex p-1 cursor-pointer hover:bg-neutral-100 rounded-full hover:scale-105 transition-transform">
+    <div className="hidden lg:flex p-1 cursor-pointer hover:bg-neutral-100 active:scale-90 rounded-full hover:scale-105 transition-transform">
       <Badge variant="dot" color="warning">
         <GoBell
           size={24}

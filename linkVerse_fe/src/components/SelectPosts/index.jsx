@@ -46,7 +46,7 @@ const SelectPosts = () => {
         aria-haspopup="true"
         aria-expanded={open ? "true" : undefined}
         variant="contained"
-        className="w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:scale-110 cursor-pointer transition-transform border-1 border-borderNewFeed shadow-newFeed"
+        className="w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:scale-110 active:scal90 cursor-pointer transition-transform border-1 border-borderNewFeed shadow-newFeed"
       >
         <RiArrowDownSLine size={14} />
       </div>

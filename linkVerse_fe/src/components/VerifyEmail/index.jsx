@@ -72,7 +72,7 @@ const VerifyEmail = ({ setting }) => {
                 onClick={handleSendMailVerify}
                 className={`${isSuccess && "hidden"} px-4 ${
                   isPending && "hidden"
-                } py-2 text-primary hover:opacity-90 hover:scale-105 transition-transform bg-[#0444A4] rounded-xl`}
+                } py-2 text-primary hover:opacity-90 hover:scale-105 transition-transform bg-bluePrimary rounded-xl`}
               >
                 Click to Verify Email
               </button>
@@ -85,7 +85,7 @@ const VerifyEmail = ({ setting }) => {
                 </div>
               )}
               {isSuccess && (
-                <span className="text-center text-[#0444A4]">
+                <span className="text-center text-bluePrimary">
                   Check your email to verify
                 </span>
               )}

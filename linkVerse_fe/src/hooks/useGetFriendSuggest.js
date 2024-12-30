@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import * as FriendService from "~/services/FriendService";
 
-const useGetRequestSend = (reload = false) => {
-    const [requests, setRequests] = useState([]);
+const useGetFriendSuggest = (reload = false) => {
+    const [users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const token = localStorage.getItem("token");
 
-    const fetchRequestSend = async () => {
+    const fetchFriendSuggest = async () => {
         setLoading(true);
         try {
-            const res = await FriendService.getRequestSend(token);
-            if (res && res?.length > 0) {
-                setRequests(res);
+            const res = await FriendService.friendSuggesstion(token);
+            if (res?.code === 1000 && res?.result.length > 0) {
+                setUsers(res?.result);
             }
         } catch (error) {
             console.error("Error fetching friends details:", error);
@@ -21,10 +21,10 @@ const useGetRequestSend = (reload = false) => {
     };
 
     useEffect(() => {
-        fetchRequestSend();
+        fetchFriendSuggest();
     }, [reload]);
 
-    return { loading, requests, reload: fetchRequestSend };
+    return { loading, users, reload: fetchFriendSuggest };
 };
 
-export default useGetRequestSend;
+export default useGetFriendSuggest;

@@ -5,6 +5,7 @@ import {
   UpdateUser,
   Button,
   Alerts,
+  CustomizeMenu,
 } from "~/components";
 import { useSelector } from "react-redux";
 import { FaInstagram } from "react-icons/fa";
@@ -14,7 +15,7 @@ import Tab from "@mui/material/Tab";
 import Box from "@mui/material/Box";
 import { BlankAvatar } from "~/assets";
 import { useEffect, useState } from "react";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, MenuItem } from "@mui/material";
 import * as PostService from "~/services/PostService";
 import * as UserService from "~/services/UserService";
 import { BsFillPlusCircleFill } from "react-icons/bs";
@@ -24,7 +25,9 @@ import useGetFriendRequest from "~/hooks/useGetFriendRequest";
 import * as FriendService from "~/services/FriendService";
 import useGetRequestSend from "~/hooks/useGetRequestSend";
 import useGetFriendOfUser from "~/hooks/useGetFriendOfUser";
-import { BsCameraFill } from "react-icons/bs";
+import { TbDotsCircleHorizontal } from "react-icons/tb";
+import { FiBookmark } from "react-icons/fi";
+import { RiAttachment2 } from "react-icons/ri";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -42,13 +45,24 @@ const ProfilePage = () => {
   const { id } = useParams();
   const [page, setPage] = useState(1);
   const { friends } = useGetMyFriend();
-  const { request } = useGetFriendRequest();
+  const { friendRequest } = useGetFriendRequest();
   const { requestsSend } = useGetRequestSend();
   const { friendOfUser } = useGetFriendOfUser();
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const [isAccept, setIsAccept] = useState(false);
+
+  const handleOpenMenu = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
 
   const handleChange = (event, newValue) => {
     setValue(newValue);
@@ -138,10 +152,14 @@ const ProfilePage = () => {
   //change avatar
   const handleChangeAvatar = async (e) => {
     const file = e.target.files[0];
-
+    const request = {
+      content: user?.username + " vừa cập nhật ảnh đại diện",
+      visibility: "PRIVATE",
+    };
+    const data = { request, file };
     setLoadingUpdateAvatar(true);
     try {
-      const res = await UserService.setAvatar({ file, token });
+      const res = await UserService.setAvatar({ data, token });
       if (res) {
         handleSuccess();
       }
@@ -162,14 +180,11 @@ const ProfilePage = () => {
     try {
       const res = await FriendService.unfriend({ id, token });
       if (res) {
-        setIsUnFriend(true);
-        setMessage("Unfriend successful");
-        setTypeMessage("success");
+        return;
       }
     } catch (error) {
-      setMessage("User not existing!");
+      setMessage("Some thing went wrong!");
       setTypeMessage("error");
-    } finally {
       setOpenMessage(true);
     }
   };
@@ -188,6 +203,44 @@ const ProfilePage = () => {
       setTypeMessage("error");
       setOpenMessage(true);
     }
+  };
+
+  //block
+  const handleBlockUser = async () => {
+    try {
+      handleCloseMenu();
+      const res = await UserService.block({ id, token });
+      if (res) {
+      }
+    } catch (error) {}
+  };
+
+  //accept
+  const handleAccept = async (id) => {
+    try {
+      const res = await FriendService.accept({ id, token });
+      if (res) {
+        setIsAccept(true);
+      }
+    } catch (error) {
+      setMessage("Something went wrong!");
+      setType("error");
+      setOpen(true);
+    }
+  };
+
+  //reject
+  const handleDecline = async (id) => {
+    // try {
+    //   const res = await FriendService.reject({ id, token });
+    //   if (res?.code === 9999 || res?.status === "REJECTED") {
+    //     fetchRequests();
+    //   }
+    // } catch (error) {
+    //   setMessage("Something went wrong!");
+    //   setType("error");
+    //   setOpen(true);
+    // }
   };
 
   return (
@@ -267,18 +320,42 @@ const ProfilePage = () => {
               <div className="flex justify-between items-center">
                 <span>{friendOfUser?.length} friends</span>
                 <div className="flex gap-2">
-                  <FaInstagram
-                    color={theme === "dark" ? "#fff" : "#000"}
-                    size="30px"
-                  />
                   <CiFacebook
                     color={theme === "dark" ? "#fff" : "#000"}
                     size="30px"
                   />
+                  <TbDotsCircleHorizontal
+                    onClick={handleOpenMenu}
+                    className="cursor-pointer active:scale-90 "
+                    color={theme === "dark" ? "#fff" : "#000"}
+                    size="30px"
+                  />
+                  <CustomizeMenu
+                    handleClose={handleCloseMenu}
+                    anchorEl={anchorEl}
+                    open={open}
+                    styles={{ marginTop: "10px" }}
+                    anchor={{ vertical: "top", horizontal: "right" }}
+                  >
+                    <MenuItem onClick={handleBlockUser}>
+                      <div className="flex items-center justify-between w-full">
+                        <span className="text-red-600">Block</span>
+                        <FiBookmark color="red" />
+                      </div>
+                    </MenuItem>
+                    <MenuItem>
+                      <div className="flex items-center justify-between w-full">
+                        <span className={theme === "light" && "text-black"}>
+                          Copy url
+                        </span>
+                        <RiAttachment2 color={theme === "light" && "black"} />
+                      </div>
+                    </MenuItem>
+                  </CustomizeMenu>
                 </div>
               </div>
               {/* 4 */}
-
+              {}
               {userState?.id !== user?.id ? (
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   {friends?.find((friend) => friend?.userId === user?.id) ? (
@@ -308,7 +385,61 @@ const ProfilePage = () => {
                       }
                       disabled
                     />
+                  ) : friendRequest.find(
+                      (request) => request?.userId === user?.id
+                    ) ? (
+                    isAccept ? (
+                      <>
+                        <Button
+                          onClick={() => handleUnfriend(user?.id)}
+                          title="Hủy kết bạn"
+                          containerStyles={
+                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                        <Button
+                          onClick={() => navigate("/chat")}
+                          title="Nhắn tin"
+                          containerStyles={
+                            "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          onClick={() => handleAccept(user?.id)}
+                          title="Chấp nhận"
+                          containerStyles={
+                            "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                        <Button
+                          onClick={() => handleDecline(user?.id)}
+                          title="Từ chối"
+                          containerStyles={
+                            "text-danger bg-primary w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                          }
+                        />
+                      </>
+                    )
                   ) : (
+                    // <>
+                    //   <Button
+                    //     onClick={() => handleAccept(user?.id)}
+                    //     title="Chấp nhận"
+                    //     containerStyles={
+                    //       "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                    //     }
+                    //   />
+                    //   <Button
+                    //     onClick={() => handleDecline(user?.id)}
+                    //     title="Từ chối"
+                    //     containerStyles={
+                    //       "text-danger bg-primary w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                    //     }
+                    //   />
+                    // </>
                     <Button
                       onClick={() => handleRequest(user?.id)}
                       title="Kết bạn"
@@ -318,17 +449,20 @@ const ProfilePage = () => {
                     />
                   )}
 
-                  {/* Button nhắn tin */}
-                  <Button
-                    onClick={() => navigate("/chat")}
-                    title="Nhắn tin"
-                    containerStyles={
-                      "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
-                    }
-                  />
+                  {!friendRequest.find(
+                    (request) => request?.userId === user?.id
+                  ) && (
+                    <Button
+                      onClick={() => navigate("/chat")}
+                      title="Nhắn tin"
+                      containerStyles={
+                        "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+                      }
+                    />
+                  )}
                 </div>
               ) : (
-                <div className="w-full text-center items-center justify-center flex ">
+                <div className="w-full text-center items-center justify-center flex">
                   <UpdateUser profile onSuccess={handleSuccess} />
                 </div>
               )}
@@ -440,3 +574,4 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
+// : friendRequest?.find(request => request?.userId === user?.id )  ? () : ()

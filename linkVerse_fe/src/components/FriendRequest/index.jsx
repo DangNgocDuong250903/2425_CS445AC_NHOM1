@@ -48,6 +48,7 @@ const FriendRequest = () => {
     try {
       const res = await FriendService.accept({ id, token });
       if (res) {
+        reload();
         fetchRequests();
       }
     } catch (error) {
@@ -127,7 +128,7 @@ const FriendRequest = () => {
                 <Button
                   title={t("Chấp nhận")}
                   onClick={() => handleAccept(request.userId)}
-                  containerStyles="bg-[#0444A4] text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-xl"
+                  containerStyles="bg-bluePrimary text-xs border-borderNewFeed border text-white px-1.5 py-1 rounded-xl"
                 />
                 <Button
                   title={t("Từ chối")}

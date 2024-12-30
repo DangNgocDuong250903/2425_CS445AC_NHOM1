@@ -1,12 +1,7 @@
-// FriendCard.js
 import { CircularProgress } from "@mui/material";
-import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { BlankAvatar } from "~/assets/index";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
-import { updateFriends } from "~/redux/Slices/userSlice";
-import * as FriendService from "~/services/FriendService";
 
 const FriendCard = () => {
   const { friends, loading } = useGetMyFriend();
@@ -28,11 +23,19 @@ const FriendCard = () => {
               to={"/profile/" + friend?.userId}
               className="flex gap-4 w-full items-center cursor-pointer"
             >
-              <img
-                src={friend?.imageUrl ?? BlankAvatar}
-                alt={friend?.firstName}
-                className="w-10 h-10 object-cover rounded-full"
-              />
+              <div className="relative">
+                <img
+                  src={friend?.imageUrl ?? BlankAvatar}
+                  alt={friend?.firstName}
+                  className="w-10 h-10 object-cover rounded-full"
+                />
+                {friend?.status === "ONLINE" ? (
+                  <div className="absolute right-0 top-7 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />
+                ) : (
+                  <div className="absolute right-0 top-7 w-2 h-2 bg-[#ccc] rounded-full border-2 border-primary" />
+                )}
+              </div>
+
               <div className="flex-1">
                 <p className="text-base font-medium text-ascent-1">
                   {friend?.firstName} {friend?.lastName}

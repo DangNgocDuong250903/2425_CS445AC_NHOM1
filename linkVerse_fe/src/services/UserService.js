@@ -116,10 +116,10 @@ export const verify = async ({ data, token }) => {
     return res.data;
 }
 
-export const setAvatar = async ({ file, token }) => {
+export const setAvatar = async ({ data, token }) => {
     const formData = new FormData
-    formData.append("request", { content: "Update avatar" });
-    formData.append("avatar", file);
+    formData.append("request", JSON.stringify(data?.request));
+    formData.append("avatar", data?.file);
 
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/set-avatar`, formData, {
         headers: {
