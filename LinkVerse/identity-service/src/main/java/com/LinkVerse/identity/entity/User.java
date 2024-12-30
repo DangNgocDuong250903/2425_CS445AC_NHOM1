@@ -62,5 +62,6 @@ public class User {
         createdAt = LocalDateTime.now();
     }
 
+    String fcmToken;
 
 }

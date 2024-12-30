@@ -16,7 +16,6 @@ import com.LinkVerse.identity.mapper.UserMapper;
 import com.LinkVerse.identity.repository.RoleRepository;
 import com.LinkVerse.identity.repository.UserRepository;
 import com.LinkVerse.identity.repository.httpclient.ProfileClient;
-import com.nimbusds.jwt.SignedJWT;
 import feign.FeignException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,10 +30,10 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +47,7 @@ public class UserService {
     PasswordEncoder passwordEncoder;
     ProfileClient profileClient;
     KafkaTemplate<String, Object> kafkaTemplate;
-    AuthenticationService authenticationService;
+    NotificationService notificationService;
 
     public void updateImage(String userId, String imageUrl) {
         User user = userRepository.findUserById(userId);
@@ -102,9 +101,19 @@ public class UserService {
         kafkaTemplate.send("notification-delivery", notificationEvent);
 
 
+        List<String> userTokens = getAllUserTokensExcept(user);
+        notificationService.sendNotificationToUsers(userTokens, "New User Registered", "A new user has joined: " + user.getUsername());
+
+
         return userMapper.toUserResponse(user);
     }
 
+    private List<String> getAllUserTokensExcept(User newUser) {
+        return userRepository.findAll().stream()
+                .filter(user -> !user.getId().equals(newUser.getId()))
+                .map(User::getFcmToken)
+                .collect(Collectors.toList());
+    }
 
     public UserResponse updateStatus(String userId, String status) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
