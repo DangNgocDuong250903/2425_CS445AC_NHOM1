@@ -26,7 +26,7 @@ public class SecurityConfig {
             "/email/reset-password",
             "/email/send-verification",
             "/api/v1/notification/**",
-            "/v3/.*"
+            "/v3/.*", "/ws", "/ws/**"
     };
 
     private final CustomJwtDecoder customJwtDecoder;

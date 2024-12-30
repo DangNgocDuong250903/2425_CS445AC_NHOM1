@@ -159,8 +159,8 @@ public class FriendService {
         UserProfile user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAcceptedAsSender(user);
-        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAcceptedAsRecipient(user);
+        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
+        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
         Set<UserProfile> allFriends = new HashSet<>(friendsAsSender);
         allFriends.addAll(friendsAsRecipient);
 
@@ -177,8 +177,8 @@ public class FriendService {
         UserProfile user = userRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAcceptedAsSender(user);
-        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAcceptedAsRecipient(user);
+        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
+        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
         Set<UserProfile> allFriends = new HashSet<>(friendsAsSender);
         allFriends.addAll(friendsAsRecipient);
 

@@ -19,20 +19,11 @@ public interface FriendshipRepository extends JpaRepository<Friendship, String> 
     Optional<Friendship> findByUserProfiles(@Param("user1") UserProfile user1, @Param("user2") UserProfile user2);
 
     @Query("SELECT f.recipient FROM Friendship f " +
-<<<<<<< HEAD
-            "WHERE f.sender = :user AND f.status = 'ACCEPTED'")
-    Set<UserProfile> findFriendsByUserAndStatusAcceptedAsSender(@Param("user") UserProfile user);
-
-    @Query("SELECT f.sender FROM Friendship f " +
-            "WHERE f.recipient = :user AND f.status = 'ACCEPTED'")
-    Set<UserProfile> findFriendsByUserAndStatusAcceptedAsRecipient(@Param("user") UserProfile user);
-=======
             "WHERE f.sender = :user AND f.status = 'ACCEPTED' " +
             "UNION " +
             "SELECT f.sender FROM Friendship f " +
             "WHERE f.recipient = :user AND f.status = 'ACCEPTED'")
     Set<UserProfile> findFriendsByUserAndStatusAccepted(@Param("user") UserProfile user);
->>>>>>> DangNgocDuong250903/build
 
     @Query("SELECT f FROM Friendship f " +
             "WHERE f.sender = :user AND f.status = 'BLOCKED'")
