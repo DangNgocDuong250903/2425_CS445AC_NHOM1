@@ -21,6 +21,7 @@ public class UserProfileResponse {
     String email;
     String firstName;
     String lastName;
+    String imageUrl;
     Gender gender;
     String phoneNumber;
     Date dateOfBirth;

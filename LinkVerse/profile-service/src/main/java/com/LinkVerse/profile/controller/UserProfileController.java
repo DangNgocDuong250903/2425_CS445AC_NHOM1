@@ -23,6 +23,24 @@ public class UserProfileController {
     UserProfileService userProfileService;
     UserProfileRepository userProfileRepository;
 
+    @PutMapping("/{userId}")
+    public ResponseEntity<Void> updateImage(@PathVariable("userId") String userId, @RequestParam String imageFile) {
+        if (userId == null || userId.isEmpty() || imageFile == null || imageFile.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+
+        try {
+            userProfileService.updateImage(userId, imageFile);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            log.error("User not found for ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            log.error("Failed to update user image for ID: {}", userId, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/users/{profileId}")
     ApiResponse<UserProfileResponse> getProfile(@PathVariable String profileId) {
         return ApiResponse.<UserProfileResponse>builder()

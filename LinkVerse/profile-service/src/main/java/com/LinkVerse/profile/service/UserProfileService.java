@@ -27,6 +27,15 @@ public class UserProfileService {
     UserProfileMapper userProfileMapper;
     FriendshipRepository friendshipRepository;
 
+    public void updateImage(String userId, String imageUrl) {
+        UserProfile userProfile= userProfileRepository.findUserProfileByUserId(userId);
+        if (userProfile == null) {
+            throw new IllegalArgumentException("User not found with ID: " + userId);
+        }
+        userProfile.setImageUrl(imageUrl);
+        userProfileRepository.save(userProfile);
+    }
+
 
     public UserProfileResponse createProfile(ProfileCreationRequest request) {
         UserProfile userProfile = userProfileMapper.toUserProfile(request);
