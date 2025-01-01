@@ -50,13 +50,9 @@ const FriendSuggest = () => {
       const res = await FriendService.request({ id, token });
       if (res?.status === "PENDING") {
         setRequests((prev) => [...prev, { userId: id }]);
-        setMessage("Gửi lời mời kết bạn thành công");
-        setType("success");
-        setOpen(true);
       }
     } catch (error) {
-      console.error("Error sending friend request:", error);
-      setMessage("Không thể gửi lời mời kết bạn");
+      setMessage("Something went wrong!");
       setType("error");
       setOpen(true);
     } finally {
@@ -143,7 +139,9 @@ const FriendSuggest = () => {
               ));
             } else {
               return (
-                <span className="text-center">Không có bạn bè đề xuất nào</span>
+                <span className="text-center text-ascent-1">
+                  Không có bạn bè đề xuất nào
+                </span>
               );
             }
           })()

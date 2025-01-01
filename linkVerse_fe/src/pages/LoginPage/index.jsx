@@ -167,7 +167,7 @@ const LoginPage = () => {
               <CustomButton
                 disable={isPending || !isValid}
                 type="submit"
-                containerStyles="w-full mt-3 inline-flex justify-center rounded-md bg-[#065ad8] px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#065ad898] hover:text-black"
+                containerStyles="w-full mt-3 inline-flex active:scale-90 justify-center rounded-md bg-[#065ad8] px-8 py-3 text-sm font-medium text-white outline-none hover:bg-[#065ad898] hover:text-black"
                 title={t("Đăng nhập")}
               />
               {isPending && (

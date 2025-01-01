@@ -67,16 +67,12 @@ const Apps = () => {
           <div>
             <MenuItem onClick={() => navigate("/settings")}>
               <div className="flex items-center justify-between w-full">
-                <span className={theme === "light" && "text-black"}>
-                  Settings
-                </span>
+                <span className="text-ascent-1">Settings</span>
               </div>
             </MenuItem>
             <MenuItem onClick={() => navigate("/saveds")}>
               <div className="flex items-center justify-between w-full">
-                <span className={theme === "light" && "text-black"}>
-                  Saveds
-                </span>
+                <span className="text-ascent-1">Saveds</span>
                 <FiBookmark color="black" />
               </div>
             </MenuItem>
@@ -84,7 +80,7 @@ const Apps = () => {
         )}
         <MenuItem>
           <div className="flex items-center justify-between w-full">
-            <span className={theme === "light" && "text-black"}>Dark mode</span>
+            <span className="text-ascent-1">Dark mode</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"

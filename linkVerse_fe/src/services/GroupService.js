@@ -79,4 +79,14 @@ export const addUserToGroup = async ({ userId, groupId, token }) => {
 
 };
 
+export const isUserInGroup = async ({ userId, token }) => {
+    const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups/${userId}/isUserInGroup`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return res.data;
+
+};
+
 

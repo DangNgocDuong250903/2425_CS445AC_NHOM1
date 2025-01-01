@@ -48,7 +48,7 @@ const SelectPosts = () => {
         variant="contained"
         className="w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:scale-110 active:scal90 cursor-pointer transition-transform border-1 border-borderNewFeed shadow-newFeed"
       >
-        <RiArrowDownSLine size={14} />
+        <RiArrowDownSLine size={14} className="text-bgStandard" />
       </div>
       <CustomizeMenu
         anchor={{ vertical: "top", horizontal: "center" }}
@@ -64,9 +64,7 @@ const SelectPosts = () => {
               selected={selectsPost[i] === sentiment}
             >
               <div className="flex items-center justify-between w-full">
-                <span className={theme === "light" && "text-black"}>
-                  {option}
-                </span>
+                <span className="text-ascent-1">{option}</span>
                 {selectsPost[i] === sentiment && <FaCheck color="black" />}
               </div>
             </MenuItem>

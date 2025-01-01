@@ -59,7 +59,7 @@ const BlockList = ({ setting }) => {
         <IoIosArrowForward
           onClick={handleOpen}
           size={20}
-          className="cursor-pointer"
+          className="cursor-pointer text-bgStandard"
         />
       )}
       <DialogCustom isOpen={open} handleCloseDiaLogAdd={handleClose}>
@@ -89,7 +89,7 @@ const BlockList = ({ setting }) => {
                     <img
                       src={block?.imageUrl ?? BlankAvatar}
                       alt="avatar"
-                      className="w-10 h-10 object-cover bg-no-repeat"
+                      className="w-10 h-10 object-cover rounded-full bg-no-repeat"
                     />
                     <span className="font-semibold text-ascent-1">
                       {block?.username}

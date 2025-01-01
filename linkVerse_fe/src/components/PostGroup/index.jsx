@@ -85,7 +85,7 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
   };
 
   return (
-    <div className="bg-primary p-5 rounded-2xl border-e-borderNewFeed border-1 shadow-newFeed">
+    <div className="bg-primary p-5 rounded-2xl border-borderNewFeed border-1 shadow-newFeed">
       <div
         onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"

@@ -317,7 +317,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
               <img
                 src={user?.avatar ?? BlankAvatar}
                 alt="User Image"
-                className="w-14 h-14 rounded-full object-cover shadow-newFeed"
+                className="w-14 h-14 flex-shrink-0 border-1 border-borderNewFeed shadow-newFeed rounded-full object-cover shadow-newFeed"
               />
               <TextField
                 label="Có gì mới ?"
@@ -330,7 +330,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
                 fullWidth
                 sx={{
                   "& .MuiInput-root": {
-                    color: theme === "dark" ? "#fff" : "#000",
+                    color: "#000",
                     "&:before": {
                       display: "none",
                     },

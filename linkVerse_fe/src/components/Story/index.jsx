@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { GoPlus } from "react-icons/go";
 import CreateStory from "../CreateStory";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { StoryCard } from "..";
 import * as StoryService from "~/services/StoryService";
 

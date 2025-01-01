@@ -1,22 +1,45 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CustomizeMenu } from "..";
 import { Badge } from "@mui/material";
 import { useSelector } from "react-redux";
 import { BlankAvatar } from "~/assets";
 import { GoBell } from "react-icons/go";
-import { GoBellFill } from "react-icons/go";
+import SockJs from "sockjs-client/dist/sockjs";
+import { over } from "stompjs";
 
 const Notifications = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const user = useSelector((state) => state?.user);
-
+  const token = localStorage.getItem("token");
   const open = Boolean(anchorEl);
+  // const [stompClient, setStompClient] = useState(null);
   const handleClick = (event) => {
     setAnchorEl(user?.token ? event.currentTarget : null);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  // const onError = (error) => {
+  //   console.log("on error ", error);
+  // };
+
+  // const connect = () => {
+  //   const sock = new SockJs("http://localhost:8082/notification/ws");
+  //   const temp = over(sock);
+  //   setStompClient(temp);
+
+  //   const headers = {
+  //     Authorization: `Bearer ${token}`,
+  //   };
+
+  //   // Connect to WebSocket server
+  //   temp.connect(headers, onError);
+  // };
+
+  // useEffect(() => {
+  //   connect();
+  // }, []);
 
   return (
     <div className="hidden lg:flex p-1 cursor-pointer hover:bg-neutral-100 active:scale-90 rounded-full hover:scale-105 transition-transform">

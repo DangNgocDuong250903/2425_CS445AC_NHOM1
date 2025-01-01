@@ -23,8 +23,9 @@ import { FiBookmark } from "react-icons/fi";
 import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import ChangeVisibility from "../ChangeVisibility";
+import useCopyToClipboard from "~/hooks/useCopyToClipboard";
 
-const PostCard = ({ post, isShowImage, onSuccess }) => {
+const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
   const userState = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
@@ -42,6 +43,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
   const [type, setType] = useState("");
   const [icon, setIcon] = useState(null);
   const [duration, setDuration] = useState("");
+  const { isCopied, error, copyToClipboard } = useCopyToClipboard();
 
   const handleCloseAlert = () => {
     setOpenAlert(false);
@@ -221,11 +223,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
 
   //save url
   const handleSaveUrl = (id) => {
-    setUrl(`http://localhost:5173/post/${id}`);
-    setMessage("Copy to clipboard success!");
-    copyToClipboard(url);
-    handleClose();
-    setOpenMessage(true);
+    copyToClipboard(`http://localhost:5173/post/${id}`);
   };
 
   //share post
@@ -266,20 +264,14 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
       setTypeMessage("warning");
       setOpenMessage(true);
       const res = await PostService.deletePost({ id, token });
-      if (res?.code === 400) {
+      if (res?.code === 200) {
+        onSuccess();
         setDuration(3000);
         setIcon();
-        setMessage("Post already saved!");
-        setTypeMessage("error");
+        setMessage(res?.message);
+        setTypeMessage("success");
         setOpenMessage(true);
-        return;
       }
-      onSuccess();
-      setDuration(3000);
-      setIcon();
-      setMessage("Delete post success!");
-      setTypeMessage("success");
-      setOpenMessage(true);
     } catch (error) {
       setDuration(3000);
       setIcon();
@@ -351,6 +343,11 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
   const [changeVisibility, setChangeVisibility] = useState(false);
   const handleCloseChangeVisibility = () => setChangeVisibility(false);
 
+  const onSuccessChange = () => {
+    handleClose();
+    onSuccess();
+  };
+
   return (
     <div className="bg-primary p-2 rounded-xl">
       <AlertWelcome
@@ -362,7 +359,8 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
         openChange={changeVisibility}
         handleClose={handleCloseChangeVisibility}
         closeMenu={handleClose}
-        visibility={post}
+        post={post}
+        onSuccessChange={onSuccess}
       />
       <Alerts
         type={typeMessage}
@@ -380,8 +378,8 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
         <img
           onClick={(e) => e.stopPropagation()}
           src={user?.imageUrl ?? BlankAvatar}
-          alt={"avatar"}
-          className="w-14 h-14 object-cover rounded-full"
+          alt="avatar"
+          className="w-14 h-14 object-cover border-1 border-borderNewFeed shadow-newFeed bg-no-repeat rounded-full shrink-0"
         />
 
         <div className="w-full flex justify-between">
@@ -432,14 +430,15 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
                   <>
                     <MenuItem onClick={() => handleSavePost(post?.id)}>
                       <div className="flex items-center justify-between w-full">
-                        <span className={theme === "light" && "text-black"}>
-                          Save
-                        </span>
-                        <FiBookmark color={theme === "light" && "black"} />
+                        <span className="text-ascent-1">Save</span>
+                        <FiBookmark
+                          color={theme === "light" && "black"}
+                          className="text-bgStandard"
+                        />
                       </div>
                     </MenuItem>
                     <StyledDivider />
-                    {user?.userId !== post?.userId && (
+                    {userState?.id !== post?.userId && (
                       <div>
                         <MenuItem onClick={handleClose} disableRipple>
                           <div className="flex items-center justify-between w-full">
@@ -458,6 +457,7 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
                         </MenuItem>
                       </div>
                     )}
+
                     {userState?.id === post?.userId && (
                       <div>
                         <MenuItem
@@ -485,10 +485,10 @@ const PostCard = ({ post, isShowImage, onSuccess }) => {
                 )}
                 <MenuItem onClick={() => handleSaveUrl(post?.id)}>
                   <div className="flex items-center justify-between w-full">
-                    <span className={theme === "light" && "text-black"}>
-                      Copy address
+                    <span className="text-bgStandard">
+                      {isCopied ? "Copied" : "Copy link"}
                     </span>
-                    <RiAttachment2 color={theme === "light" && "black"} />
+                    <RiAttachment2 className="text-bgStandard" />
                   </div>
                 </MenuItem>
               </CustomizeMenu>

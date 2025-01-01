@@ -28,6 +28,8 @@ import useGetFriendOfUser from "~/hooks/useGetFriendOfUser";
 import { TbDotsCircleHorizontal } from "react-icons/tb";
 import { FiBookmark } from "react-icons/fi";
 import { RiAttachment2 } from "react-icons/ri";
+import useCopyToClipboard from "~/hooks/useCopyToClipboard";
+import Confirm from "~/components/Confirm";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -55,9 +57,16 @@ const ProfilePage = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [isAccept, setIsAccept] = useState(false);
+  const { isCopied, error, copyToClipboard } = useCopyToClipboard();
+  const [openConfirm, setOpenConfirm] = useState(false);
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseConfirm = () => {
+    handleCloseMenu();
+    setOpenConfirm(false);
   };
 
   const handleCloseMenu = () => {
@@ -180,7 +189,7 @@ const ProfilePage = () => {
     try {
       const res = await FriendService.unfriend({ id, token });
       if (res) {
-        return;
+        setIsUnFriend(true);
       }
     } catch (error) {
       setMessage("Some thing went wrong!");
@@ -194,7 +203,6 @@ const ProfilePage = () => {
     try {
       const res = await FriendService.request({ id, token });
       if (res?.status === "PENDING") {
-        // Cập nhật trạng thái PENDING
         setPendingRequests((prev) => [...prev, id]);
       }
     } catch (error) {
@@ -203,16 +211,6 @@ const ProfilePage = () => {
       setTypeMessage("error");
       setOpenMessage(true);
     }
-  };
-
-  //block
-  const handleBlockUser = async () => {
-    try {
-      handleCloseMenu();
-      const res = await UserService.block({ id, token });
-      if (res) {
-      }
-    } catch (error) {}
   };
 
   //accept
@@ -231,16 +229,25 @@ const ProfilePage = () => {
 
   //reject
   const handleDecline = async (id) => {
-    // try {
-    //   const res = await FriendService.reject({ id, token });
-    //   if (res?.code === 9999 || res?.status === "REJECTED") {
-    //     fetchRequests();
-    //   }
-    // } catch (error) {
-    //   setMessage("Something went wrong!");
-    //   setType("error");
-    //   setOpen(true);
-    // }
+    try {
+      const res = await FriendService.reject({ id, token });
+      if (res?.code === 9999 || res?.status === "REJECTED") {
+        fetchRequests();
+      }
+    } catch (error) {
+      setMessage("Something went wrong!");
+      setType("error");
+      setOpen(true);
+    }
+  };
+
+  //save url
+  const handleSaveUrl = () => {
+    copyToClipboard(`http://localhost:5173/profile/${id}`);
+    setOpenMessage(true);
+    setMessage("Copy to clipboard success!");
+    setTypeMessage("success");
+    handleCloseMenu();
   };
 
   return (
@@ -255,6 +262,7 @@ const ProfilePage = () => {
           type={typeMessage}
           duration={2000}
         />
+        <Confirm open={openConfirm} handleClose={handleCloseConfirm} id={id} />
 
         <div className="w-full h-full justify-center flex ">
           <div className="max-w-[680px] h-full bg-primary rounded-3xl shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed overflow-y-auto">
@@ -276,7 +284,7 @@ const ProfilePage = () => {
                     <img
                       src={user?.imageUrl ?? BlankAvatar}
                       alt="avatar"
-                      className="rounded-full relative object-cover bg-no-repeat w-20 h-20"
+                      className="rounded-full relative border-1 border-borderNewFeed shadow-newFeed object-cover bg-no-repeat w-20 h-20"
                     />
                     {loadingUpdateAvatar && (
                       <CircularProgress
@@ -314,11 +322,13 @@ const ProfilePage = () => {
               </div>
               {/* 2 */}
               <div className="flex items-center">
-                <p className="text-ascent-1">{user?.bio || "No storie"}</p>
+                <p className="text-ascent-2">{user?.bio || "No storie"}</p>
               </div>
               {/* 3 */}
               <div className="flex justify-between items-center">
-                <span>{friendOfUser?.length} friends</span>
+                <span className="text-ascent-2">
+                  {friendOfUser?.length} friends
+                </span>
                 <div className="flex gap-2">
                   <CiFacebook
                     color={theme === "dark" ? "#fff" : "#000"}
@@ -337,13 +347,15 @@ const ProfilePage = () => {
                     styles={{ marginTop: "10px" }}
                     anchor={{ vertical: "top", horizontal: "right" }}
                   >
-                    <MenuItem onClick={handleBlockUser}>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Block</span>
-                        <FiBookmark color="red" />
-                      </div>
-                    </MenuItem>
-                    <MenuItem>
+                    {id !== userState?.id && (
+                      <MenuItem onClick={() => setOpenConfirm(true)}>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-red-600">Block</span>
+                          <FiBookmark color="red" />
+                        </div>
+                      </MenuItem>
+                    )}
+                    <MenuItem onClick={handleSaveUrl}>
                       <div className="flex items-center justify-between w-full">
                         <span className={theme === "light" && "text-black"}>
                           Copy url
@@ -355,7 +367,6 @@ const ProfilePage = () => {
                 </div>
               </div>
               {/* 4 */}
-              {}
               {userState?.id !== user?.id ? (
                 <div className="w-full text-center items-center justify-center flex gap-x-2">
                   {friends?.find((friend) => friend?.userId === user?.id) ? (
@@ -470,100 +481,98 @@ const ProfilePage = () => {
             {/* 2 */}
             <div className="flex w-full h-auto items-center justify-center">
               {/* tab */}
-              <div>
-                <Box sx={{ width: "100%" }}>
-                  <Box
+              <Box sx={{ width: "100%" }}>
+                <Box
+                  sx={{
+                    borderBottom: 1,
+                    borderColor: "divider",
+                    width: "680px",
+                  }}
+                >
+                  <Tabs
                     sx={{
-                      borderBottom: 1,
-                      borderColor: "divider",
-                      width: "680px",
+                      color: theme === "dark" ? "#fff" : "#000",
+                      "& .MuiTabs-indicator": {
+                        backgroundColor: theme === "dark" ? "#fff" : "#000",
+                        height: "1px",
+                      },
                     }}
+                    indicatorColor="primary"
+                    textColor="inherit"
+                    value={value}
+                    onChange={handleChange}
+                    variant="fullWidth"
+                    aria-label="basic tabs example"
                   >
-                    <Tabs
-                      sx={{
-                        color: theme === "dark" ? "#fff" : "#000",
-                        "& .MuiTabs-indicator": {
-                          backgroundColor: theme === "dark" ? "#fff" : "#000",
-                          height: "1px",
-                        },
-                      }}
-                      indicatorColor="primary"
-                      textColor="inherit"
-                      value={value}
-                      onChange={handleChange}
-                      variant="fullWidth"
-                      aria-label="basic tabs example"
-                    >
-                      <Tab label="Bài đăng" {...a11yProps(0)} />
-                      <Tab label="Bài viết chia sẻ" {...a11yProps(1)} />
-                      <Tab label="Lịch sử" {...a11yProps(2)} />
-                    </Tabs>
-                  </Box>
-                  {/* 1 */}
-                  <CustomTabPanel value={value} index={0}>
-                    <div className="w-full pb-10 h-full">
-                      {/* header */}
-                      <div className=" w-full flex items-center justify-between px-6 py-3 border-b">
-                        <div className="flex items-center justify-center gap-4 ">
-                          <img
-                            src={user?.imageUrl || BlankAvatar}
-                            alt="avatar"
-                            className="rounded-full object-cover w-14 h-14 bg-no-repeat"
-                          />
-                          <span className="text-ascent-2 text-sm font-normal">
-                            Có gì mới...
-                          </span>
+                    <Tab label="Bài đăng" {...a11yProps(0)} />
+                    <Tab label="Bài viết chia sẻ" {...a11yProps(1)} />
+                    <Tab label="Lịch sử" {...a11yProps(2)} />
+                  </Tabs>
+                </Box>
+                {/* 1 */}
+                <CustomTabPanel value={value} index={0}>
+                  <div className="w-full pb-10 h-full">
+                    {/* header */}
+                    <div className=" w-full flex items-center justify-between px-6 py-3 border-b border-borderNewFeed">
+                      <div className="flex items-center justify-center gap-4 ">
+                        <img
+                          src={user?.imageUrl || BlankAvatar}
+                          alt="avatar"
+                          className="rounded-full border-1 border-borderNewFeed shadow-newFeed object-cover w-14 h-14 bg-no-repeat"
+                        />
+                        <span className="text-ascent-2 text-sm font-normal">
+                          Có gì mới...
+                        </span>
+                      </div>
+                      <CreatePost profilePage onSuccess={handleSuccess} />
+                    </div>
+                    {/* posts */}
+                    <div className="flex-1 bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto  ">
+                      {!loadingPost && posts.length === 0 && (
+                        <div className="w-full h-60 flex items-center justify-center">
+                          <p className="text-lg text-ascent-2">
+                            Không có bài viết nào
+                          </p>
                         </div>
-                        <CreatePost profilePage onSuccess={handleSuccess} />
-                      </div>
-                      {/* posts */}
-                      <div className="flex-1 bg-primary px-4 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto  ">
-                        {!loadingPost && posts.length === 0 && (
-                          <div className="w-full h-60 flex items-center justify-center">
-                            <p className="text-lg text-ascent-2">
-                              Không có bài viết nào
-                            </p>
-                          </div>
-                        )}
-                        {loadingPost && (
-                          <div className="w-full h-60 flex items-center justify-center">
-                            <CircularProgress />
-                          </div>
-                        )}
+                      )}
+                      {loadingPost && (
+                        <div className="w-full h-60 flex items-center justify-center">
+                          <CircularProgress />
+                        </div>
+                      )}
 
-                        {posts &&
-                          posts.length > 0 &&
-                          posts.map((post, i) => (
-                            <PostCard
-                              fetchPosts={handleSuccess}
-                              key={i}
-                              post={post}
-                              user={user}
-                            />
-                          ))}
-                      </div>
+                      {posts &&
+                        posts.length > 0 &&
+                        posts.map((post, i) => (
+                          <PostCard
+                            fetchPosts={handleSuccess}
+                            key={i}
+                            post={post}
+                            user={user}
+                          />
+                        ))}
                     </div>
-                  </CustomTabPanel>
-                  {/* 2 */}
-                  <CustomTabPanel value={value} index={1}>
-                    <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
-                      <div className="w-full h-60 flex items-center justify-center">
-                        <p className="text-lg text-ascent-2">
-                          Chưa chia sẻ bài nào
-                        </p>
-                      </div>
-                    </div>
-                  </CustomTabPanel>
-                  {/* 3 */}
-                  <CustomTabPanel value={value} index={2}>
+                  </div>
+                </CustomTabPanel>
+                {/* 2 */}
+                <CustomTabPanel value={value} index={1}>
+                  <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
                     <div className="w-full h-60 flex items-center justify-center">
                       <p className="text-lg text-ascent-2">
-                        Chưa có lịch sử bài viết
+                        Chưa chia sẻ bài nào
                       </p>
                     </div>
-                  </CustomTabPanel>
-                </Box>
-              </div>
+                  </div>
+                </CustomTabPanel>
+                {/* 3 */}
+                <CustomTabPanel value={value} index={2}>
+                  <div className="w-full h-60 flex items-center justify-center">
+                    <p className="text-lg text-ascent-2">
+                      Chưa có lịch sử bài viết
+                    </p>
+                  </div>
+                </CustomTabPanel>
+              </Box>
             </div>
           </div>
         </div>
@@ -574,4 +583,3 @@ const ProfilePage = () => {
 };
 
 export default ProfilePage;
-// : friendRequest?.find(request => request?.userId === user?.id )  ? () : ()

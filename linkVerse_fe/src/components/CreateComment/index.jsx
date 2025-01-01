@@ -99,31 +99,21 @@ const CreateComment = ({ handleClose, open, id }) => {
         width="640px"
         handleCloseDiaLogAdd={handleClose}
       >
-        <div
-          className={`w-full ${
-            theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
-          } shadow-newFeed`}
-        >
+        <div className="w-full shadow-newFeed bg-primary">
           {/* header */}
           <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
             <button
               onClick={() => setOpen(false)}
-              className={`text-base hover:text-neutral-400 font-medium text-neutral-500 ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
+              className="text-base hover:text-neutral-400 font-medium text-ascent-1"
             >
               Hủy
             </button>
-            <span
-              className={`text-lg font-semibold ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
-            >
+            <span className="text-lg font-semibold text-ascent-1">
               Trả lời mới
             </span>
             <div />
           </div>
-          <div className="w-full border-t-[0.1px] border-borderNewFeed" />
+          <div className="w-full border-1 border-borderNewFeed" />
 
           {/* body */}
           <div className=" w-full flex flex-col px-5 py-4 justify-center gap-y-2">
@@ -134,7 +124,7 @@ const CreateComment = ({ handleClose, open, id }) => {
                 <img
                   src={user?.avatar ?? BlankAvatar}
                   alt="User Image"
-                  className="w-14 h-14 rounded-full object-cover shadow-newFeed"
+                  className="w-14 h-14 flex-shrink-0 border-1 border-borderNewFeed shadow-newFeed rounded-full object-cover shadow-newFeed"
                 />
                 {/* 2 */}
                 <TextField
@@ -148,7 +138,7 @@ const CreateComment = ({ handleClose, open, id }) => {
                   fullWidth
                   sx={{
                     "& .MuiInput-root": {
-                      color: theme === "dark" ? "#fff" : "#000",
+                      color: "#000",
                       "&:before": {
                         display: "none",
                       },

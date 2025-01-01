@@ -26,7 +26,7 @@ const ProfileCard = () => {
             <img
               src={user?.avatar || BlankAvatar}
               alt={"avatar"}
-              className="w-14 h-14 object-cover rounded-full"
+              className="w-14 h-14 object-cover border-1 border-borderNewFeed shadow-newFeed rounded-full"
             />
             {user?.status === "ONLINE" ? (
               <div className="absolute right-1 bottom-0 w-3 h-3 bg-[#53C259] rounded-full border-2 border-primary" />

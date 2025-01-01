@@ -16,9 +16,16 @@ import { PiGifThin } from "react-icons/pi";
 import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
-import { IoEarthOutline } from "react-icons/io5";
+import * as GroupService from "~/services/GroupService";
 
-const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
+const CreatePost = ({
+  buttonRight,
+  profilePage,
+  homePage,
+  onSuccess,
+  group,
+  groupId,
+}) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const [status, setStatus] = useState("");
@@ -86,6 +93,45 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
     mutation.mutate({ data, token });
   };
 
+  //group
+  const mutationGroup = useMutationHook(({ data, token }) =>
+    GroupService.createPost({ data, token })
+  );
+  const {
+    data: dataGroup,
+    isPending: isPendingGroup,
+    isError: isErrorGroup,
+    isSuccess: isSuccessGroup,
+  } = mutationGroup;
+
+  useEffect(() => {
+    if (isSuccessGroup) {
+      if (dataGroup?.code === 200) {
+        handleClear();
+        setOpen(false);
+        setType("success");
+        setMessage("Create post success!");
+        setShowMessage(true);
+        // onSuccess();
+      } else if (dataGroup?.code === 400) {
+        setType("error");
+        setMessage(dataGroup?.message);
+        setShowMessage(true);
+        handleClear();
+        setOpen(false);
+      }
+    } else if (isErrorGroup) {
+      setMessage("Something went wrong!");
+    }
+  }, [isSuccessGroup, isErrorGroup]);
+
+  const handleSubmitPostGroup = () => {
+    const request = { content: status, groupId: groupId };
+    const data = { request, files: files };
+    const token = localStorage.getItem("token");
+    mutationGroup.mutate({ data, token });
+  };
+
   const handleCloseMessage = () => {
     setShowMessage(false);
   };
@@ -96,7 +142,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         <div className="absolute bottom-5 right-5">
           <div
             onClick={() => setOpen(user?.token ? true : false)}
-            className="bg-primary w-[70px] h-[70px] border-1 border-borderNewFeed shadow-2xl hover:scale-105 active:scale-90 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
+            className="bg-primary w-[70px] h-[70px]  border-1 border-borderNewFeed shadow-2xl hover:scale-105 active:scale-90 transition-transform flex items-center justify-center rounded-3xl cursor-pointer"
           >
             <IoIosAdd className="text-bgStandard" size={35} />
           </div>
@@ -106,10 +152,17 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
         <Button
           onClick={() => setOpen(true)}
           title="Đăng"
-          containerStyles="px-4 py-2 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
+          containerStyles="px-4 py-2 hover:scale-105 active:scale-90 transition-transform border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
         />
       )}
       {homePage && (
+        <Button
+          title="Post"
+          onClick={() => setOpen(true)}
+          containerStyles="bg-bluePrimary text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 active:scale-90 transition-transform"
+        />
+      )}
+      {group && (
         <Button
           title="Post"
           onClick={() => setOpen(true)}
@@ -145,17 +198,11 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
           <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
             <button
               onClick={() => setOpen(false)}
-              className={`text-base hover:text-neutral-400 font-medium text-neutral-500 ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
+              className="text-base hover:text-neutral-400 font-medium text-ascent-1"
             >
               Hủy
             </button>
-            <span
-              className={`text-lg font-semibold ${
-                theme === "dark" ? "text-white" : "text-black"
-              }`}
-            >
+            <span className="text-lg font-semibold text-ascent-1">
               Bài viết mới
             </span>
             <div className="w-7" />
@@ -171,7 +218,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
                 <img
                   src={user?.avatar ?? BlankAvatar}
                   alt="User Image"
-                  className="w-14 h-14 rounded-full object-cover shadow-newFeed"
+                  className="w-14 h-14 rounded-full border-1 flex-shrink-0 border-borderNewFeed  object-cover shadow-newFeed"
                 />
                 {/* 2 */}
                 <TextField
@@ -185,7 +232,7 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
                   fullWidth
                   sx={{
                     "& .MuiInput-root": {
-                      color: theme === "dark" ? "#fff" : "#000",
+                      color: "#000",
                       "&:before": {
                         display: "none",
                       },
@@ -313,19 +360,44 @@ const CreatePost = ({ buttonRight, profilePage, homePage, onSuccess }) => {
                 </Select>
               </FormControl>
               <div className="relative py-1">
-                <Button
-                  type="submit"
-                  title="Đăng"
-                  onClick={handleSubmitPost}
-                  containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                  disable={isPending || (files.length === 0 && !status.trim())}
-                />
+                {group ? (
+                  <>
+                    <Button
+                      type="submit"
+                      title="Đăng"
+                      onClick={handleSubmitPostGroup}
+                      containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                      disable={
+                        isPendingGroup || (files.length === 0 && !status.trim())
+                      }
+                    />
 
-                {isPending && (
-                  <CircularProgress
-                    className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
-                    size={20}
-                  />
+                    {isPendingGroup && (
+                      <CircularProgress
+                        className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
+                        size={20}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      type="submit"
+                      title="Đăng"
+                      onClick={handleSubmitPost}
+                      containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                      disable={
+                        isPending || (files.length === 0 && !status.trim())
+                      }
+                    />
+
+                    {isPending && (
+                      <CircularProgress
+                        className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
+                        size={20}
+                      />
+                    )}
+                  </>
                 )}
               </div>
             </div>

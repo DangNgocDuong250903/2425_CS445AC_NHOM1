@@ -117,7 +117,7 @@ function DeleteAccount({ setting }) {
         <IoIosArrowForward
           size={20}
           onClick={handleMainDialogOpen}
-          className="cursor-pointer"
+          className="cursor-pointer text-bgStandard"
         />
       )}
       {/* main */}

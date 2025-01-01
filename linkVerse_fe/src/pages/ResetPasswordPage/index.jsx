@@ -47,7 +47,7 @@ const ResetPassword = () => {
     <div className="w-full h-[100vh] flex bg-bgColor items-center justify-center p-6 ">
       <div className="bg-primary w-full md:w-1/3 2xl:w-1/4 px-6 pb-8 pt-6 shadow-newFeed rounded-xl border-x-[0.8px] border-y-[0.8px] border-solid border-borderNewFeed">
         <div
-          className="w-8 h-8 mb-4 rounded-lg bg-blue flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
+          className="w-8 h-8 mb-4 rounded-lg active:scale-90 bg-blue flex items-center justify-center hover:scale-110 cursor-pointer transition-transform"
           onClick={() => navigate("/forgot-password")}
         >
           <FaArrowLeft color="#fff" />
@@ -150,7 +150,7 @@ const ResetPassword = () => {
             <Button
               disable={isPending || !isValid}
               type="submit"
-              containerStyles={`inline-flex w-full justify-center rounded-md bg-blue px-8 py-3 text-sm text-white font-medium outline-none mt-3`}
+              containerStyles={`inline-flex active:scale-90 w-full justify-center rounded-md bg-blue px-8 py-3 text-sm text-white font-medium outline-none mt-3`}
               title={t("Xác nhận")}
             />
             {isPending && (

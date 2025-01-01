@@ -39,10 +39,10 @@ const ChangeLanguage = () => {
         onChange={handleChangeLanguage}
       >
         <MenuItem value={"vie"}>
-          <span className="">VIE</span>
+          <span className="text-ascent-1">VIE</span>
         </MenuItem>
         <MenuItem value={"en"}>
-          <span>EN</span>
+          <span className="text-ascent-1">EN</span>
         </MenuItem>
       </Select>
     </div>

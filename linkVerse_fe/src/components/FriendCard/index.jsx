@@ -47,7 +47,7 @@ const FriendCard = () => {
             </Link>
           ))
         ) : (
-          <span>Chưa có bạn nào</span>
+          <span className="text-ascent-1">Chưa có bạn nào</span>
         )}
       </div>
     </div>

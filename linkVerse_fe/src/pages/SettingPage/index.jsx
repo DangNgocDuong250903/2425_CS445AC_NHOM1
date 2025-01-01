@@ -129,7 +129,7 @@ const SettingPage = () => {
                 {/* 1 */}
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center">
                   <div className="flex items-center gap-x-2">
-                    <RxLockClosed size={20} />
+                    <RxLockClosed size={20} className="text-bgStandard" />
                     <h1 className="text-ascent-1">Trang cá nhân riêng tư</h1>
                   </div>
                   <div>
@@ -143,7 +143,7 @@ const SettingPage = () => {
                 {/* 2 */}
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center">
                   <div className="flex items-center gap-x-2">
-                    <RiEyeOffLine size={20} />
+                    <RiEyeOffLine size={20} className="text-bgStandard" />
                     <h1 className="text-ascent-1">Trạng thái hoạt động</h1>
                   </div>
                   <div>
@@ -194,7 +194,10 @@ const SettingPage = () => {
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
                   <h1 className="text-ascent-1">Trung tâm trợ giúp</h1>
-                  <FaArrowUpRightFromSquare size={20} />
+                  <FaArrowUpRightFromSquare
+                    size={20}
+                    className="text-bgStandard"
+                  />
                 </a>
 
                 {/* 2 */}
@@ -206,7 +209,10 @@ const SettingPage = () => {
                   <h1 className="text-ascent-1">
                     Chính sách và quyền riêng tư của LinkVerse
                   </h1>
-                  <FaArrowUpRightFromSquare size={20} />
+                  <FaArrowUpRightFromSquare
+                    size={20}
+                    className="text-bgStandard"
+                  />
                 </a>
                 {/* 3 */}
                 <a
@@ -217,7 +223,10 @@ const SettingPage = () => {
                   <h1 className="text-ascent-1">
                     Điều khoản sử dụng của LinkVerse
                   </h1>
-                  <FaArrowUpRightFromSquare size={20} />
+                  <FaArrowUpRightFromSquare
+                    size={20}
+                    className="text-bgStandard"
+                  />
                 </a>
                 {/* 4 */}
                 <a
@@ -226,7 +235,10 @@ const SettingPage = () => {
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
                   <h1 className="text-ascent-1">Chính sách cookies</h1>
-                  <FaArrowUpRightFromSquare size={20} />
+                  <FaArrowUpRightFromSquare
+                    size={20}
+                    className="text-bgStandard"
+                  />
                 </a>
               </div>
             </CustomTabPanel>

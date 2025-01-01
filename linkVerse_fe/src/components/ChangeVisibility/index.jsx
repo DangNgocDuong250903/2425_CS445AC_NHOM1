@@ -2,13 +2,18 @@ import { useEffect, useState } from "react";
 import { WrapperModal } from "./style";
 import { FaEarthAmericas } from "react-icons/fa6";
 import { Button } from "..";
-import { BiSolidLockAlt } from "react-icons/bi";
 import * as PostService from "~/services/PostService";
 
-const ChangeVisibility = ({ openChange, handleClose, closeMenu, post }) => {
+const ChangeVisibility = ({
+  openChange,
+  handleClose,
+  closeMenu,
+  post,
+  onSuccessChange,
+}) => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
-  const [checked, setChecked] = useState(!post?.visibility);
+  const [checked, setChecked] = useState(post?.visibility);
 
   useEffect(() => {
     if (openChange) {
@@ -16,13 +21,24 @@ const ChangeVisibility = ({ openChange, handleClose, closeMenu, post }) => {
     }
   }, [openChange, closeMenu]);
 
-  const handleChecked = () => {};
+  const handleChecked = (visibility) => {
+    setChecked(visibility);
+  };
 
   const handleChangeVisibility = async () => {
     setLoading(true);
     try {
-      const res = await PostService.changeVisibility({ id, token, visibility });
+      const res = await PostService.changeVisibility({
+        id: post?.id,
+        token,
+        visibility: checked,
+      });
+      if (res) {
+        onSuccessChange();
+      }
+      console.log("Visibility updated:", res);
     } catch (error) {
+      console.error("Failed to update visibility:", error);
     } finally {
       setLoading(false);
     }
@@ -44,44 +60,95 @@ const ChangeVisibility = ({ openChange, handleClose, closeMenu, post }) => {
           backgroundPosition: "center",
         }}
       >
-        {/* header */}
+        {/* Header */}
         <div className="w-full flex items-center justify-center gap-5 px-5 py-4">
           <span className="text-lg font-semibold text-ascent-1">
             Change visibility
           </span>
         </div>
         <div className="w-full border-t-[0.1px] border-borderNewFeed" />
-        {/* body */}
+
+        {/* Body */}
         <div className="w-full flex flex-col py-2 gap-y-2">
-          {/* 1 */}
+          {/* PUBLIC */}
           <div
-            onClick={handleChecked}
-            className="w-full flex items-center justify-between p-5 hover:opacity-80 opacity-100 cursor-pointer"
+            onClick={() => handleChecked("PUBLIC")}
+            className="w-full flex items-center justify-between p-5 hover:bg-[#F3F8FE] cursor-pointer"
           >
             <div className="w-full flex items-center gap-4">
               <FaEarthAmericas size={30} />
               <div className="w-full flex flex-col">
                 <span className="font-semibold text-ascent-1">PUBLIC</span>
                 <span className="text-xs text-ascent-2">
-                  Ai cung co the thay
+                  Ai cũng có thể thấy
                 </span>
               </div>
             </div>
-            <input type="radio" name="visibility" id="" className="w-5 h-5" />
+            <input
+              type="radio"
+              name="visibility"
+              className="w-5 h-5 cursor-pointer"
+              checked={checked === "PUBLIC"}
+              readOnly
+            />
+          </div>
+
+          {/* PRIVATE */}
+          <div
+            onClick={() => handleChecked("PRIVATE")}
+            className="w-full flex items-center justify-between p-5 hover:bg-[#F3F8FE] cursor-pointer"
+          >
+            <div className="w-full flex items-center gap-4">
+              <FaEarthAmericas size={30} />
+              <div className="w-full flex flex-col">
+                <span className="font-semibold text-ascent-1">PRIVATE</span>
+                <span className="text-xs text-ascent-2">
+                  Chỉ mình tôi nhìn thấy
+                </span>
+              </div>
+            </div>
+            <input
+              type="radio"
+              name="visibility"
+              className="w-5 h-5 cursor-pointer"
+              checked={checked === "PRIVATE"}
+              readOnly
+            />
           </div>
         </div>
-        {/* footer */}
+
+        {/* Footer */}
         <div className="w-full flex justify-end p-5">
           <Button
             type="submit"
-            title="Xong"
+            title={loading ? "Đang cập nhật..." : "Xong"}
             containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+            onClick={handleChangeVisibility}
+            disabled={loading}
           />
         </div>
-        <div></div>
       </div>
     </WrapperModal>
   );
 };
 
 export default ChangeVisibility;
+
+{
+  /* <div className="relative py-1">
+                <Button
+                  type="submit"
+                  title="Đăng"
+                  onClick={handleSubmitPost}
+                  containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                  disable={isPending || (files.length === 0 && !status.trim())}
+                />
+
+                {isPending && (
+                  <CircularProgress
+                    className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
+                    size={20}
+                  />
+                )}
+              </div> */
+}

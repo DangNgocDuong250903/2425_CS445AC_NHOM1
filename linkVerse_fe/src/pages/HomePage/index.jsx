@@ -101,7 +101,7 @@ const HomePage = () => {
                   <img
                     src={user?.avatar ?? BlankAvatar}
                     alt="User Image"
-                    className="w-14 h-14 rounded-full object-cover"
+                    className="w-14 h-14 shadow-newFeed border-1 border-borderNewFeed rounded-full object-cover"
                   />
                   <span className="text-ascent-2 text-sm cursor-pointer">
                     Có gì mới?

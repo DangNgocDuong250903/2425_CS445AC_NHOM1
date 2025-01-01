@@ -127,6 +127,16 @@ export const save = async ({ id, token }) => {
     return res.data
 }
 
+export const unsave = async ({ id, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/unsave`, {}, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+
+    })
+    return res.data
+}
+
 export const getSaveds = async (token) => {
     const res = await axiosJWT.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/saved-posts`, {
         headers: {

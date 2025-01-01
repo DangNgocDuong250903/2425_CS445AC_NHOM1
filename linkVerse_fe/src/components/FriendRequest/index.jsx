@@ -139,7 +139,7 @@ const FriendRequest = () => {
             </div>
           ))
         ) : (
-          <span>{t("Không có lời mời kết bạn")}</span>
+          <span className="text-ascent-1">{t("Không có lời mời kết bạn")}</span>
         )}
       </div>
     </div>

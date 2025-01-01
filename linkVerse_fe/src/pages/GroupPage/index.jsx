@@ -7,20 +7,24 @@ import {
   Welcome,
   Story,
   Group,
+  CreatePost,
 } from "~/components";
 import GroupDesc from "~/components/GroupDesc";
 import PostGroup from "~/components/PostGroup";
 import { Dropdown, Space } from "antd";
-import * as GroupService from "~/services/GroupService";
 import { useEffect, useState } from "react";
 import { CircularProgress } from "@mui/material";
 import useGetDetailGroup from "~/hooks/useGetDetailGroup";
+import { useParams } from "react-router-dom";
+import * as GroupService from "~/services/GroupService";
+import AddMemberToGroup from "~/components/AddMemberToGroup";
 
 const GroupPage = () => {
   const token = localStorage.getItem("token");
-  const { groupDetail } = useGetDetailGroup();
+  const { groupDetail, reload } = useGetDetailGroup();
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
+  const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedKey, setSelectedKey] = useState("0");
 
@@ -28,22 +32,6 @@ const GroupPage = () => {
     {
       key: "0",
       label: "For you",
-    },
-    {
-      key: "1",
-      label: "Positive",
-    },
-    {
-      key: "2",
-      label: "Negative",
-    },
-    {
-      key: "3",
-      label: "Neutral",
-    },
-    {
-      key: "4",
-      label: "Mixed",
     },
   ];
 
@@ -56,18 +44,12 @@ const GroupPage = () => {
 
     setIsLoading(true);
     try {
-      const sentimentParam = items[selectedKey].label.toUpperCase();
-      let res;
-
-      if (sentimentParam === "FOR YOU") {
-        res = await PostService.getAllPosts(page);
-      } else {
-        res = await PostService.getPostsBySentiment({
-          page,
-          sentiment: sentimentParam,
-          token,
-        });
-      }
+      const res = await GroupService.getAllPosts({
+        id,
+        token,
+        page,
+        size: 10,
+      });
 
       const { code, result } = res;
       if (code === 200 && result) {
@@ -86,7 +68,11 @@ const GroupPage = () => {
     setPosts([]);
     setPage(1);
     fetchPosts();
-  }, [selectedKey]);
+  }, []);
+
+  const handleSuccessAdd = () => {
+    reload();
+  };
 
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
@@ -98,6 +84,7 @@ const GroupPage = () => {
           {token && (
             <>
               <GroupDesc groupDetail={groupDetail} />
+              <AddMemberToGroup groupId={id} onSuccessAdd={handleSuccessAdd} />
               <Group />
             </>
           )}
@@ -107,20 +94,23 @@ const GroupPage = () => {
         <div className="flex-1 h-full mx-2 lg:m-0 flex flex-col gap-3 overflow-y-auto">
           {/* 1 */}
           <div className="w-full rounded-2xl bg-primary border-borderNewFeed shadow-newFeed border-1">
-            <div className="w-full border-b p-4">
-              <span className="font-normal">Post Something</span>
+            <div className="w-full border-b p-4 border-borderNewFeed">
+              <span className="font-normal text-ascent-1">Post Something</span>
             </div>
-            <div className="w-full flex p-4 gap-x-3">
-              <img
-                src={BlankAvatar}
-                alt="User Image"
-                className="w-12 h-12 rounded-full object-cover shadow-newFeed"
-              />
-              <input
-                type="text"
-                placeholder="What's on your mind"
-                className="focus:outline-none placeholder:text-sm placeholder:text-ascent-2"
-              />
+            <div className="w-full flex justify-between items-center p-4 gap-x-3">
+              <div className="flex items-center gap-4">
+                <img
+                  src={BlankAvatar}
+                  alt="User Image"
+                  className="w-12 h-12 rounded-full object-cover shadow-newFeed"
+                />
+                <span className="text-ascent-2 text-sm cursor-pointer">
+                  Có gì mới?
+                </span>
+              </div>
+              <div>
+                <CreatePost group groupId={id} />
+              </div>
             </div>
           </div>
           {/* 3 */}
@@ -137,8 +127,10 @@ const GroupPage = () => {
                 }}
               >
                 <Space>
-                  <span className="text-sm">{items[selectedKey].label}</span>
-                  <IoIosArrowDown size={18} />
+                  <span className="text-sm text-ascent-1">
+                    {items[selectedKey].label}
+                  </span>
+                  <IoIosArrowDown size={18} className="text-ascent-1" />
                 </Space>
               </Dropdown>
             </div>
@@ -146,9 +138,7 @@ const GroupPage = () => {
 
           {/* 2 */}
           {posts.length > 0 ? (
-            posts
-              .filter((post) => post?.visibility === "PUBLIC")
-              .map((post, i) => <PostGroup key={i} post={post} />)
+            posts.map((post, i) => <PostGroup key={i} post={post} />)
           ) : (
             <div className="flex w-full h-full items-center justify-center">
               <p className="text-lg text-ascent-2">Không có bài viết nào</p>

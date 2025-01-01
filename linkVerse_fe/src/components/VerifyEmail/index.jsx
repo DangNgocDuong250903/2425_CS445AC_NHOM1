@@ -3,6 +3,8 @@ import { DialogCustom } from "..";
 import { useSelector } from "react-redux";
 import { IoIosArrowForward } from "react-icons/io";
 import { useMutationHook } from "~/hooks/useMutationHook";
+import * as UserService from "~/services/UserService";
+import { CircularProgress } from "@mui/material";
 
 const VerifyEmail = ({ setting }) => {
   const [open, setOpen] = useState(false);
@@ -22,7 +24,7 @@ const VerifyEmail = ({ setting }) => {
         <IoIosArrowForward
           onClick={handleOpen}
           size={20}
-          className="cursor-pointer"
+          className="cursor-pointer text-bgStandard"
         />
       )}
       <DialogCustom
@@ -72,7 +74,7 @@ const VerifyEmail = ({ setting }) => {
                 onClick={handleSendMailVerify}
                 className={`${isSuccess && "hidden"} px-4 ${
                   isPending && "hidden"
-                } py-2 text-primary hover:opacity-90 hover:scale-105 transition-transform bg-bluePrimary rounded-xl`}
+                } py-2 text-primary hover:opacity-90 active:scale-90 hover:scale-105 transition-transform bg-bluePrimary rounded-xl`}
               >
                 Click to Verify Email
               </button>

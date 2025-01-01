@@ -11,14 +11,12 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import * as UserService from "~/services/UserService";
 import { CustomizeMenu } from "..";
 import { MenuItem } from "@mui/material";
-import { FiBookmark } from "react-icons/fi";
-import { useSelector } from "react-redux";
+import * as PostService from "~/services/PostService";
 import { GoBookmarkSlash } from "react-icons/go";
 
 const SavedCard = ({ post }) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const theme = useSelector((state) => state?.theme);
   const [showAll, setShowAll] = useState(0);
   const [user, setUser] = useState(null);
 
@@ -56,8 +54,17 @@ const SavedCard = ({ post }) => {
     });
   };
 
+  const handleUnsave = async (id) => {
+    try {
+      const res = await PostService.unsave({ id, token });
+      if (res.status === 200) {
+        window.location.reload();
+      }
+    } catch (error) {}
+  };
+
   return (
-    <div className="bg-primary p-5 rounded-2xl border-e-borderNewFeed border-1 shadow-newFeed">
+    <div className="bg-primary p-5 rounded-2xl border-borderNewFeed border-1 shadow-newFeed">
       <div
         onClick={() => navigate(`/post/${post.id}`)}
         className="flex gap-3 items-center mb-2 cursor-pointer"
@@ -113,7 +120,7 @@ const SavedCard = ({ post }) => {
                 open={open}
                 anchor={{ vertical: "top", horizontal: "right" }}
               >
-                <MenuItem onClick={() => handleSavePost(post?.id)}>
+                <MenuItem onClick={() => handleUnsave(post?.id)}>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-ascent-1">Unsave</span>
                     <GoBookmarkSlash color="black" />

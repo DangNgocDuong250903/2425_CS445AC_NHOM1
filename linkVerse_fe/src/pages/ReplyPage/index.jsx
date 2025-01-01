@@ -1,14 +1,17 @@
 import { CreatePost, PostCard, TopBar } from "~/components";
 import { useParams } from "react-router-dom";
 import * as PostService from "~/services/PostService";
+import * as UserService from "~/services/UserService";
 import { useQuery } from "@tanstack/react-query";
 import CommentCard from "~/components/CommentCard";
+import { useEffect, useState } from "react";
 
 const ReplyPage = () => {
   const { id } = useParams();
+  const [user, setUser] = useState(null);
+  const token = localStorage.getItem("token");
 
   const getPost = async () => {
-    const token = localStorage.getItem("token");
     const res = await PostService.getPostById({ id, token });
     return res?.result;
   };
@@ -19,6 +22,15 @@ const ReplyPage = () => {
   });
 
   const { isLoading, data: post } = queryPost;
+
+  const fetchDetailUser = async ({ id, token }) => {
+    const res = await UserService.getDetailUserByUserId({ id, token });
+    setUser(res?.result);
+  };
+
+  useEffect(() => {
+    fetchDetailUser({ id: post?.userId, token });
+  }, []);
 
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">

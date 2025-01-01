@@ -27,7 +27,7 @@ export const searchPostByKeyword = async ({ token, keyword }) => {
     return res.data
 }
 
-export const searchPostByHashTag = async ({ token, hashtag }) => {
+export const searchPostByHashTag = async ({ hashtag, token }) => {
     const res = await axios.get(`${import.meta.env.VITE_API_URL_BACKEND}/post/hashtags/${hashtag}/posts`, {
         headers: {
             Authorization: `Bearer ${token}`

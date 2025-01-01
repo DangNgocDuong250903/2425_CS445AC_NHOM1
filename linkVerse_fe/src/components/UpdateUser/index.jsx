@@ -6,6 +6,7 @@ import { CircularProgress, Divider } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { LiaEditSolid } from "react-icons/lia";
 import * as UserService from "~/services/UserService";
+import { BiotechOutlined } from "@mui/icons-material";
 
 const UpdateUser = ({ profile, profileCard, onSuccess }) => {
   const user = useSelector((state) => state.user);
@@ -18,6 +19,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [city, setCity] = useState("");
   const token = localStorage.getItem("token");
+  const [bio, setBio] = useState("");
 
   const handleDialog = () => {
     setShow((prev) => !prev);
@@ -26,6 +28,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
   useEffect(() => {
     setLastName(user?.lastName || "");
     setFirstName(user?.firstName || "");
+    setBio(user?.bio || "");
     setEmail(user?.email || "");
     setCity(user?.city || "");
     setPhoneNumber(user?.phoneNumber || "");
@@ -51,6 +54,10 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
     setCity(e.target.value);
   };
 
+  const handleChangeBio = (e) => {
+    setBio(e.target.value);
+  };
+
   const mutation = useMutationHook(({ token, data }) =>
     UserService.update({ token, data })
   );
@@ -69,6 +76,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
     const data = {
       lastName,
       firstName,
+      bio,
       email,
       city,
       phoneNumber,
@@ -82,7 +90,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
           onClick={handleDialog}
           title={t("Chỉnh sửa trang cá nhân")}
           containerStyles={
-            "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
+            "text-ascent-1 w-full active:scale-90 transition-transform py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
           }
         />
       )}
@@ -110,7 +118,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               <div className="flex flex-col">
                 <h1 className="text-ascent-2 font-medium">First name</h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-bgStandard focus:outline-none bg-transparent"
                   value={firstName}
                   onChange={handleChangeFirstName}
                   multiline
@@ -130,6 +138,24 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
                   className="border-none focus:outline-none"
                   value={lastName}
                   onChange={handleChangeLastName}
+                  multiline
+                  maxRows={5}
+                  variant="standard"
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            <Divider sx={{ borderColor: "#ccc" }} />
+
+            <div className="flex items-center   w-full justify-between py-3">
+              <div className="flex w-full flex-col">
+                <h1 className="text-ascent-2 font-medium">Bio</h1>
+                <input
+                  className="border-none focus:outline-none"
+                  value={bio}
+                  placeholder="Thêm tiểu sử"
+                  onChange={handleChangeBio}
                   multiline
                   maxRows={5}
                   variant="standard"
@@ -175,7 +201,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <Divider sx={{ borderColor: "#ccc" }} />
 
-            <div className="flex items-center   w-full justify-between py-3">
+            <div className="flex items-center  w-full justify-between py-3">
               <div className="flex w-full flex-col">
                 <h1 className="text-ascent-2 font-medium">City</h1>
                 <input
@@ -190,6 +216,7 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
                 />
               </div>
             </div>
+
             <div className="relative">
               <Button
                 title={"Xong"}

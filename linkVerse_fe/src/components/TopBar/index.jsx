@@ -10,24 +10,32 @@ import {
   TextInput,
 } from "~/components/index";
 import { useTranslation } from "react-i18next";
-import { IoIosSearch } from "react-icons/io";
+import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import * as SearchService from "~/services/SearchService";
 import { useDebounceHook } from "~/hooks/useDebounceHook";
+import { BlankAvatar } from "~/assets";
+import { IoFilter } from "react-icons/io5";
+import { Dropdown, Space } from "antd";
 
 const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
   const user = useSelector((state) => state.user);
   const { theme } = useSelector((state) => state.theme);
-  const [keyword, setKeyword] = useState("");
   const navigate = useNavigate();
+  const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const token = localStorage.getItem("token");
   const searchUser = useDebounceHook(keyword, 1000);
   const [searchResults, setSearchResults] = useState([]);
 
+  const handleChangeSearch = (e) => {
+    setKeyword(e.target.value);
+  };
+
+  //user
   const handleSearch = async () => {
     setIsLoading(true);
     try {
@@ -58,15 +66,12 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
     }
   }, [searchUser]);
 
-  const handleFocus = (e) => {
-    e.target.classList.remove("w-12");
-    e.target.classList.add("w-64");
-  };
-
-  const handleBlur = (e) => {
-    if (e.target.value === "") {
-      e.target.classList.remove("w-64");
-      e.target.classList.add("w-12");
+  const handleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      if (keyword.trim()) {
+        navigate("/search", { state: { stateKeyword: keyword } });
+      }
     }
   };
 
@@ -105,10 +110,13 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
         <div className="relative">
           <TextInput
             placeholder="Search..."
-            styles=" lg:w-[16rem]  rounded-full py-2"
+            styles="lg:w-[16rem] rounded-full py-2"
             iconLeft={<IoIosSearch size={20} />}
-            onChange={(e) => setKeyword(e.target.value)}
+            onChange={handleChangeSearch}
+            onKeyDown={handleKeyDown}
+            iconRightStyles="right-5"
           />
+
           {isDropdownOpen && (
             <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
               {isLoading ? (
@@ -119,12 +127,21 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
                     <li
                       key={user.id}
                       onClick={() => navigate(`/profile/${user.userId}`)}
-                      className="px-4 py-2 hover:bg-gray-100 bg-primary cursor-pointer"
+                      className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
                     >
-                      <p className="text-sm text-bgStandard">
-                        {user.firstName} {user.lastName}
-                      </p>
-                      <p className="text-xs text-bgStandard">{user.username}</p>
+                      <img
+                        src={user?.imageUrl ?? BlankAvatar}
+                        alt=""
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                      <div className="flex flex-col gap-y-1">
+                        <p className="text-sm text-bgStandard">
+                          {user.firstName} {user.lastName}
+                        </p>
+                        <p className="text-xs text-bgStandard">
+                          {user.username}
+                        </p>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -145,7 +162,7 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
               onClick={() => navigate("/")}
               className="w-6 h-6 rounded-full bg-primary flex items-center justify-center hover:scale-110 cursor-pointer transition-transform border-1 border-borderNewFeed shadow-newFeed"
             >
-              <FaArrowLeft size={12} />
+              <FaArrowLeft size={12} className="text-bgStandard" />
             </div>
           ) : (
             <div className="w-6 h-6"></div>
