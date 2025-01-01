@@ -563,6 +563,37 @@ public class PostService {
                 .build();
     }
 
+    public ApiResponse<PostResponse> savePost(String postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getVisibility() == PostVisibility.PRIVATE &&
+                !post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to save this post.");
+        }
+
+        if (post.getSavedBy().contains(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post already saved")
+                    .build();
+        }
+
+        post.getSavedBy().add(currentUserId);
+        post = postRepository.save(post);
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post saved successfully")
+                .result(postResponse)
+                .build();
+    }
+
     public ApiResponse<PostResponse> unSavePost(String postId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
