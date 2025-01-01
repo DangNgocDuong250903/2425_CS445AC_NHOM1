@@ -413,8 +413,8 @@ public class PostService {
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
                 .filter(post -> includeDeleted || !post.isDeleted())
-                .filter(post -> post.getGroupId() == null) // Exclude posts with groupId
-                .collect(Collectors.toList());
+                .filter(post -> post.getGroupId() == null)
+                .toList();
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)
@@ -505,19 +505,25 @@ public class PostService {
     }
 
     public ApiResponse<PageResponse<PostResponse>> getUserPost(int page, int size, String userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Post> originalPostsPage = postRepository.findPostByUserId(userId, pageable);
         Page<SharedPost> sharedPostsPage = sharedPostRepository.findSharedPostByUserId(userId, pageable);
 
+        boolean isFriend = profileServiceClient.areFriends(currentUserId, userId);
+
         List<Post> originalPosts = originalPostsPage.getContent().stream()
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
-                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                        (post.getVisibility() == PostVisibility.FRIENDS && isFriend) ||
+                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(currentUserId)))
                 .filter(post -> post.getGroupId() == null)
                 .toList();
 
         List<Post> sharedPosts = sharedPostsPage.getContent().stream()
                 .filter(sharedPost -> sharedPost.getVisibility() == PostVisibility.PUBLIC ||
-                        (sharedPost.getVisibility() == PostVisibility.PRIVATE && sharedPost.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                        (sharedPost.getVisibility() == PostVisibility.FRIENDS && isFriend) ||
+                        (sharedPost.getVisibility() == PostVisibility.PRIVATE && sharedPost.getUserId().equals(currentUserId)))
                 .map(Post.class::cast)
                 .toList();
 
@@ -670,9 +676,8 @@ public class PostService {
         }
     }
 
-    boolean isFriend(String currentUserId, String postUserId) {
-        // TODO nối qua friend-service để check relationship
-        return true;
+    public boolean isFriend(String currentUserId, String postUserId) {
+        return profileServiceClient.areFriends(currentUserId, postUserId);
     }
 
     private String extractFileNameFromUrl(String fileUrl) {

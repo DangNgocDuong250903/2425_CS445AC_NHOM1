@@ -8,4 +8,8 @@ import org.springframework.web.bind.annotation.*;
 public interface ProfileServiceClient {
     @PutMapping("/{userId}")
     void updateImage(@PathVariable("userId") String userId, @RequestParam("imageFile") String imageFile);
+
+    @GetMapping("/friends/are-friends")
+    boolean areFriends(@RequestParam("userId1") String userId1, @RequestParam("userId2") String userId2);
+
 }

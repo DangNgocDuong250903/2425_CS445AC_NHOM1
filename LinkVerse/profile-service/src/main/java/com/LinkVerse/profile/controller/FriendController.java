@@ -57,4 +57,10 @@ public class FriendController {
         return ResponseEntity.ok(friendService.getAllFriendsOfCurrentUser());
     }
 
+    @GetMapping("/are-friends")
+    public ResponseEntity<Boolean> areFriends(@RequestParam String userId1, @RequestParam String userId2) {
+        boolean areFriends = friendService.areFriend(userId1, userId2);
+        return ResponseEntity.ok(areFriends);
+    }
+
 }
