@@ -51,6 +51,7 @@ public class User {
     Date dateOfBirth;
     String City;
     Gender gender;
+    String bio;
 
     String imageUrl;
 

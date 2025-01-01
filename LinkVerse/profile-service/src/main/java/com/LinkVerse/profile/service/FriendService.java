@@ -132,7 +132,6 @@ public class FriendService {
                 .build();
     }
 
-
     public FriendshipResponse unfriend(String friendId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();

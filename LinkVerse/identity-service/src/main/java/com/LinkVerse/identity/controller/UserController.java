@@ -101,6 +101,15 @@ public class UserController {
                 .build();
     }
 
+    @PatchMapping("/my-profile/bio")
+    public ApiResponse<UserResponse> updateMyBio(@RequestParam String bio) {
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateBio(userId, bio))
+                .build();
+    }
+
     @PutMapping("/update/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequestAdmin request) {
         return ApiResponse.<UserResponse>builder()
