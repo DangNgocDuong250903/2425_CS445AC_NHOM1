@@ -112,12 +112,6 @@ public class UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public UserResponse updateBio(String userId, String bio) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        user.setBio(bio);
-        return userMapper.toUserResponse(userRepository.save(user));
-    }
-
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
         if (context == null || context.getAuthentication() == null) {
@@ -170,6 +164,7 @@ public class UserService {
         if (request.getCity() != null) {
             user.setCity(request.getCity());
         }
+        user.setBio(request.getBio());
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
