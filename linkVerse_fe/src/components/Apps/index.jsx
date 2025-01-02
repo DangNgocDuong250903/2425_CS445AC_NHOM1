@@ -7,10 +7,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setTheme } from "~/redux/Slices/themeSlice";
 import { FiBookmark } from "react-icons/fi";
+import { useTranslation } from "react-i18next";
 
 const Apps = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const user = useSelector((state) => state.user);
   const theme = useSelector((state) => state.theme.theme);
 
@@ -67,12 +69,12 @@ const Apps = () => {
           <div>
             <MenuItem onClick={() => navigate("/settings")}>
               <div className="flex items-center justify-between w-full">
-                <span className="text-ascent-1">Settings</span>
+                <span className="text-ascent-1">{t("Cài đặt")}</span>
               </div>
             </MenuItem>
             <MenuItem onClick={() => navigate("/saveds")}>
               <div className="flex items-center justify-between w-full">
-                <span className="text-ascent-1">Saveds</span>
+                <span className="text-ascent-1">{t("Đã lưu")}</span>
                 <FiBookmark color="black" />
               </div>
             </MenuItem>
@@ -80,7 +82,7 @@ const Apps = () => {
         )}
         <MenuItem>
           <div className="flex items-center justify-between w-full">
-            <span className="text-ascent-1">Dark mode</span>
+            <span className="text-ascent-1">{t("Chế độ tối")}</span>
             <label className="relative inline-flex items-center cursor-pointer">
               <input
                 type="checkbox"

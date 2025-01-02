@@ -4,6 +4,7 @@ import { BiDotsHorizontalRounded } from "react-icons/bi";
 import CreateGroup from "../CreateGroup";
 import * as GroupService from "~/services/GroupService";
 import { GroupCard } from "..";
+import { useTranslation } from "react-i18next";
 
 const Group = () => {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ const Group = () => {
   const [loading, setLoading] = useState(false);
   const [groups, setGroups] = useState([]);
   const token = localStorage.getItem("token");
+  const { t } = useTranslation();
 
   const fetchGroups = async () => {
     setLoading(true);
@@ -33,7 +35,7 @@ const Group = () => {
     <div className="w-full bg-primary shadow-newFeed rounded-2xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <CreateGroup open={open} handleClose={handleClose} />
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-4 border-b border-[#66666645]">
-        <span className="text-lg font-medium">Groups</span>
+        <span className="text-lg font-medium">{t("Nhóm")}</span>
       </div>
 
       <div className="w-full items-center max-h-[360px] flex flex-col gap-4 pt-4 overflow-hidden">
@@ -46,10 +48,10 @@ const Group = () => {
           </div>
           <div className="flex-1">
             <p className="text-base font-medium text-ascent-1">
-              Create Your Group
+              {t("Tạo nhóm của bạn")}
             </p>
             <span className="text-sm text-ascent-2">
-              Click button beside to create yours.
+              {t("Tạo nhóm để chia sẻ với mọi người")}
             </span>
           </div>
         </div>

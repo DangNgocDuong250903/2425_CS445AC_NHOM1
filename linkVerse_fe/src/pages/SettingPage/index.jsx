@@ -14,6 +14,7 @@ import { RiEyeOffLine } from "react-icons/ri";
 import { FaArrowUpRightFromSquare } from "react-icons/fa6";
 import * as UserService from "~/services/UserService";
 import { updateStatus } from "~/redux/Slices/userSlice";
+import { useTranslation } from "react-i18next";
 
 const SettingPage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -21,6 +22,7 @@ const SettingPage = () => {
   const user = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const dispatch = useDispatch();
+  const { t } = useTranslation("");
   const [message, setMessage] = useState("");
   const [open, setOpen] = useState(false);
   const [type, setType] = useState("");
@@ -118,9 +120,9 @@ const SettingPage = () => {
                 variant="fullWidth"
                 aria-label="basic tabs example"
               >
-                <Tab label="Quyền riêng tư" {...a11yProps(0)} />
-                <Tab label="Tài khoản" {...a11yProps(1)} />
-                <Tab label="Trợ giúp" {...a11yProps(2)} />
+                <Tab label={t("Quyền riêng tư")} {...a11yProps(0)} />
+                <Tab label={t("Tài khoản")} {...a11yProps(1)} />
+                <Tab label={t("Trợ giúp")} {...a11yProps(2)} />
               </Tabs>
             </Box>
             {/* 1 */}
@@ -130,7 +132,9 @@ const SettingPage = () => {
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center">
                   <div className="flex items-center gap-x-2">
                     <RxLockClosed size={20} className="text-bgStandard" />
-                    <h1 className="text-ascent-1">Trang cá nhân riêng tư</h1>
+                    <h1 className="text-ascent-1">
+                      {t("Trang cá nhân riêng tư")}
+                    </h1>
                   </div>
                   <div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -144,7 +148,9 @@ const SettingPage = () => {
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center">
                   <div className="flex items-center gap-x-2">
                     <RiEyeOffLine size={20} className="text-bgStandard" />
-                    <h1 className="text-ascent-1">Trạng thái hoạt động</h1>
+                    <h1 className="text-ascent-1">
+                      {t("Trạng thái hoạt động")}
+                    </h1>
                   </div>
                   <div>
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -166,20 +172,22 @@ const SettingPage = () => {
                 {/* 1 */}
                 <div className="w-full py-3  px-2 h-full flex justify-between items-center cursor-pointer">
                   <h1 className="text-ascent-1">
-                    Vô hiệu hóa hoặc xóa tài khoản
+                    {t("Vô hiệu hóa hoặc xóa tài khoản")}
                   </h1>
                   <DeleteAccount setting />
                 </div>
 
                 {/* 2 */}
                 <div className="w-full py-3  px-2 h-full flex justify-between items-center cursor-pointer">
-                  <h1 className="text-ascent-1">Verify your email</h1>
+                  <h1 className="text-ascent-1">
+                    {t("Xác thực email của bạn")}
+                  </h1>
                   <VerifyEmail setting />
                 </div>
 
                 {/* 3 */}
                 <div className="w-full py-3 px-2 h-full flex justify-between items-center cursor-pointer">
-                  <h1 className="text-ascent-1">Đã chặn</h1>
+                  <h1 className="text-ascent-1">{t("Đã chặn")}</h1>
                   <BlockList setting />
                 </div>
               </div>
@@ -193,7 +201,7 @@ const SettingPage = () => {
                   target="_blank"
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
-                  <h1 className="text-ascent-1">Trung tâm trợ giúp</h1>
+                  <h1 className="text-ascent-1">{t("Trung tâm trợ giúp")}</h1>
                   <FaArrowUpRightFromSquare
                     size={20}
                     className="text-bgStandard"
@@ -207,7 +215,7 @@ const SettingPage = () => {
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
                   <h1 className="text-ascent-1">
-                    Chính sách và quyền riêng tư của LinkVerse
+                    {t("Chính sách và quyền riêng tư của LinkVerse")}
                   </h1>
                   <FaArrowUpRightFromSquare
                     size={20}
@@ -221,7 +229,7 @@ const SettingPage = () => {
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
                   <h1 className="text-ascent-1">
-                    Điều khoản sử dụng của LinkVerse
+                    {t("Điều khoản dịch vụ của LinkVerse")}
                   </h1>
                   <FaArrowUpRightFromSquare
                     size={20}
@@ -234,7 +242,7 @@ const SettingPage = () => {
                   target="_blank"
                   className="w-full py-3 px-2 h-full flex justify-between items-center"
                 >
-                  <h1 className="text-ascent-1">Chính sách cookies</h1>
+                  <h1 className="text-ascent-1">{t("Chính sách cookies")}</h1>
                   <FaArrowUpRightFromSquare
                     size={20}
                     className="text-bgStandard"

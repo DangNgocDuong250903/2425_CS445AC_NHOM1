@@ -25,11 +25,14 @@ import useGetFriendRequest from "~/hooks/useGetFriendRequest";
 import * as FriendService from "~/services/FriendService";
 import useGetRequestSend from "~/hooks/useGetRequestSend";
 import useGetFriendOfUser from "~/hooks/useGetFriendOfUser";
-import { TbDotsCircleHorizontal } from "react-icons/tb";
 import { FiBookmark } from "react-icons/fi";
 import { RiAttachment2 } from "react-icons/ri";
 import useCopyToClipboard from "~/hooks/useCopyToClipboard";
 import Confirm from "~/components/Confirm";
+import { PiDotsThreeCircleLight } from "react-icons/pi";
+import { MdAddAPhoto } from "react-icons/md";
+import { ImUserMinus } from "react-icons/im";
+import { useTranslation } from "react-i18next";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -50,6 +53,7 @@ const ProfilePage = () => {
   const { friendRequest } = useGetFriendRequest();
   const { requestsSend } = useGetRequestSend();
   const { friendOfUser } = useGetFriendOfUser();
+  const { t } = useTranslation();
   const [user, setUser] = useState({});
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
@@ -162,7 +166,7 @@ const ProfilePage = () => {
   const handleChangeAvatar = async (e) => {
     const file = e.target.files[0];
     const request = {
-      content: user?.username + " vừa cập nhật ảnh đại diện",
+      content: user?.username + t("vừa cập nhật ảnh đại diện"),
       visibility: "PRIVATE",
     };
     const data = { request, file };
@@ -322,23 +326,26 @@ const ProfilePage = () => {
               </div>
               {/* 2 */}
               <div className="flex items-center">
-                <p className="text-ascent-2">{user?.bio || "No storie"}</p>
+                <p className="text-ascent-2">
+                  {user?.bio || t("Không tiểu sử")}
+                </p>
               </div>
               {/* 3 */}
               <div className="flex justify-between items-center">
                 <span className="text-ascent-2">
-                  {friendOfUser?.length} friends
+                  {friendOfUser?.length} {t("bạn bè")}
                 </span>
-                <div className="flex gap-2">
+                <div className="flex gap-1">
                   <CiFacebook
                     color={theme === "dark" ? "#fff" : "#000"}
-                    size="30px"
+                    size={29}
+                    className="cursor-pointer active:scale-90"
                   />
-                  <TbDotsCircleHorizontal
+                  <PiDotsThreeCircleLight
                     onClick={handleOpenMenu}
                     className="cursor-pointer active:scale-90 "
                     color={theme === "dark" ? "#fff" : "#000"}
-                    size="30px"
+                    size={30}
                   />
                   <CustomizeMenu
                     handleClose={handleCloseMenu}
@@ -350,17 +357,15 @@ const ProfilePage = () => {
                     {id !== userState?.id && (
                       <MenuItem onClick={() => setOpenConfirm(true)}>
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-red-600">Block</span>
-                          <FiBookmark color="red" />
+                          <span className="text-red-600">{t("Chặn")}</span>
+                          <ImUserMinus color="red" />
                         </div>
                       </MenuItem>
                     )}
                     <MenuItem onClick={handleSaveUrl}>
                       <div className="flex items-center justify-between w-full">
-                        <span className={theme === "light" && "text-black"}>
-                          Copy url
-                        </span>
-                        <RiAttachment2 color={theme === "light" && "black"} />
+                        <span className="text-ascent-1">{t("Sao chép")}</span>
+                        <RiAttachment2 className="text-ascent-1" />
                       </div>
                     </MenuItem>
                   </CustomizeMenu>
@@ -373,7 +378,7 @@ const ProfilePage = () => {
                     isUnfriend ? (
                       <Button
                         onClick={() => handleRequest(user?.id)}
-                        title="Kết bạn"
+                        title={t("Kết bạn")}
                         containerStyles={
                           "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                         }
@@ -381,7 +386,7 @@ const ProfilePage = () => {
                     ) : (
                       <Button
                         onClick={() => handleUnfriend(user?.id)}
-                        title="Hủy kết bạn"
+                        title={t("Hủy kết bạn")}
                         containerStyles={
                           "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                         }
@@ -390,7 +395,7 @@ const ProfilePage = () => {
                   ) : pendingRequests.includes(user?.id) ||
                     requests.some((request) => request?.userId === user?.id) ? (
                     <Button
-                      title="Pending"
+                      title={t("Đã gửi yêu cầu")}
                       containerStyles={
                         "text-ascent-2 bg-borderNewFeed w-full py-2 rounded-xl border border-borderNewFeed flex items-center justify-center font-medium cursor-default"
                       }
@@ -403,14 +408,14 @@ const ProfilePage = () => {
                       <>
                         <Button
                           onClick={() => handleUnfriend(user?.id)}
-                          title="Hủy kết bạn"
+                          title={t("Hủy kết bạn")}
                           containerStyles={
                             "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                           }
                         />
                         <Button
                           onClick={() => navigate("/chat")}
-                          title="Nhắn tin"
+                          title={t("Nhắn tin")}
                           containerStyles={
                             "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                           }
@@ -420,14 +425,14 @@ const ProfilePage = () => {
                       <>
                         <Button
                           onClick={() => handleAccept(user?.id)}
-                          title="Chấp nhận"
+                          title={t("Chấp nhận")}
                           containerStyles={
                             "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                           }
                         />
                         <Button
                           onClick={() => handleDecline(user?.id)}
-                          title="Từ chối"
+                          title={t("Từ chối")}
                           containerStyles={
                             "text-danger bg-primary w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                           }
@@ -453,7 +458,7 @@ const ProfilePage = () => {
                     // </>
                     <Button
                       onClick={() => handleRequest(user?.id)}
-                      title="Kết bạn"
+                      title={t("Kết bạn")}
                       containerStyles={
                         "text-textStandard bg-bgStandard w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                       }
@@ -465,7 +470,7 @@ const ProfilePage = () => {
                   ) && (
                     <Button
                       onClick={() => navigate("/chat")}
-                      title="Nhắn tin"
+                      title={t("Nhắn tin")}
                       containerStyles={
                         "text-ascent-1 w-full py-2 border border-borderNewFeed rounded-xl flex items-center justify-center font-medium"
                       }
@@ -504,9 +509,9 @@ const ProfilePage = () => {
                     variant="fullWidth"
                     aria-label="basic tabs example"
                   >
-                    <Tab label="Bài đăng" {...a11yProps(0)} />
-                    <Tab label="Bài viết chia sẻ" {...a11yProps(1)} />
-                    <Tab label="Lịch sử" {...a11yProps(2)} />
+                    <Tab label={t("Bài đăng")} {...a11yProps(0)} />
+                    <Tab label={t("Bài viết chia sẻ")} {...a11yProps(1)} />
+                    <Tab label={t("Lịch sử")} {...a11yProps(2)} />
                   </Tabs>
                 </Box>
                 {/* 1 */}
@@ -521,7 +526,7 @@ const ProfilePage = () => {
                           className="rounded-full border-1 border-borderNewFeed shadow-newFeed object-cover w-14 h-14 bg-no-repeat"
                         />
                         <span className="text-ascent-2 text-sm font-normal">
-                          Có gì mới...
+                          {t("Có gì mới ?")}
                         </span>
                       </div>
                       <CreatePost profilePage onSuccess={handleSuccess} />
@@ -531,7 +536,7 @@ const ProfilePage = () => {
                       {!loadingPost && posts.length === 0 && (
                         <div className="w-full h-60 flex items-center justify-center">
                           <p className="text-lg text-ascent-2">
-                            Không có bài viết nào
+                            {t("Chưa có bài viết nào")}
                           </p>
                         </div>
                       )}
@@ -559,7 +564,7 @@ const ProfilePage = () => {
                   <div className="w-full h-full flex flex-col items-center justify-center overflow-y-auto">
                     <div className="w-full h-60 flex items-center justify-center">
                       <p className="text-lg text-ascent-2">
-                        Chưa chia sẻ bài nào
+                        {t("Chưa có bài viết chia sẻ")}
                       </p>
                     </div>
                   </div>
@@ -568,7 +573,7 @@ const ProfilePage = () => {
                 <CustomTabPanel value={value} index={2}>
                   <div className="w-full h-60 flex items-center justify-center">
                     <p className="text-lg text-ascent-2">
-                      Chưa có lịch sử bài viết
+                      {t("Chưa có lịch sử nào")}
                     </p>
                   </div>
                 </CustomTabPanel>

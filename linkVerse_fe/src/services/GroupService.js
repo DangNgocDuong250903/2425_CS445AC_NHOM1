@@ -69,6 +69,16 @@ export const getDetailGroup = async ({ id, token }) => {
 
 };
 
+export const deletePost = async ({ postId, token }) => {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/post/group/${postId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+    return res.data;
+
+};
+
 export const addUserToGroup = async ({ userId, groupId, token }) => {
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/identity/groups/${groupId}/members/${userId}`, {}, {
         headers: {

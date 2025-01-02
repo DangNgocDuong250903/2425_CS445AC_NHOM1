@@ -18,12 +18,14 @@ import useGetDetailGroup from "~/hooks/useGetDetailGroup";
 import { useParams } from "react-router-dom";
 import * as GroupService from "~/services/GroupService";
 import AddMemberToGroup from "~/components/AddMemberToGroup";
+import { useTranslation } from "react-i18next";
 
 const GroupPage = () => {
   const token = localStorage.getItem("token");
   const { groupDetail, reload } = useGetDetailGroup();
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
+  const { t } = useTranslation();
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedKey, setSelectedKey] = useState("0");
@@ -31,7 +33,7 @@ const GroupPage = () => {
   const items = [
     {
       key: "0",
-      label: "For you",
+      label: t("Cho bạn"),
     },
   ];
 
@@ -95,7 +97,9 @@ const GroupPage = () => {
           {/* 1 */}
           <div className="w-full rounded-2xl bg-primary border-borderNewFeed shadow-newFeed border-1">
             <div className="w-full border-b p-4 border-borderNewFeed">
-              <span className="font-normal text-ascent-1">Post Something</span>
+              <span className="font-normal text-ascent-1">
+                {t("Đăng cái gì đó")}
+              </span>
             </div>
             <div className="w-full flex justify-between items-center p-4 gap-x-3">
               <div className="flex items-center gap-4">
@@ -105,7 +109,7 @@ const GroupPage = () => {
                   className="w-12 h-12 rounded-full object-cover shadow-newFeed"
                 />
                 <span className="text-ascent-2 text-sm cursor-pointer">
-                  Có gì mới?
+                  {t("Có gì mới ?")}
                 </span>
               </div>
               <div>
@@ -117,7 +121,7 @@ const GroupPage = () => {
           <div className="w-full flex gap-2 px-1 items-center">
             <div className="flex-1 border-1 border-borderNewFeed"></div>
             <div className="flex-shrink-0">
-              <span className="text-sm text-ascent-2">Sort by: </span>
+              <span className="text-sm text-ascent-2">{t("Sắp xếp")}: </span>
               <Dropdown
                 className="cursor-pointer"
                 menu={{
@@ -141,7 +145,9 @@ const GroupPage = () => {
             posts.map((post, i) => <PostGroup key={i} post={post} />)
           ) : (
             <div className="flex w-full h-full items-center justify-center">
-              <p className="text-lg text-ascent-2">Không có bài viết nào</p>
+              <p className="text-lg text-ascent-2">
+                {t("Không có bài viết nào")}
+              </p>
             </div>
           )}
 

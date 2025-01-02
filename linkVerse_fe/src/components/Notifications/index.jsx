@@ -6,12 +6,14 @@ import { BlankAvatar } from "~/assets";
 import { GoBell } from "react-icons/go";
 import SockJs from "sockjs-client/dist/sockjs";
 import { over } from "stompjs";
+import { useTranslation } from "react-i18next";
 
 const Notifications = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const user = useSelector((state) => state?.user);
   const token = localStorage.getItem("token");
   const open = Boolean(anchorEl);
+  const { t } = useTranslation();
   // const [stompClient, setStompClient] = useState(null);
   const handleClick = (event) => {
     setAnchorEl(user?.token ? event.currentTarget : null);
@@ -64,9 +66,9 @@ const Notifications = () => {
       >
         <div className="w-96 flex items-center justify-center flex-col">
           <div className="w-full py-5 px-5 flex items-center justify-between border-b">
-            <span className="font-bold text-ascent-1">Notifications</span>
+            <span className="font-bold text-ascent-1">{t("Thông báo")}</span>
             <span className="text-blue text-sm font-semibold cursor-pointer">
-              Mark all as read
+              {t("Mark all as read")}
             </span>
           </div>
 
@@ -87,7 +89,7 @@ const Notifications = () => {
           </div>
 
           <div className="w-full py-5 cursor-pointer px-4 flex items-center justify-center text-blue text-sm font-semibold">
-            View all notifications
+            {t("Xem tất cả thông báo")}
           </div>
         </div>
       </CustomizeMenu>

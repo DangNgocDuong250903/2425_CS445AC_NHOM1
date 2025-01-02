@@ -17,6 +17,7 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
 import * as GroupService from "~/services/GroupService";
+import { useTranslation } from "react-i18next";
 
 const CreatePost = ({
   buttonRight,
@@ -35,6 +36,7 @@ const CreatePost = ({
   const [showMessage, setShowMessage] = useState(false);
   const [postState, setPostState] = useState("PUBLIC");
   const [type, setType] = useState("");
+  const { t } = useTranslation();
 
   const handleClose = () => {
     handleClear();
@@ -151,20 +153,20 @@ const CreatePost = ({
       {profilePage && (
         <Button
           onClick={() => setOpen(true)}
-          title="Đăng"
+          title={t("Đăng")}
           containerStyles="px-4 py-2 hover:scale-105 active:scale-90 transition-transform border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl text-ascent-1"
         />
       )}
       {homePage && (
         <Button
-          title="Post"
+          title={t("Đăng")}
           onClick={() => setOpen(true)}
           containerStyles="bg-bluePrimary text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 active:scale-90 transition-transform"
         />
       )}
       {group && (
         <Button
-          title="Post"
+          title={t("Đăng")}
           onClick={() => setOpen(true)}
           containerStyles="bg-bluePrimary text-white py-2 px-6 rounded-xl font-medium text-sm  border-borderNewFeed shadow-newFeed hover:scale-105 active:scale-90 transition-transform"
         />
@@ -200,10 +202,10 @@ const CreatePost = ({
               onClick={() => setOpen(false)}
               className="text-base hover:text-neutral-400 font-medium text-ascent-1"
             >
-              Hủy
+              {t("Hủy")}
             </button>
             <span className="text-lg font-semibold text-ascent-1">
-              Bài viết mới
+              {t("Tạo bài viết")}
             </span>
             <div className="w-7" />
           </div>
@@ -222,7 +224,7 @@ const CreatePost = ({
                 />
                 {/* 2 */}
                 <TextField
-                  label="Có gì mới ?"
+                  label={t("Có gì mới ?")}
                   multiline
                   id="content"
                   onChange={handleChangeStatus}
@@ -352,10 +354,10 @@ const CreatePost = ({
                   }}
                 >
                   <MenuItem value={"PUBLIC"}>
-                    <span className="text-ascent-2">Công khai</span>
+                    <span className="text-ascent-2">{t("Công khai")}</span>
                   </MenuItem>
                   <MenuItem value={"PRIVATE"}>
-                    <span className="text-ascent-2">Riêng tư</span>
+                    <span className="text-ascent-2">{t("Riêng tư")}</span>
                   </MenuItem>
                 </Select>
               </FormControl>
@@ -364,7 +366,7 @@ const CreatePost = ({
                   <>
                     <Button
                       type="submit"
-                      title="Đăng"
+                      title={t("Đăng")}
                       onClick={handleSubmitPostGroup}
                       containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
                       disable={
@@ -383,7 +385,7 @@ const CreatePost = ({
                   <>
                     <Button
                       type="submit"
-                      title="Đăng"
+                      title={t("Đăng")}
                       onClick={handleSubmitPost}
                       containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
                       disable={

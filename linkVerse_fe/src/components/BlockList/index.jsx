@@ -4,10 +4,12 @@ import { Button, DialogCustom } from "..";
 import { CircularProgress } from "@mui/material";
 import * as UserService from "~/services/UserService";
 import { BlankAvatar } from "~/assets";
+import { useTranslation } from "react-i18next";
 
 const BlockList = ({ setting }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
+  const { t } = useTranslation();
   const handleOpen = () => setOpen(true);
   const token = localStorage.getItem("token");
   const [blocks, setBlocks] = useState([]);
@@ -66,7 +68,7 @@ const BlockList = ({ setting }) => {
         <div className="w-full flex items-center justify-center flex-col">
           <div className="w-full py-5 px-5 flex items-center justify-center border-b">
             <span className="font-bold text-ascent-1 text-center">
-              Block lists
+              {t("Danh sách chặn")}
             </span>
           </div>
 
@@ -97,7 +99,7 @@ const BlockList = ({ setting }) => {
                   </div>
                   <div className="relative">
                     <Button
-                      title="Bỏ chặn"
+                      title={t("Bỏ chặn")}
                       disable={loadingUnblock}
                       onClick={() => handleUnblock(block?.userId)}
                       containerStyles="border-1 rounded-xl hover:bg-[#FAFAFA] px-3 py-2 text-ascent-1 text-sm"
@@ -114,7 +116,7 @@ const BlockList = ({ setting }) => {
             ) : (
               <div className="flex items-center justify-center py-5">
                 <span className="text-ascent-1 text-center text-sm">
-                  Chưa có ai trong danh sách chặn
+                  {t("Chưa có ai trong danh sách chặn")}
                 </span>
               </div>
             )}
@@ -124,7 +126,7 @@ const BlockList = ({ setting }) => {
             className="w-full py-5 hover:bg-[#F3F8FE] cursor-pointer px-4 flex border-t items-center justify-center text-blue text-sm font-semibold"
             onClick={() => setIsExpanded((prev) => !prev)}
           >
-            {isExpanded ? "View less" : "View all"}
+            {isExpanded ? t("Xem ít hơn") : t("Xem tất cả")}
           </div>
         </div>
       </DialogCustom>

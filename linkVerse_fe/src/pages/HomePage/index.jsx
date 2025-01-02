@@ -16,6 +16,7 @@ import {
 } from "~/components";
 import { BlankAvatar } from "~/assets/index";
 import useGetBlockList from "~/hooks/useGetBlockList";
+import { useTranslation } from "react-i18next";
 
 const HomePage = () => {
   const user = useSelector((state) => state?.user);
@@ -25,6 +26,7 @@ const HomePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const token = localStorage.getItem("token");
   const { blocks, reload } = useGetBlockList();
+  const { t } = useTranslation();
 
   const fetchPosts = async () => {
     if (isLoading) return;
@@ -46,9 +48,13 @@ const HomePage = () => {
 
       const { code, result } = res;
       if (code === 200 && result) {
-        const { data: dataPost, currentPage, totalPage } = result;
+        const { data: dataPost } = result;
+        console.log(dataPost);
+        const sortedPosts = dataPost.sort(
+          (a, b) => new Date(b.createdDate) - new Date(a.createdDate)
+        );
 
-        setPosts((prev) => [...prev, ...dataPost]);
+        setPosts((prev) => [...prev, ...sortedPosts]);
       }
     } catch (error) {
       console.error("Error fetching posts:", error);
@@ -104,7 +110,7 @@ const HomePage = () => {
                     className="w-14 h-14 shadow-newFeed border-1 border-borderNewFeed rounded-full object-cover"
                   />
                   <span className="text-ascent-2 text-sm cursor-pointer">
-                    Có gì mới?
+                    {t("Có gì mới ?")}
                   </span>
                 </div>
                 <CreatePost homePage onSuccess={handleSuccess} />

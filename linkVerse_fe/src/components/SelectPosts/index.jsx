@@ -7,11 +7,13 @@ import { useDispatch, useSelector } from "react-redux";
 import styled from "@emotion/styled";
 import { setSentiment } from "~/redux/Slices/postSlice";
 import { selectsPost } from "~/constants";
+import { useTranslation } from "react-i18next";
 
 const SelectPosts = () => {
   const theme = useSelector((state) => state.theme.theme);
   const dispatch = useDispatch();
   const sentiment = useSelector((state) => state.post.sentiment);
+  const { t } = useTranslation();
 
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -64,7 +66,7 @@ const SelectPosts = () => {
               selected={selectsPost[i] === sentiment}
             >
               <div className="flex items-center justify-between w-full">
-                <span className="text-ascent-1">{option}</span>
+                <span className="text-ascent-1">{t(option)}</span>
                 {selectsPost[i] === sentiment && <FaCheck color="black" />}
               </div>
             </MenuItem>

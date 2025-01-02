@@ -140,7 +140,7 @@ const FriendSuggest = () => {
             } else {
               return (
                 <span className="text-center text-ascent-1">
-                  Không có bạn bè đề xuất nào
+                  {t("Không có bạn bè đề xuất")}
                 </span>
               );
             }

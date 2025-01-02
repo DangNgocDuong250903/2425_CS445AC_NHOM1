@@ -3,10 +3,12 @@ import { BlankAvatar } from "~/assets";
 import moment from "moment";
 import StoryTimer from "../PreviewStory";
 import PreviewStory from "../PreviewStory";
+import useGetDetailUserById from "~/hooks/useGetDetailUserById";
 
 const StoryCard = ({ story }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
+  const { user } = useGetDetailUserById({ id: story?.userId });
 
   return (
     <div className="flex gap-4 w-full justify-center items-center cursor-pointer">
@@ -17,11 +19,11 @@ const StoryCard = ({ story }) => {
       >
         <img
           class="w-12 h-12 rounded-full block object-cover bg-white p-[2px] transform transition hover:-rotate-6"
-          src={story?.imageUrl?.length > 0 ? story?.imageUrl : BlankAvatar}
+          src={user?.imageUrl || BlankAvatar}
         />
       </div>
       <div className="flex-1">
-        <p className="text-base font-medium text-ascent-1">{story?.content}</p>
+        <p className="text-base font-medium text-ascent-1">{user?.username}</p>
         <span className="text-sm text-ascent-2">
           {moment(story?.postedAt).fromNow()}
         </span>

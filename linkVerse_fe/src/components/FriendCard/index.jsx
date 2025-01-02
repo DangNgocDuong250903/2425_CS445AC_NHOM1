@@ -1,15 +1,17 @@
 import { CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { BlankAvatar } from "~/assets/index";
 import useGetMyFriend from "~/hooks/useGetMyFriend";
 
 const FriendCard = () => {
   const { friends, loading } = useGetMyFriend();
+  const { t } = useTranslation();
 
   return (
     <div className="w-full bg-primary rounded-2xl px-6 py-5 shadow-newFeed border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-ascent-1 pb-2 border-b border-[#66666645]">
-        <span>Friends</span>
+        <span>{t("Bạn bè")}</span>
         <span>{friends?.length}</span>
       </div>
 
@@ -47,7 +49,7 @@ const FriendCard = () => {
             </Link>
           ))
         ) : (
-          <span className="text-ascent-1">Chưa có bạn nào</span>
+          <span className="text-ascent-1">{t("Chưa có bạn nào")}</span>
         )}
       </div>
     </div>

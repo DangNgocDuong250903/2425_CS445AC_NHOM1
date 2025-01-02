@@ -14,7 +14,7 @@ import { MenuItem } from "@mui/material";
 import * as PostService from "~/services/PostService";
 import { GoBookmarkSlash } from "react-icons/go";
 
-const SavedCard = ({ post }) => {
+const SavedCard = ({ post, onSuccess }) => {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
@@ -57,10 +57,13 @@ const SavedCard = ({ post }) => {
   const handleUnsave = async (id) => {
     try {
       const res = await PostService.unsave({ id, token });
-      if (res.status === 200) {
-        window.location.reload();
+      if (res.code === 200) {
+        onSuccess();
+        handleClose();
       }
-    } catch (error) {}
+    } catch (error) {
+      throw error;
+    }
   };
 
   return (

@@ -24,9 +24,13 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import { FaRegEdit } from "react-icons/fa";
 import ChangeVisibility from "../ChangeVisibility";
 import useCopyToClipboard from "~/hooks/useCopyToClipboard";
+import { useTranslation } from "react-i18next";
+import { MdOutlineGTranslate } from "react-icons/md";
+import { Skeleton } from "antd";
 
 const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
+  const { t } = useTranslation();
   const userState = useSelector((state) => state.user);
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
@@ -35,7 +39,6 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const [dislikeCount, setDislikeCount] = useState(post?.unlike || 0);
   const [like, setLike] = useState(false);
   const [disLike, setDisLike] = useState(false);
-  const [url, setUrl] = useState("");
   const [typeMessage, setTypeMessage] = useState("success");
   const [message, setMessage] = useState("");
   const [openMessage, setOpenMessage] = useState(false);
@@ -43,25 +46,27 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const [type, setType] = useState("");
   const [icon, setIcon] = useState(null);
   const [duration, setDuration] = useState("");
-  const { isCopied, error, copyToClipboard } = useCopyToClipboard();
-
-  const handleCloseAlert = () => {
-    setOpenAlert(false);
-  };
-
-  //Menu
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const [translateLoading, setTranslateLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [changeVisibility, setChangeVisibility] = useState(false);
+  const handleCloseChangeVisibility = () => setChangeVisibility(false);
+  const handleCloseAlert = () => setOpenAlert(false);
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleCloseMessage = () => {
-    setOpenMessage(false);
-  };
+  const imgRef = useRef(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [openImagePreview, setOpenImagePreview] = useState(false);
+  const handleClosePreview = () => setOpenImagePreview(false);
+  const [isOpenReply, setIsOpenReply] = useState(false);
+  const [textReply, setTextReply] = useState("");
+  const [file, setFile] = useState(null);
+  const [img, setImg] = useState("");
+  const [status, setStatus] = useState("public");
+  const handleCloseReply = () => setIsOpenReply(false);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const handleCloseMessage = () => setOpenMessage(false);
 
   const StyledDivider = styled(Divider)(({ theme }) => ({
     borderColor: theme.colorSchemes.light.border,
@@ -87,24 +92,13 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   };
 
   //preview img
-  const imgRef = useRef(null);
-  const [imagePreview, setImagePreview] = useState("");
-  const [openImagePreview, setOpenImagePreview] = useState(false);
+
   const handleClickImage = () => {
     setImagePreview(imgRef.current.src);
     setOpenImagePreview(true);
   };
 
-  const handleClosePreview = () => {
-    setOpenImagePreview(false);
-  };
-
   //comment
-  const [isOpenReply, setIsOpenReply] = useState(false);
-  const [textReply, setTextReply] = useState("");
-  const [file, setFile] = useState(null);
-  const [img, setImg] = useState("");
-  const [status, setStatus] = useState("public");
 
   const handleComment = (id) => {
     if (!token) {
@@ -134,15 +128,6 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
     setFile(null);
     setImg("");
   };
-
-  const handleCloseReply = () => {
-    setIsOpenReply(false);
-  };
-
-  const handleTranslateEn = () => {};
-  const handleTranslateVie = () => {};
-
-  const [user, setUser] = useState(null);
 
   const fetchDetailUser = async ({ id, token }) => {
     const res = await UserService.getDetailUserByUserId({ id, token });
@@ -339,10 +324,28 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
     }
   };
 
-  //change visibility
-  const [changeVisibility, setChangeVisibility] = useState(false);
-  const handleCloseChangeVisibility = () => setChangeVisibility(false);
+  //translate
+  const handleTranslate = async ({ id, language }) => {
+    setTranslateLoading(true);
+    try {
+      const res = await PostService.translatePost({
+        id,
+        language: language === "vi" ? "en" : "vi",
+        token,
+      });
+      if (res?.code === 200) {
+        handleClose();
+        post.language = res?.result?.language;
+        post.content = res?.result?.content;
+      }
+    } catch (error) {
+      throw error;
+    } finally {
+      setTranslateLoading(false);
+    }
+  };
 
+  //change visibility
   const onSuccessChange = () => {
     handleClose();
     onSuccess();
@@ -430,7 +433,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                   <>
                     <MenuItem onClick={() => handleSavePost(post?.id)}>
                       <div className="flex items-center justify-between w-full">
-                        <span className="text-ascent-1">Save</span>
+                        <span className="text-ascent-1">{t("Lưu")}</span>
                         <FiBookmark
                           color={theme === "light" && "black"}
                           className="text-bgStandard"
@@ -442,7 +445,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                       <div>
                         <MenuItem onClick={handleClose} disableRipple>
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-red-600">Report</span>
+                            <span className="text-red-600">{t("Báo cáo")}</span>
                             <TbMessageReport color="red" />
                           </div>
                         </MenuItem>
@@ -451,7 +454,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                           disableRipple
                         >
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-red-600">Block</span>
+                            <span className="text-red-600">{t("Chặn")}</span>
                             <ImUserMinus color="red" />
                           </div>
                         </MenuItem>
@@ -465,7 +468,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                           disableRipple
                         >
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-red-600">Delete</span>
+                            <span className="text-red-600">{t("Xóa")}</span>
                             <FaRegTrashCan color="red" />
                           </div>
                         </MenuItem>
@@ -474,7 +477,9 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                           disableRipple
                         >
                           <div className="flex items-center justify-between w-full">
-                            <span className="text-red-600">Edit post</span>
+                            <span className="text-red-600">
+                              {t("Hiển thị")}
+                            </span>
                             <FaRegEdit color="red" />
                           </div>
                         </MenuItem>
@@ -483,10 +488,22 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                     <StyledDivider />
                   </>
                 )}
+                <MenuItem
+                  onClick={() =>
+                    handleTranslate({ id: post?.id, language: post?.language })
+                  }
+                >
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-bgStandard">
+                      Translate to {post?.language === "vi" ? "en" : "vie"}
+                    </span>
+                    <MdOutlineGTranslate className="text-bgStandard" />
+                  </div>
+                </MenuItem>
                 <MenuItem onClick={() => handleSaveUrl(post?.id)}>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-bgStandard">
-                      {isCopied ? "Copied" : "Copy link"}
+                      {isCopied ? t("Đã sao chép") : t("Sao chép")}
                     </span>
                     <RiAttachment2 className="text-bgStandard" />
                   </div>
@@ -499,27 +516,33 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
 
       <div>
         <p className="text-ascent-2">
-          {showAll === post?.id
-            ? renderContentWithHashtags(post?.content) || ""
-            : renderContentWithHashtags(post?.content?.slice(0, 300)) || ""}
+          {translateLoading ? (
+            <Skeleton variant="text" sx={{ width: "100%" }} />
+          ) : (
+            <>
+              {showAll === post?.id
+                ? renderContentWithHashtags(post?.content) || ""
+                : renderContentWithHashtags(post?.content?.slice(0, 300)) || ""}
 
-          {post?.content &&
-            post.content.length > 301 &&
-            (showAll === post?.id ? (
-              <span
-                className="text-blue ml-2 font-medium  cursor-pointer"
-                onClick={() => setShowAll(0)}
-              >
-                Show less
-              </span>
-            ) : (
-              <span
-                className="text-blue ml-2 font-medium cursor-pointer"
-                onClick={() => setShowAll(post?.id)}
-              >
-                Show more
-              </span>
-            ))}
+              {post?.content &&
+                post.content.length > 301 &&
+                (showAll === post?.id ? (
+                  <span
+                    className="text-blue ml-2 font-medium cursor-pointer"
+                    onClick={() => setShowAll(0)}
+                  >
+                    {t("Hiển thị ít hơn")}
+                  </span>
+                ) : (
+                  <span
+                    className="text-blue ml-2 font-medium cursor-pointer"
+                    onClick={() => setShowAll(post?.id)}
+                  >
+                    {t("Xem thêm")}
+                  </span>
+                ))}
+            </>
+          )}
         </p>
 
         {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
@@ -551,6 +574,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
           </div>
         )}
       </div>
+
       <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
@@ -597,6 +621,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
             open={isOpenReply}
             handleClose={handleCloseReply}
             id={post?.id}
+            onCommentSuccess={onSuccessChange}
           />
         </div>
         <div

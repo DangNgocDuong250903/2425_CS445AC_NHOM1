@@ -14,6 +14,7 @@ import { useMutationHook } from "~/hooks/useMutationHook";
 import * as StoryService from "~/services/StoryService";
 import useDragAndDrop from "~/hooks/useDragAndDrop";
 import { WrapperModal } from "./style";
+import { useTranslation } from "react-i18next";
 
 const CreateStory = ({ handleClose, open, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -23,6 +24,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
   const [postState, setPostState] = useState("PUBLIC");
   const token = localStorage.getItem("token");
   const inputFileRef = useRef(null);
+  const { t } = useTranslation();
 
   const handleChangeStatus = useCallback((e) => {
     setStatus(e.target.value);
@@ -300,10 +302,10 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
             onClick={handleClose}
             className="text-base hover:text-neutral-400 font-medium text-ascent-1"
           >
-            Hủy
+            {t("Hủy")}
           </button>
           <span className="text-lg font-semibold text-ascent-1">
-            Create story
+            {t("Tạo story")}
           </span>
           <div />
         </div>
@@ -320,7 +322,7 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
                 className="w-14 h-14 flex-shrink-0 border-1 border-borderNewFeed shadow-newFeed rounded-full object-cover shadow-newFeed"
               />
               <TextField
-                label="Có gì mới ?"
+                label={t("Có gì mới ?")}
                 multiline
                 id="content"
                 onChange={handleChangeStatus}
@@ -366,8 +368,8 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
             }}
           >
             {isDragging
-              ? "Drop your files here"
-              : "Drag and drop files here or click to upload"}
+              ? t("Thả tập tin của bạn ở đây")
+              : t("Kéo và thả tập tin ở đây hoặc nhấn để tải lên")}
             <input
               type="file"
               ref={inputFileRef}
@@ -446,17 +448,17 @@ const CreateStory = ({ handleClose, open, onSuccess }) => {
                 }}
               >
                 <MenuItem value={"PUBLIC"}>
-                  <span className="text-ascent-2">Công khai</span>
+                  <span className="text-ascent-2">{t("Công khai")}</span>
                 </MenuItem>
                 <MenuItem value={"PRIVATE"}>
-                  <span className="text-ascent-2">Riêng tư</span>
+                  <span className="text-ascent-2">{t("Riêng tư")}</span>
                 </MenuItem>
               </Select>
             </FormControl>
             <div className="relative py-1">
               <Button
                 type="submit"
-                title="Đăng"
+                title={t("Đăng")}
                 onClick={handleSubmitPost}
                 containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
                 disable={isPending || (files.length === 0 && !status.trim())}

@@ -6,6 +6,7 @@ import { CircularProgress, FormControl, MenuItem, Select } from "@mui/material";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as GroupService from "~/services/GroupService";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const CreateGroup = ({ open, handleClose }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -17,6 +18,7 @@ const CreateGroup = ({ open, handleClose }) => {
   const [message, setMessage] = useState("");
   const [openMessage, setOpenMessage] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleChangeName = (e) => {
     setName(e.target.value);
@@ -81,10 +83,10 @@ const CreateGroup = ({ open, handleClose }) => {
                 theme === "dark" ? "text-white" : "text-black"
               }`}
             >
-              Hủy
+              {t("Hủy")}
             </button>
             <span className="text-lg font-semibold text-ascent-2">
-              New Group
+              {t("Tạo nhóm")}
             </span>
             <div className="w-7" />
           </div>
@@ -106,7 +108,7 @@ const CreateGroup = ({ open, handleClose }) => {
                   value={name}
                   name="name"
                   onChange={handleChangeName}
-                  placeholder="Group Name"
+                  placeholder={t("Tên nhóm")}
                   className={`placeholder:text-black bg-transparent text-center focus:outline-none`}
                   autoFocus
                 />
@@ -114,7 +116,7 @@ const CreateGroup = ({ open, handleClose }) => {
                   value={description}
                   onChange={handleChangeDescription}
                   type="text"
-                  placeholder="Please provide a group description"
+                  placeholder={t("Mô tả thông tin về nhóm của bạn")}
                   className="placeholder:text-ascent-2 placeholder:text-sm w-full bg-transparent text-center focus:outline-none"
                 />
               </form>
@@ -140,7 +142,7 @@ const CreateGroup = ({ open, handleClose }) => {
                   }}
                 >
                   <MenuItem value={"PUBLIC"}>
-                    <span className="text-ascent-2">Công khai</span>
+                    <span className="text-ascent-2">{t("Công khai")}</span>
                   </MenuItem>
                   <MenuItem value={"PRIVATE"}>
                     <span className="text-ascent-2">Riêng tư</span>
@@ -150,7 +152,7 @@ const CreateGroup = ({ open, handleClose }) => {
               <div className="relative">
                 <Button
                   type="submit"
-                  title="Create"
+                  title={t("Tạo")}
                   onClick={handleSubmitPost}
                   containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
                   disable={isPending}

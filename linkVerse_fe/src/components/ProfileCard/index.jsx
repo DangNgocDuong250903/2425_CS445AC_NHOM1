@@ -59,21 +59,21 @@ const ProfileCard = () => {
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <div className="flex gap-2 items-center text-ascent-2">
           <CiLocationOn className="text-xl text-ascent-1" />
-          <span>{user?.city || "Thêm địa chỉ"}</span>
+          <span>{user?.city || t("Thêm địa chỉ")}</span>
         </div>
 
         <div className="flex gap-2 items-center text-ascent-2">
           <BsBriefcase className="text-lg text-ascent-1" />
-          <span>{user?.profession || "Thêm nghề nghiệp"}</span>
+          <span>{user?.profession || t("Thêm nghề nghiệp")}</span>
         </div>
       </div>
       <div className="w-full flex flex-col gap-2 py-4 border-b border-[#66666645]">
         <p className="text-lg text-ascent-1 font-semibold lowercase">
-          {friendOfUser?.length} {t("Bạn bè")}
+          {friendOfUser?.length} {t("bạn bè")}
         </p>
 
         <span className="text-base text-blue">
-          {user?.emailVerified ? "Verified account" : "Not verified"}
+          {user?.emailVerified ? t("Đã xác thực") : t("Chưa xác thực")}
         </span>
 
         <div className="flex items-center justify-between">

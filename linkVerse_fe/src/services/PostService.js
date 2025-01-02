@@ -31,8 +31,8 @@ export const getMyPosts = async (token) => {
     return res.data
 }
 
-export const translatePost = async ({ id, token }) => {
-    const res = await axios.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${postId}/translate?targetLanguage=en`, {
+export const translatePost = async ({ id, language, token }) => {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/translate?targetLanguage=${language}`, {}, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -83,6 +83,24 @@ export const comment = async ({ id, token, data }) => {
         formData.append('files', new Blob([]));
     }
     const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/comment-file`, formData, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const deleteComment = async ({ postId, commentId, token }) => {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/post/${postId}/comments/${commentId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+    return res.data
+}
+
+export const editComment = async ({ postId, commentId, data, token }) => {
+    const res = await axiosJWT.put(`${import.meta.env.VITE_API_URL_BACKEND}/post/${postId}/comments/${commentId}`, data, {
         headers: {
             Authorization: `Bearer ${token}`
         }

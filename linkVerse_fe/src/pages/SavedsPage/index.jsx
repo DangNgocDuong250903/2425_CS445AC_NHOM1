@@ -1,5 +1,6 @@
 import { CircularProgress, MenuItem } from "@mui/material";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 import { FiBookmark } from "react-icons/fi";
 import { useSelector } from "react-redux";
@@ -14,6 +15,7 @@ const SavedsPage = () => {
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
+  const { t } = useTranslation();
 
   const open = Boolean(anchorEl);
   const handleClick = (event) => {
@@ -42,9 +44,14 @@ const SavedsPage = () => {
     fetchSaveds(token);
   }, []);
 
+  const handleSuccess = () => {
+    setPosts([]);
+    fetchSaveds(token);
+  };
+
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
-      <TopBar title={"Saveds"} iconBack />
+      <TopBar title={t("Saved")} iconBack />
       <div className="w-full h-full flex justify-center">
         <div className="w-[680px] h-full px-3 py-2 mx-2 lg:m-0 flex flex-col gap-6 overflow-y-auto">
           <div className="flex h-full flex-col gap-6 ">
@@ -54,11 +61,13 @@ const SavedsPage = () => {
               </div>
             ) : posts.length > 0 ? (
               posts.map((post, i) => {
-                return <SavedCard key={i} post={post} />;
+                return (
+                  <SavedCard key={i} post={post} onSuccess={handleSuccess} />
+                );
               })
             ) : (
               <div className="flex flex-1 justify-center items-center w-full h-full">
-                Chưa bài viết nào được lưu
+                {t("Chưa bài viết nào được lưu")}
               </div>
             )}
           </div>

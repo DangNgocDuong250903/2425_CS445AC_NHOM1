@@ -3,6 +3,7 @@ import { GoPlus } from "react-icons/go";
 import CreateStory from "../CreateStory";
 import { StoryCard } from "..";
 import * as StoryService from "~/services/StoryService";
+import { useTranslation } from "react-i18next";
 
 const Story = () => {
   const [open, setOpen] = useState(false);
@@ -11,6 +12,7 @@ const Story = () => {
   const [loading, setLoading] = useState(false);
   const token = localStorage.getItem("token");
   const [page, setPage] = useState(1);
+  const { t } = useTranslation();
 
   const fetchAllStories = async ({ page, token }) => {
     setLoading(true);
@@ -37,7 +39,7 @@ const Story = () => {
   return (
     <div className="w-full bg-primary shadow-newFeed rounded-2xl px-5 py-5 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed">
       <div className="flex items-center justify-between text-xl text-ascent-1 pb-4 border-b border-[#66666645]">
-        <span className="text-lg font-medium">Stories</span>
+        <span className="text-lg font-medium">Story</span>
       </div>
       <CreateStory
         open={open}
@@ -55,10 +57,10 @@ const Story = () => {
           </div>
           <div className="flex-1">
             <p className="text-base font-medium text-ascent-1">
-              Create Your Story
+              {t("Tạo story của bạn")}
             </p>
             <span className="text-sm text-ascent-2">
-              Click button beside to create yours.
+              {t("Chia sẻ câu chuyện của bạn")}
             </span>
           </div>
         </div>

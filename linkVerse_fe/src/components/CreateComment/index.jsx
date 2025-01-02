@@ -10,21 +10,15 @@ import { IoCloseCircle } from "react-icons/io5";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as PostService from "~/services/PostService";
 
-const CreateComment = ({ handleClose, open, id }) => {
+const CreateComment = ({ handleClose, open, id, onCommentSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
   const user = useSelector((state) => state.user);
   const [status, setStatus] = useState("");
-  // const [open, setOpen] = useState(false);
   const [files, setFiles] = useState([]);
   const [message, setMessage] = useState("");
   const [showMessage, setShowMessage] = useState(false);
   const [type, setType] = useState("");
   const token = localStorage.getItem("token");
-
-  // const handleClose = () => {
-  //   handleClear();
-  //   setOpen(false);
-  // };
 
   const handleCloseMessage = () => {
     setShowMessage(false);
@@ -59,12 +53,11 @@ const CreateComment = ({ handleClose, open, id }) => {
     if (isSuccess) {
       if (data?.code === 200) {
         handleClear();
-        // setOpen(false);
         handleClose();
         setType("success");
         setMessage("Create comment success!");
         setShowMessage(true);
-        // onSuccess();
+        onCommentSuccess();
       } else if (data?.code === 400) {
         setType("error");
         setMessage(data?.message);
@@ -99,7 +92,14 @@ const CreateComment = ({ handleClose, open, id }) => {
         width="640px"
         handleCloseDiaLogAdd={handleClose}
       >
-        <div className="w-full shadow-newFeed bg-primary">
+        <div
+          style={{
+            backgroundImage: "url(/group.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+          className="w-full shadow-newFeed bg-primary"
+        >
           {/* header */}
           <div className="w-full flex items-center justify-between gap-5 px-5 py-4">
             <button
@@ -113,7 +113,7 @@ const CreateComment = ({ handleClose, open, id }) => {
             </span>
             <div />
           </div>
-          <div className="w-full border-1 border-borderNewFeed" />
+          <div className="w-full border-t-[0.1px] border-borderNewFeed" />
 
           {/* body */}
           <div className=" w-full flex flex-col px-5 py-4 justify-center gap-y-2">
@@ -220,7 +220,7 @@ const CreateComment = ({ handleClose, open, id }) => {
                     file?.type.includes("gif")
                   ) {
                     return (
-                      <div key={index} className="w-full h-80 relative">
+                      <div key={index} className="w-full h-full relative">
                         <img
                           src={fileURL}
                           className="w-full h-full rounded-xl border-1 object-cover bg-no-repeat shadow-newFeed border-borderNewFeed"
@@ -239,20 +239,22 @@ const CreateComment = ({ handleClose, open, id }) => {
 
             {/* 4 */}
             <div className="w-full flex justify-end">
-              <Button
-                type="submit"
-                title="Trả lời"
-                onClick={handleSubmitPost}
-                containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
-                disable={isPending || (files.length === 0 && !status.trim())}
-              />
-
-              {isPending && (
-                <CircularProgress
-                  className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
-                  size={20}
+              <div className="relative py-1">
+                <Button
+                  type="submit"
+                  title="Trả lời"
+                  onClick={handleSubmitPost}
+                  containerStyles="bg-bgColor relative text-ascent-1 px-5 py-3 rounded-xl border-borderNewFeed border-1 font-semibold text-sm shadow-newFeed"
+                  disable={isPending || (files.length === 0 && !status.trim())}
                 />
-              )}
+
+                {isPending && (
+                  <CircularProgress
+                    className="absolute top-1/3 left-7 transform -translate-x-1/2 -translate-y-1/2"
+                    size={20}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>

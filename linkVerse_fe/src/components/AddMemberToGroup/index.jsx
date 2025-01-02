@@ -8,9 +8,11 @@ import { Link } from "react-router-dom";
 import * as GroupService from "~/services/GroupService";
 import { HiOutlinePlusSm } from "react-icons/hi";
 import { Tooltip } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const AddMemberToGroup = ({ groupId, onSuccessAdd }) => {
   const token = localStorage.getItem("token");
+  const { t } = useTranslation();
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
@@ -83,14 +85,16 @@ const AddMemberToGroup = ({ groupId, onSuccessAdd }) => {
         duration={3000}
       />
       <div className="flex items-center justify-between pb-2 text-lg text-ascent-1 border-b border-[#66666645]">
-        <span className="text-xl font-medium">Add member to group</span>
+        <span className="text-xl font-medium">
+          {t("Thêm thành viên vào nhóm")}
+        </span>
       </div>
       <div className="w-full flex flex-col gap-4 pt-4">
         {/* Search Input */}
         <div className="relative">
           <div className="flex items-center">
             <TextInput
-              placeholder="Search..."
+              placeholder={t("Tìm kiếm...")}
               styles="w-full  rounded-full py-2"
               iconLeft={<IoIosSearch size={20} />}
               onChange={(e) => setKeyword(e.target.value)}
@@ -170,7 +174,7 @@ const AddMemberToGroup = ({ groupId, onSuccessAdd }) => {
             </ul>
           ) : (
             <div className="p-4 text-sm text-bgStandard">
-              No results found...
+              {t("Không tìm thấy kết quả nào")}...
             </div>
           )}
         </div>

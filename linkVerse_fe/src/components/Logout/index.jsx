@@ -30,7 +30,7 @@ const Logout = ({ second, primary }) => {
       {second && (
         <MenuItem onClick={handleLogOut}>
           <div className="flex items-center justify-between w-full">
-            <span className="text-red-600">Log out</span>
+            <span className="text-red-600">{t("Đăng xuất")}</span>
             <FaRegTrashCan color="red" />
           </div>
         </MenuItem>

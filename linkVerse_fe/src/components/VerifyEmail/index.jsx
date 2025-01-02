@@ -5,10 +5,12 @@ import { IoIosArrowForward } from "react-icons/io";
 import { useMutationHook } from "~/hooks/useMutationHook";
 import * as UserService from "~/services/UserService";
 import { CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const VerifyEmail = ({ setting }) => {
   const [open, setOpen] = useState(false);
   const handleClose = () => setOpen(false);
+  const { t } = useTranslation();
   const handleOpen = () => setOpen(true);
   const user = useSelector((state) => state.user);
 
@@ -33,7 +35,7 @@ const VerifyEmail = ({ setting }) => {
         handleCloseDiaLogAdd={handleClose}
       >
         <div className="max-w-xl p-8 text-center text-gray-800 bg-white shadow-xl lg:max-w-3xl rounded-3xl lg:p-12">
-          <h3 className="text-2xl">Thanks for signing up for LinkVerse</h3>
+          <h3 className="text-2xl">{t("Cảm ơn bạn đã đăng ký LinkVerse")}</h3>
           <div className="flex justify-center">
             <svg
               className="w-32 h-32"
@@ -66,7 +68,11 @@ const VerifyEmail = ({ setting }) => {
               </defs>
             </svg>
           </div>
-          <p>We're happy you're here. Let's get your email address verified:</p>
+          <p>
+            {t(
+              "Chúng tôi rất vui vì bạn ở đây. Hãy xác minh địa chỉ email của bạn:"
+            )}
+          </p>
           <div className="mt-4">
             <div className="relative flex items-center justify-center">
               <button
@@ -76,7 +82,7 @@ const VerifyEmail = ({ setting }) => {
                   isPending && "hidden"
                 } py-2 text-primary hover:opacity-90 active:scale-90 hover:scale-105 transition-transform bg-bluePrimary rounded-xl`}
               >
-                Click to Verify Email
+                {t("Bấm để xác minh email")}
               </button>
               {isPending && (
                 <div className="flex items-center justify-center py-4">
@@ -88,13 +94,14 @@ const VerifyEmail = ({ setting }) => {
               )}
               {isSuccess && (
                 <span className="text-center text-bluePrimary">
-                  Check your email to verify
+                  {t("Kiểm tra email của bạn để xác minh")}
                 </span>
               )}
             </div>
             <p className="mt-4 text-sm">
-              If you’re having trouble clicking the "Verify Email Address"
-              button, copy and paste the URL below into your web browser:
+              {t(
+                'Nếu bạn gặp sự cố khi nhấp vào "Xác minh địa chỉ email" hãy sao chép và dán URL bên dưới vào trình duyệt web của bạn:'
+              )}
               <a href="" className="text-blue-600">
                 http://localhost:8082/notification/email/send-verification?email=
                 {user?.email}

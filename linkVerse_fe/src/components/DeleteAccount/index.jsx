@@ -7,6 +7,7 @@ import { FaCircleExclamation } from "react-icons/fa6";
 import { useDispatch } from "react-redux";
 import { resetUser } from "~/redux/Slices/userSlice";
 import { CircularProgress } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 function DeleteAccount({ setting }) {
   const [openMainDialog, setOpenMainDialog] = useState(false);
@@ -15,6 +16,7 @@ function DeleteAccount({ setting }) {
   const [openDialogOption2, setOpenDialogOption2] = useState(false);
   const [openDialogOption3, setOpenDialogOption3] = useState(false);
   const token = localStorage.getItem("token");
+  const { t } = useTranslation();
   const [hide, setHide] = useState("hide");
   const [message, setMessage] = useState("");
   const [type, setType] = useState("");
@@ -128,37 +130,38 @@ function DeleteAccount({ setting }) {
       >
         <div className="w-full h-auto p-6 bg-primary flex flex-col">
           <div className="w-full flex font-semibold items-center py-2 justify-center">
-            Vô hiệu hóa hoặc xóa
+            {t("Vô hiệu hóa hoặc xóa tài khoản")}
           </div>
           <div className="h-full flex flex-col w-full py-2">
             <div className="w-full flex py-2 flex-col gap-2">
               <span className="font-semibold text-sm">
-                Vô hiệu hóa trang cá nhân chỉ mang tính tạm thời
+                {t("Vô hiệu hóa trang cá nhân chỉ mang tính tạm thời")}
               </span>
               <p className="text-sm text-ascent-2">
-                Trang cá nhân, nội dung, lượt thích và người theo dõi trên
-                LinkVerse của bạn sẽ không hiển thị với bất kỳ ai cho đến khi
-                bạn đăng nhập lại để kích hoạt trang cá nhân
+                {t(
+                  "Trang cá nhân, nội dung, lượt thích và người theo dõi trên LinkVerse của bạn sẽ không hiển thị với bất kỳ ai cho đến khi bạn đăng nhập lại để kích hoạt trang cá nhân"
+                )}
               </p>
             </div>
             <div className="w-full flex py-2 flex-col gap-2">
               <h2 className="font-semibold text-sm">
-                Xóa trang cá nhân là mang tính vĩnh viễn
+                {t("Xóa trang cá nhân là mang tính vĩnh viễn")}
               </h2>
               <p className="text-sm text-ascent-2">
-                Trước khi bị gỡ vĩnh viễn, trang cá nhân, nội dung, lượt thích
-                và người theo dõi trên LinkVerse của bạn sẽ ẩn trong 30 ngày.
+                {t(
+                  "Trước khi bị gỡ vĩnh viễn, trang cá nhân, nội dung, lượt thích và người theo dõi trên LinkVerse của bạn sẽ ẩn trong 30 ngày."
+                )}
               </p>
             </div>
           </div>
           <div className="w-full flex flex-col gap-y-2 items-center justify-between">
             <Button
               onClick={handleDialogOption0Open}
-              title="Vô hiệu hóa tài khoản"
+              title={t("Vô hiệu hóa tài khoản")}
               containerStyles="w-full text-white bg-bgStandard flex items-center border-1 justify-center py-3 rounded-2xl border-borderNewFeed border-1"
             />
             <Button
-              title="Xóa tài khoản"
+              title={t("Xóa tài khoản")}
               containerStyles="border-borderNewFeed border-1 py-3 rounded-2xl text-red-600 bg-primary w-full flex items-center justify-center"
               onClick={handleDialogOption2Open}
             />
@@ -173,20 +176,21 @@ function DeleteAccount({ setting }) {
       >
         <div className="bg-primary w-full p-10 gap-3 flex items-center flex-col">
           <span className="font-semibold text-lg text-left w-full">
-            Disable account
+            {t("Vô hiệu hóa tài khoản")}
           </span>
           <span className="font-extralight">
-            Deactivating your account is only temporary. If you log back into
-            your account within 30 days, it will be automatically reactivated.
+            {t(
+              "Việc vô hiệu hóa tài khoản của bạn chỉ là tạm thời. Nếu bạn đăng nhập lại vào tài khoản trong vòng 30 ngày, tài khoản sẽ tự động được kích hoạt lại."
+            )}
           </span>
           <div className="flex flex-col gap-2 w-full">
             <span className="text-ascent-2 text-sm">
-              To confirm this, type your password
+              {t("Để xác nhận, hãy nhập mật khẩu của bạn")}
             </span>
             <div className="w-full flex gap-2 items-center ">
               <TextInput
                 name="password"
-                placeholder="Password"
+                placeholder={t("Mật khẩu")}
                 type={hide === "hide" ? "password" : "text"}
                 styles={`w-full  h-10  ${
                   errors.password ? "border-red-600" : ""
@@ -209,13 +213,13 @@ function DeleteAccount({ setting }) {
                 stylesContainer="mt-0"
                 toolTip={errors.password ? errors.password.message : ""}
                 {...register("password", {
-                  required: "This field is required!",
+                  required: t("Mật khẩu là bắt buộc!"),
                 })}
               />
               <Button
                 disable={!isValid}
                 onClick={handleDialogOption1Open}
-                title="Disable account"
+                title={t("Vô hiệu hóa")}
                 containerStyles="inline-flex font-semibold justify-center rounded-md bg-red-600 w-full h-10 text-sm font-medium text-white outline-none"
               />
             </div>
@@ -229,13 +233,13 @@ function DeleteAccount({ setting }) {
         handleCloseDiaLogAdd={handleDialogOption1Close}
       >
         <div className="bg-primary w-full flex items-center flex-col">
-          <span className="p-4">Bạn có chắc không?</span>
+          <span className="p-4">{t("Bạn có chắc không?")}</span>
           <div className="flex w-full border-t items-center justify-between">
             <div
               onClick={handleDialogOption1Close}
               className="flex hover:bg-[#fafafa] cursor-pointer w-full  border-r items-center p-4 justify-center"
             >
-              <span>Hủy</span>
+              <span>{t("Hủy")}</span>
             </div>
             <div
               onClick={handleSubmit(handleDisableAccount)}
@@ -243,7 +247,7 @@ function DeleteAccount({ setting }) {
                 loadingDisable && "bg-[#fafafa] text-[#ccc] cursor-not-allowed"
               } flex relative p-4 hover:bg-[#fafafa] cursor-pointer w-full items-center justify-center`}
             >
-              <span>Vô hiệu hóa</span>
+              <span>{t("Vô hiệu hóa")}</span>
               {loadingDisable && (
                 <CircularProgress className="absolute" size={20} />
               )}

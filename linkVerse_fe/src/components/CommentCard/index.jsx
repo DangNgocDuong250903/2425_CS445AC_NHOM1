@@ -33,12 +33,15 @@ import { IoPaperPlaneOutline } from "react-icons/io5";
 import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
 import { FaRegGrinStars } from "react-icons/fa";
 import * as UserService from "~/services/UserService";
+import * as PostService from "~/services/PostService";
 import CreateComment from "../CreateComment";
+import useGetDetailUserById from "~/hooks/useGetDetailUserById";
 
-const CommentCard = ({ comment, isShowImage }) => {
+const CommentCard = ({ comment, isShowImage, postId }) => {
   const theme = useSelector((state) => state.theme.theme);
-  const user = useSelector((state) => state.user);
+  // const user = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
   const [showAll, setShowAll] = useState(0);
   const [showReply, setShowReply] = useState(0);
   const [comments, setComments] = useState([]);
@@ -48,7 +51,9 @@ const CommentCard = ({ comment, isShowImage }) => {
   const [like, setLike] = useState(false);
   const [disLike, setDisLike] = useState(false);
   const [openComment, setOpenComment] = useState(false);
-
+  const { user } = useGetDetailUserById({ id: comment?.userId });
+  const [likeCount, setLikeCount] = useState(comment?.like || 0);
+  const [dislikeCount, setDislikeCount] = useState(comment?.unlike || 0);
   const getComments = async () => {};
 
   const handleLike = () => {
@@ -117,7 +122,13 @@ const CommentCard = ({ comment, isShowImage }) => {
     setIsOpenReply(false);
   };
 
-  console.log(comment);
+  //delete comment
+  const handleDeleteComment = async (commentId) => {
+    try {
+      const res = await PostService.deleteComment({ postId, commentId, token });
+      console.log(res);
+    } catch (error) {}
+  };
 
   return (
     <div className="bg-primary p-2 rounded-xl">
@@ -127,9 +138,9 @@ const CommentCard = ({ comment, isShowImage }) => {
       >
         <img
           onClick={(e) => e.stopPropagation()}
-          src={BlankAvatar}
+          src={user?.imageUrl || BlankAvatar}
           alt={"avatar"}
-          className="w-14 h-14 object-cover rounded-full"
+          className="w-14 h-14 flex-shrink-0 object-cover rounded-full"
         />
 
         <div className="w-full flex justify-between">
@@ -140,15 +151,71 @@ const CommentCard = ({ comment, isShowImage }) => {
                   {user?.username ?? "No name"}
                 </p>
               </Link>
-            </div>
-            <div className="flex items-center gap-1">
               <span className="text-[#A4A8AD] text-sm">
                 {moment(comment?.createdDate).fromNow()}
               </span>
             </div>
+            <div className="flex items-center gap-1">
+              <div>
+                <p className="text-ascent-2">
+                  {showAll === comment?.id
+                    ? comment?.content || ""
+                    : comment?.content?.slice(0, 300) || ""}
+
+                  {comment?.content &&
+                    comment.content.length > 301 &&
+                    (showAll === comment?.id ? (
+                      <span
+                        className="text-blue ml-2 font-medium cursor-pointer"
+                        onClick={() => setShowAll(0)}
+                      >
+                        Show less
+                      </span>
+                    ) : (
+                      <span
+                        className="text-blue ml-2 font-medium cursor-pointer"
+                        onClick={() => setShowAll(comment?.id)}
+                      >
+                        Show more
+                      </span>
+                    ))}
+                </p>
+
+                {comment?.imageUrl &&
+                  comment?.imageUrl?.length > 0 &&
+                  !isShowImage && (
+                    <>
+                      <img
+                        ref={imgRef}
+                        onClick={handleClickImage}
+                        src={comment?.imageUrl}
+                        alt="post image"
+                        className="w-full mt-2 rounded-lg cursor-pointer"
+                      />
+                      <DialogCustom
+                        imageSrc={imagePreview}
+                        isOpen={openImagePreview}
+                        handleCloseDiaLogAdd={handleClosePreview}
+                      />
+                    </>
+                  )}
+
+                {comment?.video && !isShowImage && (
+                  <div className="relative">
+                    <video
+                      width="100%"
+                      controls
+                      className="w-full mt-2 rounded-lg cursor-pointer"
+                    >
+                      <source src={comment?.video} />
+                    </video>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
 
-          {/* <div
+          <div
             className="flex justify-center items-center"
             onClick={(e) => e.stopPropagation()}
           >
@@ -172,164 +239,84 @@ const CommentCard = ({ comment, isShowImage }) => {
               >
                 <MenuItem onClick={handleClose}>
                   <div className="flex items-center justify-between w-full">
-                    <span className={theme === "light" && "text-black"}>
-                      Save
-                    </span>
-                    <FiBookmark color={theme === "light" && "black"} />
+                    <span className="text-red-600">Edit</span>
+                    <FaRegTrashCan className="text-red-600" />
                   </div>
                 </MenuItem>
-                <StyledDivider />
-                {user?.userId !== post?.userId && (
-                  <div>
-                    <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Report</span>
-                        <TbMessageReport color="red" />
-                      </div>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Block</span>
-                        <ImUserMinus color="red" />
-                      </div>
-                    </MenuItem>
-                  </div>
-                )}
-                {user?.userId === post?.userId && (
-                  <div>
-                    <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Edit post</span>
-                        <FaRegEdit color="red" />
-                      </div>
-                    </MenuItem>
-                    <MenuItem onClick={handleClose} disableRipple>
-                      <div className="flex items-center justify-between w-full">
-                        <span className="text-red-600">Delete</span>
-                        <FaRegTrashCan color="red" />
-                      </div>
-                    </MenuItem>
-                  </div>
-                )}
-                <StyledDivider />
-                <MenuItem onClick={handleClose}>
+                <MenuItem
+                  onClick={() => handleDeleteComment(comment?.commentId)}
+                >
                   <div className="flex items-center justify-between w-full">
-                    <span className={theme === "light" && "text-black"}>
-                      Copy address
-                    </span>
-                    <RiAttachment2 color={theme === "light" && "black"} />
+                    <span className="text-red-600">Delete</span>
+                    <RiAttachment2 className="text-red-600" />
                   </div>
                 </MenuItem>
               </CustomizeMenu>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
 
-      <div>
-        <p className="text-ascent-2">
-          {showAll === comment?.id
-            ? comment?.content || ""
-            : comment?.content?.slice(0, 300) || ""}
-
-          {comment?.content &&
-            comment.content.length > 301 &&
-            (showAll === comment?.id ? (
-              <span
-                className="text-blue ml-2 font-medium cursor-pointer"
-                onClick={() => setShowAll(0)}
-              >
-                Show less
-              </span>
-            ) : (
-              <span
-                className="text-blue ml-2 font-medium cursor-pointer"
-                onClick={() => setShowAll(comment?.id)}
-              >
-                Show more
-              </span>
-            ))}
-        </p>
-
-        {/* {post?.imageUrl && post?.imageUrl?.length > 0 && !isShowImage && (
-          <>
-            <img
-              ref={imgRef}
-              onClick={handleClickImage}
-              src={post?.imageUrl}
-              alt="post image"
-              className="w-full mt-2 rounded-lg cursor-pointer"
-            />
-            <DialogCustom
-              imageSrc={imagePreview}
-              isOpen={openImagePreview}
-              handleCloseDiaLogAdd={handleClosePreview}
-            />
-          </>
-        )}
-
-        {post?.video && !isShowImage && (
-          <div className="relative">
-            <video
-              width="100%"
-              controls
-              className="w-full mt-2 rounded-lg cursor-pointer"
-            >
-              <source src={post?.video} />
-            </video>
-          </div>
-        )} */}
-      </div>
-
-      {/* <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
+      <div className="mt-4 flex justify-between items-center px-3 py-2 text-ascent-2 text-base border-t border-[#66666645]">
         <div className="flex gap-x-3">
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div onClick={handleLike}>
+            <div className="relative group">
               {like ? (
-                <BiSolidLike size={20} color="blue" />
+                <BiSolidLike
+                  size={20}
+                  onClick={() => handleLike(comment?.id)}
+                  className="text-blue-500"
+                  color="#0444A4"
+                />
               ) : (
-                <BiLike size={20} className="hover:scale-105" />
+                <BiLike size={20} onClick={() => handleLike(comment?.id)} />
               )}
             </div>
-            {post?.like}
+            <span>{likeCount}</span>
           </div>
 
           <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
-            <div onClick={handleDisLike}>
+            <div class="relative group">
               {disLike ? (
-                <BiSolidDislike size={20} color="blue" />
+                <BiSolidDislike
+                  size={20}
+                  color="#0444A4"
+                  onClick={() => handleDisLike(comment?.id)}
+                  className="text-blue-500"
+                />
               ) : (
-                <BiDislike size={20} className="hover:scale-105" />
+                <BiDislike
+                  size={20}
+                  onClick={() => handleDisLike(comment?.id)}
+                />
               )}
             </div>
-            {post?.unlike}
+            <span>{dislikeCount}</span>
           </div>
-          <p
-            className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform"
-            onClick={() => {
-              setIsOpenReply(true);
-              setShowComments(showComments === post.id ? null : post?.id);
-              getComments(post?._id);
-            }}
-          >
+
+          <p className="flex gap-2 items-center text-base cursor-pointer hover:scale-105 transition-transform">
             <BiCommentDetail
               size={20}
-              onClick={() => setOpenComment(true)}
+              onClick={() => handleComment(comment?.id)}
               className="cursor-pointer"
             />
-            {post?.commentCount}
+            {comment?.commentCount}
           </p>
           <CreateComment
             open={isOpenReply}
             handleClose={handleCloseReply}
-            id={post?.id}
+            id={comment?.id}
+            // onCommentSuccess={onSuccessChange}
           />
         </div>
-        <div className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer ">
+        <div
+          onClick={() => handleShare(comment?.id)}
+          className="flex gap-2 items-center hover:scale-105 text-base cursor-pointer"
+        >
           <IoPaperPlaneOutline size={20} />
-          {post?.sharedPost}Shares
+          {comment?.sharedPost}
         </div>
-      </div> */}
+      </div>
     </div>
   );
 };

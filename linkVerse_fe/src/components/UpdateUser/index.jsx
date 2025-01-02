@@ -6,7 +6,6 @@ import { CircularProgress, Divider } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import { LiaEditSolid } from "react-icons/lia";
 import * as UserService from "~/services/UserService";
-import { BiotechOutlined } from "@mui/icons-material";
 
 const UpdateUser = ({ profile, profileCard, onSuccess }) => {
   const user = useSelector((state) => state.user);
@@ -105,20 +104,19 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
       <DialogCustom
         isOpen={show}
+        width="510px"
         theme={theme}
         handleCloseDiaLogAdd={handleDialog}
       >
-        <div
-          className={`w-full ${
-            theme === "dark" ? "bg-[rgb(24,24,24)]" : "bg-white"
-          } shadow-newFeed`}
-        >
+        <div className="w-full shadow-newFeed bg-primary">
           <div className="flex w-full flex-col px-8 py-3">
             <div className="flex items-center justify-between py-3">
               <div className="flex flex-col">
-                <h1 className="text-ascent-2 font-medium">First name</h1>
+                <h1 className="text-black font-semibold text-base">
+                  {t("Họ")}
+                </h1>
                 <input
-                  className="border-none text-bgStandard focus:outline-none bg-transparent"
+                  className="border-none text-ascent-2 text-sm focus:outline-none bg-transparent"
                   value={firstName}
                   onChange={handleChangeFirstName}
                   multiline
@@ -129,13 +127,13 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
               </div>
             </div>
 
-            <Divider sx={{ borderColor: "#ccc" }} />
+            <Divider />
 
             <div className="flex items-center justify-between py-3">
               <div className="flex flex-col">
-                <h1 className="text-ascent-2 font-medium">Last name</h1>
+                <h1 className="text-black font-semibold">{t("Tên")}</h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-ascent-2 text-sm bg-transparent focus:outline-none"
                   value={lastName}
                   onChange={handleChangeLastName}
                   multiline
@@ -150,11 +148,11 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <div className="flex items-center   w-full justify-between py-3">
               <div className="flex w-full flex-col">
-                <h1 className="text-ascent-2 font-medium">Bio</h1>
+                <h1 className="text-black font-semibold">{t("Tiểu sử")}</h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-ascent-2 text-sm bg-transparent focus:outline-none"
                   value={bio}
-                  placeholder="Thêm tiểu sử"
+                  placeholder={t("Thêm tiểu sử")}
                   onChange={handleChangeBio}
                   multiline
                   maxRows={5}
@@ -168,9 +166,9 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <div className="flex items-center w-full justify-between py-3">
               <div className="flex w-full flex-col">
-                <h1 className="text-ascent-2 font-medium">Email</h1>
+                <h1 className="text-black font-semibold">Email</h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-ascent-2 text-sm bg-transparent focus:outline-none"
                   value={email}
                   onChange={handleChangeEmail}
                   multiline
@@ -185,11 +183,13 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <div className="flex items-center w-full justify-between py-3">
               <div className="flex w-full flex-col">
-                <h1 className="text-ascent-2 font-medium">Phone number</h1>
+                <h1 className="text-black font-semibold">
+                  {t("Số điện thoại")}
+                </h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-ascent-2 text-sm bg-transparent focus:outline-none"
                   value={phoneNumber}
-                  placeholder="Thêm số điện thoại"
+                  placeholder={t("Thêm số điện thoại")}
                   onChange={handleChangePhoneNumber}
                   multiline
                   maxRows={5}
@@ -203,11 +203,11 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <div className="flex items-center  w-full justify-between py-3">
               <div className="flex w-full flex-col">
-                <h1 className="text-ascent-2 font-medium">City</h1>
+                <h1 className="text-black font-semibold">{t("Địa chỉ")}</h1>
                 <input
-                  className="border-none focus:outline-none"
+                  className="border-none text-ascent-2 text-sm bg-transparent focus:outline-none"
                   value={city}
-                  placeholder="Thêm thành phố"
+                  placeholder={t("Thêm địa chỉ")}
                   onChange={handleChangeCity}
                   multiline
                   maxRows={5}
@@ -219,14 +219,14 @@ const UpdateUser = ({ profile, profileCard, onSuccess }) => {
 
             <div className="relative">
               <Button
-                title={"Xong"}
+                title={t("Cập nhật")}
                 disable={isPending}
                 onClick={handleSubmitChange}
-                containerStyles="w-full hover:bg-[#F3F8FE] hover:text-black bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
+                containerStyles="w-full active:scale-90 hover:bg-[#F3F8FE] hover:text-black bg-bgStandard flex items-center justify-center py-3 border-x-[0.8px] border-y-[0.8px] border-borderNewFeed rounded-xl font-medium text-white"
               />
               {isPending && (
                 <CircularProgress
-                  className="absolute top-1/2 left-1/2"
+                  className="absolute top-4 right-52"
                   size={20}
                 />
               )}

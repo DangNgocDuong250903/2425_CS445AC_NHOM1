@@ -109,7 +109,7 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
 
         <div className="relative">
           <TextInput
-            placeholder="Search..."
+            placeholder={t("Tìm kiếm...")}
             styles="lg:w-[16rem] rounded-full py-2"
             iconLeft={<IoIosSearch size={20} />}
             onChange={handleChangeSearch}
