@@ -41,7 +41,7 @@ export default function PreviewStory({ open, handleClose, story }) {
       open={open}
       onClick={handleClose}
     >
-      <div className="h-full w-[350px] rounded-3xl relative">
+      <div className="h-full w-[370px] rounded-3xl relative">
         <LinearProgress
           variant="determinate"
           value={progress}
@@ -60,16 +60,22 @@ export default function PreviewStory({ open, handleClose, story }) {
 
         <div className="flex flex-col items-center justify-center absolute inset-0">
           {story?.imageUrl && story?.imageUrl.length > 0 ? (
-            <img
-              src={story?.imageUrl}
-              alt=""
-              style={{
-                objectFit: "cover",
-                width: "100%",
-                height: "100%",
-                borderRadius: "1rem",
-              }}
-            />
+            <>
+              <img
+                src={story?.imageUrl}
+                alt="story"
+                className="relative"
+                style={{
+                  objectFit: "cover",
+                  width: "100%",
+                  height: "100%",
+                  borderRadius: "1rem",
+                }}
+              />
+              <span className="absolute bottom-3 text-white">
+                {story?.content}
+              </span>
+            </>
           ) : (
             <div className="w-full h-full flex items-center justify-center rounded-3xl  bg-pink-200">
               <span className="text-red-600">{story?.content}</span>

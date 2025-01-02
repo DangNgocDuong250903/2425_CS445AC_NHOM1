@@ -20,6 +20,7 @@ import { BlankAvatar } from "~/assets";
 import { IoOptionsOutline } from "react-icons/io5";
 import { MenuItem } from "@mui/material";
 import { FaCheck } from "react-icons/fa6";
+import { IoClose } from "react-icons/io5";
 
 const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
@@ -122,6 +123,10 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
     }
   };
 
+  const handleDelete = (i) => {
+    setSearchResults(searchResults.filter((_, index) => index !== i));
+  };
+
   return (
     <div className="header w-full flex items-center justify-between pt-2 pb-2 px-1 bg-bgColor ">
       {/* 1 */}
@@ -179,7 +184,7 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
             handleClose={handleClose}
             anchorEl={anchorEl}
             open={open}
-            styles={{ marginTop: "10px" }}
+            styles={{ marginTop: "11px" }}
           >
             {searchItems.map((option, i) => (
               <div key={i}>
@@ -193,67 +198,43 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
             ))}
           </CustomizeMenu>
 
-          {/* {isDropdownOpen && (
-            <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
-              {isLoading ? (
-                <div className="p-4 text-bgStandard ">{t("Loading")}...</div>
-              ) : searchResults.length > 0 ? (
-                <ul>
-                  {searchResults.map((user) => (
-                    <Link
-                      key={user.id}
-                      to={"/profile/" + user?.userId}
-                      className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
-                    >
-                      <img
-                        src={user?.imageUrl ?? BlankAvatar}
-                        alt=""
-                        className="w-10 h-10 rounded-full object-cover"
-                      />
-                      <div className="flex flex-col gap-y-1">
-                        <p className="text-sm text-bgStandard">
-                          {user.firstName} {user.lastName}
-                        </p>
-                        <p className="text-xs text-bgStandard">
-                          {user.username}
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
-                </ul>
-              ) : (
-                <div className="p-4 text-sm text-bgStandard">
-                  {t("No results found...")}
-                </div>
-              )}
-            </div>
-          )} */}
           {isDropdownOpen && (
-            <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
+            <div className="absolute -bottom-31 mt-1 left-0 w-[20rem] bg-primary border-1 border-borderNewFeed rounded-2xl shadow-md z-50 max-h-96 overflow-auto">
               {isLoading ? (
                 <div className="p-4 text-bgStandard ">{t("Loading")}...</div>
               ) : searchResults.length > 0 ? (
                 <ul>
                   {selectedSearch === "User" &&
-                    searchResults.map((user) => (
+                    searchResults.map((user, i) => (
                       <Link
                         key={user.id}
                         to={"/profile/" + user?.userId}
-                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                        className="px-4 w-full py-3 justify-between flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
                       >
-                        <img
-                          src={user?.imageUrl ?? BlankAvatar}
-                          alt=""
-                          className="w-10 h-10 rounded-full object-cover"
-                        />
-                        <div className="flex flex-col gap-y-1">
-                          <p className="text-sm text-bgStandard">
-                            {user.firstName} {user.lastName}
-                          </p>
-                          <p className="text-xs text-bgStandard">
-                            {user.username}
-                          </p>
+                        <div className="w-full flex gap-x-2">
+                          <img
+                            src={user?.imageUrl ?? BlankAvatar}
+                            alt=""
+                            className="w-10 h-10 rounded-full object-cover"
+                          />
+                          <div className="flex flex-col gap-y-1">
+                            <p className="text-sm text-bgStandard">
+                              {user.firstName} {user.lastName}
+                            </p>
+                            <p className="text-xs text-bgStandard">
+                              {user.username}
+                            </p>
+                          </div>
                         </div>
+                        <IoClose
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            handleDelete(i);
+                          }}
+                          size={20}
+                          className="cursor-pointer opacity-100 active:scale-90 hover:opacity-60"
+                        />
                       </Link>
                     ))}
                   {selectedSearch === "Post" &&
@@ -274,19 +255,25 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
                       </Link>
                     ))}
                   {selectedSearch === "Hashtag" &&
-                    searchResults.map((post) => (
+                    searchResults.map((post, i) => (
                       <Link
                         key={post.id}
-                        to={"/post/" + post?.postId}
-                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                        to={"/post/" + post?.id}
+                        className="px-4 py-4 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
                       >
-                        <div className="flex flex-col gap-y-1">
+                        <div className="w-full flex items-center justify-between gap-y-1">
                           <p className="text-sm text-bgStandard">
-                            {post.title}
-                          </p>
-                          <p className="text-xs text-bgStandard">
                             {post.content}
                           </p>
+                          <IoClose
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              handleDelete(i);
+                            }}
+                            size={20}
+                            className="cursor-pointer opacity-100 active:scale-90 hover:opacity-60"
+                          />
                         </div>
                       </Link>
                     ))}

@@ -19,12 +19,14 @@ import { useParams } from "react-router-dom";
 import * as GroupService from "~/services/GroupService";
 import AddMemberToGroup from "~/components/AddMemberToGroup";
 import { useTranslation } from "react-i18next";
+import { useSelector } from "react-redux";
 
 const GroupPage = () => {
   const token = localStorage.getItem("token");
   const { groupDetail, reload } = useGetDetailGroup();
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1);
+  const user = useSelector((state) => state?.user);
   const { t } = useTranslation();
   const { id } = useParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +106,7 @@ const GroupPage = () => {
             <div className="w-full flex justify-between items-center p-4 gap-x-3">
               <div className="flex items-center gap-4">
                 <img
-                  src={BlankAvatar}
+                  src={user?.avatar ?? BlankAvatar}
                   alt="User Image"
                   className="w-12 h-12 rounded-full object-cover shadow-newFeed"
                 />

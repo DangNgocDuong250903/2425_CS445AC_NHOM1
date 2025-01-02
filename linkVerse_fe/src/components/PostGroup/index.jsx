@@ -1,73 +1,34 @@
 import moment from "moment";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Alerts, CustomizeMenu, DialogCustom, TextInput } from "..";
+import { CustomizeMenu, TextInput } from "..";
 import { BiCommentDetail } from "react-icons/bi";
-import { CircularProgress, Divider, MenuItem, styled } from "@mui/material";
-import { TbMessageReport } from "react-icons/tb";
+import { MenuItem } from "@mui/material";
 import { RiAttachment2 } from "react-icons/ri";
-import { ImUserMinus } from "react-icons/im";
-import { useSelector } from "react-redux";
-import { copyToClipboard, getBase64 } from "~/utils";
-import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
-import CreateComment from "../CreateComment";
-import * as PostService from "~/services/PostService";
-import AlertWelcome from "../AlertWelcome";
+import { BiSolidLockAlt, BiSolidDislike } from "react-icons/bi";
 import { BlankAvatar } from "~/assets";
 import { FaEarthAmericas, FaRegTrashCan } from "react-icons/fa6";
-import { FiBookmark } from "react-icons/fi";
 import { IoPaperPlaneOutline } from "react-icons/io5";
-import PostMenu from "../PostMenu";
+import { useTranslation } from "react-i18next";
+import useGetDetailUserById from "~/hooks/useGetDetailUserById";
+import useCopyToClipboard from "~/hooks/useCopyToClipboard";
 
-const PostGroup = ({ post, isShowImage, fetchPosts }) => {
-  const theme = useSelector((state) => state.theme.theme);
-  const userState = useSelector((state) => state.user);
-  const token = localStorage.getItem("token");
+const PostGroup = ({ post, isShowImage }) => {
   const navigate = useNavigate();
   const [showAll, setShowAll] = useState(0);
-  const [showReply, setShowReply] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [replyComments, setReplyComments] = useState(0);
-  const [showComments, setShowComments] = useState(0);
   const [likeCount, setLikeCount] = useState(post?.like || 0);
   const [dislikeCount, setDislikeCount] = useState(post?.unlike || 0);
-  const [like, setLike] = useState(false);
-  const [disLike, setDisLike] = useState(false);
-  const [openComment, setOpenComment] = useState(false);
-  const [url, setUrl] = useState("");
-  const [typeMessage, setTypeMessage] = useState("success");
-  const [message, setMessage] = useState("");
-  const [openMessage, setOpenMessage] = useState(false);
+  const { t } = useTranslation();
   const [openAlert, setOpenAlert] = useState(false);
-  const [type, setType] = useState("");
-  const [icon, setIcon] = useState(null);
-  const [duration, setDuration] = useState("");
-
-  const handleCloseAlert = () => {
-    setOpenAlert(false);
-  };
-
-  //Menu
+  const { user } = useGetDetailUserById({ id: post?.userId });
+  const { isCopied, copyToClipboard } = useCopyToClipboard();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const StyledDivider = styled(Divider)(({ theme }) => ({
-    borderColor: theme.colorSchemes.light.border,
-    margin: `${theme.spacing(0.5)} 0`,
-    ...theme.applyStyles("dark", {
-      borderColor: theme.colorSchemes.dark.border,
-    }),
-  }));
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  //Menu
 
   const renderContentWithHashtags = (content) => {
     if (!content) return "";
@@ -84,6 +45,10 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
     });
   };
 
+  const handleSaveUrl = (id) => {
+    copyToClipboard(`http://localhost:5173/post/${id}`);
+  };
+
   return (
     <div className="bg-primary p-5 rounded-2xl border-borderNewFeed border-1 shadow-newFeed">
       <div
@@ -92,16 +57,18 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
       >
         <img
           onClick={(e) => e.stopPropagation()}
-          src={BlankAvatar}
+          src={user?.imageUrl ?? BlankAvatar}
           alt={"avatar"}
-          className="w-14 h-14 object-cover rounded-full"
+          className="w-14 h-14 flex-shrink-0 border-borderNewFeed border-1 shadow-newFeed object-cover rounded-full"
         />
 
         <div className="w-full flex justify-between">
           <div onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center gap-2 ">
               <Link to={`/profile/${post?.userId}`}>
-                <p className="font-medium text-lg text-ascent-1">{"No name"}</p>
+                <p className="font-medium text-lg text-ascent-1">
+                  {user?.username ?? "No name"}
+                </p>
               </Link>
             </div>
             <div className="flex items-center gap-1">
@@ -125,6 +92,7 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
               <BiDotsHorizontalRounded
                 size={25}
                 color="#686868"
+                onClick={handleClick}
                 className="cursor-pointer "
                 id="demo-customized-button"
                 aria-controls={open ? "demo-customized-menu" : undefined}
@@ -132,6 +100,30 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
                 aria-expanded={open ? "true" : undefined}
                 variant="contained"
               />
+              <CustomizeMenu
+                handleClose={handleClose}
+                anchorEl={anchorEl}
+                open={open}
+                anchor={{ vertical: "top", horizontal: "right" }}
+              >
+                {user?.id === post?.userId && (
+                  <MenuItem>
+                    <div className="flex items-center justify-between w-full">
+                      <span className="text-red-600">Delete</span>
+                      <FaRegTrashCan className="text-red-600" />
+                    </div>
+                  </MenuItem>
+                )}
+
+                <MenuItem>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-bgStandard">
+                      {isCopied ? t("Đã sao chép") : t("Sao chép")}
+                    </span>
+                    <RiAttachment2 className="text-bgStandard" />
+                  </div>
+                </MenuItem>
+              </CustomizeMenu>
             </div>
           </div>
         </div>
@@ -217,9 +209,9 @@ const PostGroup = ({ post, isShowImage, fetchPosts }) => {
       </div>
       <div className="py-2 w-full flex gap-3 items-center">
         <img
-          src={BlankAvatar}
+          src={user?.imageUrl ?? BlankAvatar}
           alt="avatar"
-          className="w-11 h-1w-11 mt-2 rounded-full object-cover"
+          className="w-11 h-11 flex-shrink-0 border-1 border-e-borderNewFeed shadow-newFeed mt-2 rounded-full object-cover"
         />
         <TextInput
           name="username"

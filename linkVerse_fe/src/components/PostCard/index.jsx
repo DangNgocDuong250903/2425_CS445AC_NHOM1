@@ -99,7 +99,6 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   };
 
   //comment
-
   const handleComment = (id) => {
     if (!token) {
       setType("like");
