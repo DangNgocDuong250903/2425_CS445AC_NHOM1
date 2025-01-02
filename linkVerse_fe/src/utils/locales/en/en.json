@@ -78,6 +78,7 @@
     "Kéo và thả tập tin ở đây hoặc nhấn để tải lên": "Drag and drop file here or click to upload",
     "Chặn": "Block",
     "Xóa":  "Delete",
+    "Dịch sang": "Translate to",
     "Hiển thị": "Visibility",
     "Sao chép": "Copy",
     "Tạo story của bạn": "Create your story",
@@ -143,5 +144,7 @@
     "Bạn bè đề xuất": "Friend suggestion",
     "Lời mời kết bạn": "Friend request",
     "Chấp nhận": "Accept",
-    "Từ chối": "Deny"
+    "Từ chối": "Deny",
+    "Đang tải": "Loading",
+    "Quản trị hệ thống": "System management"
 }

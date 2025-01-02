@@ -94,6 +94,15 @@ const Apps = () => {
             </label>
           </div>
         </MenuItem>
+        {user?.token && user?.roles[0]?.name === "ADMIN" && (
+          <div>
+            <MenuItem onClick={() => navigate("/admin")}>
+              <div className="flex items-center justify-between w-full">
+                <span className="text-ascent-1">{t("Quản trị hệ thống")}</span>
+              </div>
+            </MenuItem>
+          </div>
+        )}
 
         {user?.token && (
           <div>

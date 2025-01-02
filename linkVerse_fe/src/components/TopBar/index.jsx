@@ -4,20 +4,22 @@ import {
   Apps,
   ChangeLanguage,
   Chat,
+  CustomizeMenu,
   Logout,
   Notifications,
   SelectPosts,
   TextInput,
 } from "~/components/index";
 import { useTranslation } from "react-i18next";
-import { IoIosArrowDown, IoIosSearch } from "react-icons/io";
+import { IoIosSearch } from "react-icons/io";
 import { FaArrowLeft } from "react-icons/fa";
 import { useEffect, useState } from "react";
 import * as SearchService from "~/services/SearchService";
 import { useDebounceHook } from "~/hooks/useDebounceHook";
 import { BlankAvatar } from "~/assets";
-import { IoFilter } from "react-icons/io5";
-import { Dropdown, Space } from "antd";
+import { IoOptionsOutline } from "react-icons/io5";
+import { MenuItem } from "@mui/material";
+import { FaCheck } from "react-icons/fa6";
 
 const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
@@ -30,21 +32,61 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
   const token = localStorage.getItem("token");
   const searchUser = useDebounceHook(keyword, 1000);
   const [searchResults, setSearchResults] = useState([]);
+  const [selectedSearch, setSelectedSearch] = useState("User");
+  const searchItems = ["User", "Post", "Hashtag", "Keyword"];
+  const [anchorEl, setAnchorEl] = useState(null);
+  const handleClick = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+  const open = Boolean(anchorEl);
+  const handleChangeSearch = (e) => setKeyword(e.target.value);
+  const [page, setPage] = useState(1);
+  const [size, setSize] = useState(10);
 
-  const handleChangeSearch = (e) => {
-    setKeyword(e.target.value);
-  };
-
-  //user
   const handleSearch = async () => {
     setIsLoading(true);
     try {
-      const res = await SearchService.searchUser({
-        token,
-        keyword: searchUser,
-      });
-      if (res.code === 1000) {
-        setSearchResults(res.result.items || []);
+      if (selectedSearch === "User") {
+        const res = await SearchService.searchUser({
+          token,
+          keyword: searchUser,
+        });
+        if (res.code === 1000) {
+          setSearchResults(res.result.items || []);
+        } else {
+          setSearchResults([]);
+        }
+      } else if (selectedSearch === "Post") {
+        const res = await SearchService.searchPost({
+          size,
+          page,
+          keyword,
+          token,
+        });
+        if (res.code === 200) {
+          setSearchResults(res.result.data || []);
+        } else {
+          setSearchResults([]);
+        }
+      } else if (selectedSearch === "Hashtag") {
+        const res = await SearchService.searchPostByHashTag({
+          hashtag: keyword,
+          token,
+        });
+        if (res.code === 200) {
+          setSearchResults(res.result || []);
+        } else {
+          setSearchResults([]);
+        }
+      } else if (selectedSearch === "Keyword") {
+        const res = await SearchService.searchPostByKeyword({
+          keyword,
+          token,
+        });
+        if (res.code === 200) {
+          setSearchResults(res.result || []);
+        } else {
+          setSearchResults([]);
+        }
       } else {
         setSearchResults([]);
       }
@@ -64,8 +106,13 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
       setSearchResults([]);
       setIsDropdownOpen(false);
     }
-  }, [searchUser]);
+  }, [searchUser, selectedSearch]);
 
+  const handleMenuItemClick = (option) => {
+    setSelectedSearch(option);
+    setAnchorEl(null);
+    handleSearch();
+  };
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -111,22 +158,51 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
           <TextInput
             placeholder={t("Tìm kiếm...")}
             styles="lg:w-[16rem] rounded-full py-2"
-            iconLeft={<IoIosSearch size={20} />}
+            iconLeft={<IoIosSearch size={20} className="text-ascent-2" />}
             onChange={handleChangeSearch}
             onKeyDown={handleKeyDown}
             iconRightStyles="right-5"
+            iconRight={
+              <IoOptionsOutline
+                size={22}
+                onClick={handleClick}
+                aria-controls={open ? "demo-customized-menu" : undefined}
+                aria-haspopup="true"
+                aria-expanded={open ? "true" : undefined}
+                variant="contained"
+                className=" cursor-pointer text-ascent-2 active:scale-90 hover:scale-105 transition-transform"
+              />
+            }
           />
+          <CustomizeMenu
+            anchor={{ vertical: "top", horizontal: "right" }}
+            handleClose={handleClose}
+            anchorEl={anchorEl}
+            open={open}
+            styles={{ marginTop: "10px" }}
+          >
+            {searchItems.map((option, i) => (
+              <div key={i}>
+                <MenuItem onClick={() => handleMenuItemClick(option)}>
+                  <div className="flex items-center justify-between w-full">
+                    <span className="text-ascent-1">{option}</span>
+                    {selectedSearch === option && <FaCheck color="black" />}
+                  </div>
+                </MenuItem>
+              </div>
+            ))}
+          </CustomizeMenu>
 
-          {isDropdownOpen && (
+          {/* {isDropdownOpen && (
             <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
               {isLoading ? (
-                <div className="p-4 text-bgStandard ">{t("Loading...")}</div>
+                <div className="p-4 text-bgStandard ">{t("Loading")}...</div>
               ) : searchResults.length > 0 ? (
                 <ul>
                   {searchResults.map((user) => (
-                    <li
+                    <Link
                       key={user.id}
-                      onClick={() => navigate(`/profile/${user.userId}`)}
+                      to={"/profile/" + user?.userId}
                       className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
                     >
                       <img
@@ -142,8 +218,96 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
                           {user.username}
                         </p>
                       </div>
-                    </li>
+                    </Link>
                   ))}
+                </ul>
+              ) : (
+                <div className="p-4 text-sm text-bgStandard">
+                  {t("No results found...")}
+                </div>
+              )}
+            </div>
+          )} */}
+          {isDropdownOpen && (
+            <div className="absolute -bottom-31 mt-1 left-0 w-[16rem] bg-primary border-1 border-borderNewFeed shadow-newFeed rounded-2xl shadow-md z-50 max-h-60 overflow-auto">
+              {isLoading ? (
+                <div className="p-4 text-bgStandard ">{t("Loading")}...</div>
+              ) : searchResults.length > 0 ? (
+                <ul>
+                  {selectedSearch === "User" &&
+                    searchResults.map((user) => (
+                      <Link
+                        key={user.id}
+                        to={"/profile/" + user?.userId}
+                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                      >
+                        <img
+                          src={user?.imageUrl ?? BlankAvatar}
+                          alt=""
+                          className="w-10 h-10 rounded-full object-cover"
+                        />
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-sm text-bgStandard">
+                            {user.firstName} {user.lastName}
+                          </p>
+                          <p className="text-xs text-bgStandard">
+                            {user.username}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  {selectedSearch === "Post" &&
+                    searchResults.map((post) => (
+                      <Link
+                        key={post.id}
+                        to={"/post/" + post?.postId}
+                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                      >
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-sm text-bgStandard">
+                            {post.title}
+                          </p>
+                          <p className="text-xs text-bgStandard">
+                            {post.content}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+                  {selectedSearch === "Hashtag" &&
+                    searchResults.map((post) => (
+                      <Link
+                        key={post.id}
+                        to={"/post/" + post?.postId}
+                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                      >
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-sm text-bgStandard">
+                            {post.title}
+                          </p>
+                          <p className="text-xs text-bgStandard">
+                            {post.content}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
+
+                  {selectedSearch === "Keyword" &&
+                    searchResults.map((post) => (
+                      <Link
+                        key={post.id}
+                        to={"/post/" + post?.postId}
+                        className="px-4 py-2 flex gap-2 items-center hover:bg-gray-100 bg-primary cursor-pointer"
+                      >
+                        <div className="flex flex-col gap-y-1">
+                          <p className="text-sm text-bgStandard">
+                            {post.title}
+                          </p>
+                          <p className="text-xs text-bgStandard">
+                            {post.content}
+                          </p>
+                        </div>
+                      </Link>
+                    ))}
                 </ul>
               ) : (
                 <div className="p-4 text-sm text-bgStandard">

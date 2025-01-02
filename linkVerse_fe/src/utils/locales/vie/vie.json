@@ -55,6 +55,7 @@
     "Drop your file here": "Thả tập tin của bạn tại đây",
     "Drag and drop file here or click to upload": "Kéo và thả tập tin ở đây hoặc nhấn để tải lên",
     "Visibility": "Hiển thị",
+    "Translate to": "Dịch sang",
     "Copy": "Sao chép",
     "Copied": "Đã sao chép",
     "Show less": "Hiển thị ít hơn",
@@ -142,5 +143,7 @@
     "Friend suggestion": "Bạn bè đề xuất",
     "Friend requests": "Lời mời kết bạn",
     "Accept": "Chấp nhận",
-    "Deny": "Từ chối"
+    "Deny": "Từ chối",
+    "Loading": "Đang tải",
+    "System management": "Quản trị hệ thống"
 }

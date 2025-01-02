@@ -495,7 +495,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
                 >
                   <div className="flex items-center justify-between w-full">
                     <span className="text-bgStandard">
-                      Translate to {post?.language === "vi" ? "en" : "vie"}
+                      {t("Dịch sang")} {post?.language === "vi" ? "en" : "vie"}
                     </span>
                     <MdOutlineGTranslate className="text-bgStandard" />
                   </div>
