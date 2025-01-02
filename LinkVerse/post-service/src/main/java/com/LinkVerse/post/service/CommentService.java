@@ -167,16 +167,19 @@ public class CommentService {
                 .build();
     }
 
-    public ApiResponse<PostResponse> deleteComment(String commentId) {
+    public ApiResponse<PostResponse> deleteComment(String postId, String commentId) {
+        // Find the post by its ID
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Find the comment by its ID
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
-
-        Post post = postRepository.findById(comment.getPostId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
 
+        // Check if the user is the owner of the comment or the owner of the post
         if (!comment.getUserId().equals(currentUserId) && !post.getUserId().equals(currentUserId)) {
             return ApiResponse.<PostResponse>builder()
                     .code(HttpStatus.FORBIDDEN.value())
@@ -184,12 +187,15 @@ public class CommentService {
                     .build();
         }
 
+        // Remove the comment from the post
         post.getComments().remove(comment);
         post.setCommentCount(post.getComments().size());
         postRepository.save(post);
 
+        // Delete the comment from the CommentRepository
         commentRepository.delete(comment);
 
+        // Map the updated post to the response
         PostResponse postResponse = postMapper.toPostResponse(post);
 
         return ApiResponse.<PostResponse>builder()

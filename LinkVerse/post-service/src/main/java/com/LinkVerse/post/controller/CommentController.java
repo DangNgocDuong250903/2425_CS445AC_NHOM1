@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
+@RequestMapping("/comments")
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -50,9 +51,11 @@ public class CommentController {
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 
-    @DeleteMapping("/{commentId}")
-    public ResponseEntity<ApiResponse<PostResponse>> deleteComment(@PathVariable String commentId) {
-        ApiResponse<PostResponse> response = commentService.deleteComment(commentId);
+    @DeleteMapping("/{postId}/comments/{commentId}")
+    public ResponseEntity<ApiResponse<PostResponse>> deleteComment(
+            @PathVariable String postId,
+            @PathVariable String commentId) {
+        ApiResponse<PostResponse> response = commentService.deleteComment(postId, commentId);
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 }
