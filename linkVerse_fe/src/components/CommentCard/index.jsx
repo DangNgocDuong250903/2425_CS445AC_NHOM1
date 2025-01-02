@@ -1,51 +1,28 @@
 import moment from "moment";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import { BiComment, BiLike } from "react-icons/bi";
+import { Link, useNavigate } from "react-router-dom";
+import { BiLike } from "react-icons/bi";
 import { BiSolidLike } from "react-icons/bi";
-import { MdOutlineDelete } from "react-icons/md";
 import { BlankAvatar } from "~/assets";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { Button, CustomizeMenu, DialogCustom } from "..";
+import { CustomizeMenu, DialogCustom } from "..";
 import { BiCommentDetail } from "react-icons/bi";
-import {
-  Divider,
-  FormControl,
-  MenuItem,
-  Select,
-  styled,
-  TextField,
-} from "@mui/material";
-import { PiShareFat } from "react-icons/pi";
-import { FiBookmark } from "react-icons/fi";
-import { TbMessageReport } from "react-icons/tb";
+import { Divider, MenuItem, styled } from "@mui/material";
 import { RiAttachment2 } from "react-icons/ri";
-import { ImUserMinus } from "react-icons/im";
 import { useSelector } from "react-redux";
 import { getBase64 } from "~/utils";
-import { PiGifThin } from "react-icons/pi";
-import { FaPhotoVideo } from "react-icons/fa";
-import { BsImages } from "react-icons/bs";
-import { IoCloseCircle } from "react-icons/io5";
-import { FaRegTrashCan, FaEarthAmericas } from "react-icons/fa6";
-import { FaRegEdit } from "react-icons/fa";
+import { FaRegTrashCan } from "react-icons/fa6";
 import { IoPaperPlaneOutline } from "react-icons/io5";
-import { BiSolidLockAlt, BiDislike, BiSolidDislike } from "react-icons/bi";
-import { FaRegGrinStars } from "react-icons/fa";
-import * as UserService from "~/services/UserService";
+import { BiDislike, BiSolidDislike } from "react-icons/bi";
 import * as PostService from "~/services/PostService";
 import CreateComment from "../CreateComment";
 import useGetDetailUserById from "~/hooks/useGetDetailUserById";
 
-const CommentCard = ({ comment, isShowImage, postId }) => {
+const CommentCard = ({ comment, isShowImage, postId, onSuccess }) => {
   const theme = useSelector((state) => state.theme.theme);
-  // const user = useSelector((state) => state.user);
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
   const [showAll, setShowAll] = useState(0);
-  const [showReply, setShowReply] = useState(0);
-  const [comments, setComments] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [replyComments, setReplyComments] = useState(0);
   const [showComments, setShowComments] = useState(0);
   const [like, setLike] = useState(false);
@@ -54,7 +31,6 @@ const CommentCard = ({ comment, isShowImage, postId }) => {
   const { user } = useGetDetailUserById({ id: comment?.userId });
   const [likeCount, setLikeCount] = useState(comment?.like || 0);
   const [dislikeCount, setDislikeCount] = useState(comment?.unlike || 0);
-  const getComments = async () => {};
 
   const handleLike = () => {
     setLike(like === true ? false : true);
@@ -69,14 +45,6 @@ const CommentCard = ({ comment, isShowImage, postId }) => {
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const StyledDivider = styled(Divider)(({ theme }) => ({
-    borderColor: theme.colorSchemes.light.border,
-    margin: `${theme.spacing(0.5)} 0`,
-    ...theme.applyStyles("dark", {
-      borderColor: theme.colorSchemes.dark.border,
-    }),
-  }));
 
   //preview img
   const imgRef = useRef(null);
@@ -126,7 +94,9 @@ const CommentCard = ({ comment, isShowImage, postId }) => {
   const handleDeleteComment = async (commentId) => {
     try {
       const res = await PostService.deleteComment({ postId, commentId, token });
-      console.log(res);
+      if (res) {
+        onSuccess();
+      }
     } catch (error) {}
   };
 
@@ -243,9 +213,7 @@ const CommentCard = ({ comment, isShowImage, postId }) => {
                     <FaRegTrashCan className="text-red-600" />
                   </div>
                 </MenuItem>
-                <MenuItem
-                  onClick={() => handleDeleteComment(comment?.commentId)}
-                >
+                <MenuItem onClick={() => handleDeleteComment(comment?.id)}>
                   <div className="flex items-center justify-between w-full">
                     <span className="text-red-600">Delete</span>
                     <RiAttachment2 className="text-red-600" />

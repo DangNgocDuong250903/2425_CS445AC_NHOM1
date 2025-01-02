@@ -27,6 +27,7 @@ import useCopyToClipboard from "~/hooks/useCopyToClipboard";
 import { useTranslation } from "react-i18next";
 import { MdOutlineGTranslate } from "react-icons/md";
 import { Skeleton } from "antd";
+import useGetDetailUserById from "~/hooks/useGetDetailUserById";
 
 const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const theme = useSelector((state) => state.theme.theme);
@@ -48,7 +49,6 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const [duration, setDuration] = useState("");
   const { isCopied, copyToClipboard } = useCopyToClipboard();
   const [translateLoading, setTranslateLoading] = useState(false);
-  const [user, setUser] = useState(null);
   const [changeVisibility, setChangeVisibility] = useState(false);
   const handleCloseChangeVisibility = () => setChangeVisibility(false);
   const handleCloseAlert = () => setOpenAlert(false);
@@ -67,6 +67,7 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
   const handleCloseMessage = () => setOpenMessage(false);
+  const { user } = useGetDetailUserById({ id: post?.userId });
 
   const StyledDivider = styled(Divider)(({ theme }) => ({
     borderColor: theme.colorSchemes.light.border,
@@ -127,15 +128,6 @@ const PostCard = ({ post, isShowImage, onSuccess, fetchPosts }) => {
     setFile(null);
     setImg("");
   };
-
-  const fetchDetailUser = async ({ id, token }) => {
-    const res = await UserService.getDetailUserByUserId({ id, token });
-    setUser(res?.result);
-  };
-
-  useEffect(() => {
-    fetchDetailUser({ id: post?.userId, token });
-  }, []);
 
   //like
   const handleLike = async (id) => {

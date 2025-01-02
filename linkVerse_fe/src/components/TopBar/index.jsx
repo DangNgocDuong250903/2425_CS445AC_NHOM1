@@ -21,6 +21,7 @@ import { IoOptionsOutline } from "react-icons/io5";
 import { MenuItem } from "@mui/material";
 import { FaCheck } from "react-icons/fa6";
 import { IoClose } from "react-icons/io5";
+import useGetBlockList from "~/hooks/useGetBlockList";
 
 const TopBar = ({ title, iconBack, selectPosts }) => {
   const { t } = useTranslation();
@@ -42,19 +43,74 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
   const handleChangeSearch = (e) => setKeyword(e.target.value);
   const [page, setPage] = useState(1);
   const [size, setSize] = useState(10);
+  const { blocks } = useGetBlockList();
 
+  // const handleSearch = async () => {
+  //   setIsLoading(true);
+  //   try {
+  //     if (selectedSearch === "User") {
+  //       const res = await SearchService.searchUser({
+  //         token,
+  //         keyword: searchUser,
+  //       });
+  //       if (res.code === 1000) {
+  //         setSearchResults(res.result.items || []);
+  //       } else {
+  //         setSearchResults([]);
+  //       }
+  //     } else if (selectedSearch === "Post") {
+  //       const res = await SearchService.searchPost({
+  //         size,
+  //         page,
+  //         keyword,
+  //         token,
+  //       });
+  //       if (res.code === 200) {
+  //         setSearchResults(res.result.data || []);
+  //       } else {
+  //         setSearchResults([]);
+  //       }
+  //     } else if (selectedSearch === "Hashtag") {
+  //       const res = await SearchService.searchPostByHashTag({
+  //         hashtag: keyword,
+  //         token,
+  //       });
+  //       if (res.code === 200) {
+  //         setSearchResults(res.result || []);
+  //       } else {
+  //         setSearchResults([]);
+  //       }
+  //     } else if (selectedSearch === "Keyword") {
+  //       const res = await SearchService.searchPostByKeyword({
+  //         keyword,
+  //         token,
+  //       });
+  //       if (res.code === 200) {
+  //         setSearchResults(res.result || []);
+  //       } else {
+  //         setSearchResults([]);
+  //       }
+  //     } else {
+  //       setSearchResults([]);
+  //     }
+  //   } catch (error) {
+  //     console.error("Error fetching search results:", error);
+  //     setSearchResults([]);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSearch = async () => {
     setIsLoading(true);
     try {
+      let results = [];
       if (selectedSearch === "User") {
         const res = await SearchService.searchUser({
           token,
           keyword: searchUser,
         });
         if (res.code === 1000) {
-          setSearchResults(res.result.items || []);
-        } else {
-          setSearchResults([]);
+          results = res.result.items || [];
         }
       } else if (selectedSearch === "Post") {
         const res = await SearchService.searchPost({
@@ -64,9 +120,7 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
           token,
         });
         if (res.code === 200) {
-          setSearchResults(res.result.data || []);
-        } else {
-          setSearchResults([]);
+          results = res.result.data || [];
         }
       } else if (selectedSearch === "Hashtag") {
         const res = await SearchService.searchPostByHashTag({
@@ -74,9 +128,7 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
           token,
         });
         if (res.code === 200) {
-          setSearchResults(res.result || []);
-        } else {
-          setSearchResults([]);
+          results = res.result || [];
         }
       } else if (selectedSearch === "Keyword") {
         const res = await SearchService.searchPostByKeyword({
@@ -84,13 +136,13 @@ const TopBar = ({ title, iconBack, selectPosts }) => {
           token,
         });
         if (res.code === 200) {
-          setSearchResults(res.result || []);
-        } else {
-          setSearchResults([]);
+          results = res.result || [];
         }
-      } else {
-        setSearchResults([]);
       }
+      results = results.filter(
+        (user) => !blocks.some((block) => block.userId === user.userId)
+      );
+      setSearchResults(results);
     } catch (error) {
       console.error("Error fetching search results:", error);
       setSearchResults([]);

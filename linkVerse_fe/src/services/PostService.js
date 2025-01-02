@@ -82,7 +82,7 @@ export const comment = async ({ id, token, data }) => {
     } else {
         formData.append('files', new Blob([]));
     }
-    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/${id}/comment-file`, formData, {
+    const res = await axiosJWT.post(`${import.meta.env.VITE_API_URL_BACKEND}/post/comments/${id}/comment-file`, formData, {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -91,7 +91,7 @@ export const comment = async ({ id, token, data }) => {
 }
 
 export const deleteComment = async ({ postId, commentId, token }) => {
-    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/post/${postId}/comments/${commentId}`, {
+    const res = await axiosJWT.delete(`${import.meta.env.VITE_API_URL_BACKEND}/post/comments/${postId}/comments/${commentId}`, {
         headers: {
             Authorization: `Bearer ${token}`
         }

@@ -33,6 +33,7 @@ import { PiDotsThreeCircleLight } from "react-icons/pi";
 import { MdAddAPhoto } from "react-icons/md";
 import { ImUserMinus } from "react-icons/im";
 import { useTranslation } from "react-i18next";
+import useGetDetailUserById from "~/hooks/useGetDetailUserById";
 
 const ProfilePage = () => {
   const theme = useSelector((state) => state.theme.theme);
@@ -54,7 +55,6 @@ const ProfilePage = () => {
   const { requestsSend } = useGetRequestSend();
   const { friendOfUser } = useGetFriendOfUser();
   const { t } = useTranslation();
-  const [user, setUser] = useState({});
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [pendingRequests, setPendingRequests] = useState([]);
@@ -63,6 +63,7 @@ const ProfilePage = () => {
   const [isAccept, setIsAccept] = useState(false);
   const { isCopied, error, copyToClipboard } = useCopyToClipboard();
   const [openConfirm, setOpenConfirm] = useState(false);
+  const { user } = useGetDetailUserById({ id: id });
 
   const handleOpenMenu = (event) => {
     setAnchorEl(event.currentTarget);
@@ -140,20 +141,6 @@ const ProfilePage = () => {
 
   useEffect(() => {
     fetchMyPosts({ id, token, page });
-  }, []);
-
-  //fetch detail user
-  const fetchDetailUser = async ({ id, token }) => {
-    try {
-      const res = await UserService.getDetailUserByUserId({ id, token });
-      if (res?.code === 1000) {
-        setUser(res?.result);
-      }
-    } catch (error) {}
-  };
-
-  useEffect(() => {
-    fetchDetailUser({ id, token });
   }, []);
 
   const handleSuccess = () => {

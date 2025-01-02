@@ -1,29 +1,15 @@
-import { CircularProgress, MenuItem } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
-import { FiBookmark } from "react-icons/fi";
-import { useSelector } from "react-redux";
-import { BlankAvatar } from "~/assets";
-import { CreatePost, CustomizeMenu, PostCard, TopBar } from "~/components";
+import { CreatePost, TopBar } from "~/components";
 import SavedCard from "~/components/SavedCard";
 import * as PostService from "~/services/PostService";
 
 const SavedsPage = () => {
-  const theme = useSelector((state) => state.theme.theme);
-  const [anchorEl, setAnchorEl] = useState(null);
   const token = localStorage.getItem("token");
   const [loading, setLoading] = useState(false);
   const [posts, setPosts] = useState([]);
   const { t } = useTranslation();
-
-  const open = Boolean(anchorEl);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
 
   const fetchSaveds = async (token) => {
     setLoading(true);

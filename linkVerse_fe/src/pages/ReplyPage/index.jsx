@@ -50,7 +50,7 @@ const ReplyPage = () => {
     queryFn: getPost,
   });
 
-  const { isLoading, data: post } = queryPost;
+  const { isLoading, data: post, refetch: refetchPost } = queryPost;
 
   const fetchDetailUser = async ({ id, token }) => {
     const res = await UserService.getDetailUserByUserId({ id, token });
@@ -88,6 +88,10 @@ const ReplyPage = () => {
     }
   }, [selectedKey, post?.comments]);
 
+  const handleSuccess = () => {
+    refetchPost();
+  };
+
   return (
     <div className="w-full lg:px-10 pb-10 2xl:px-50 bg-bgColor h-screen overflow-hidden">
       <TopBar title={t("Trả lời")} iconBack />
@@ -102,10 +106,12 @@ const ReplyPage = () => {
           {/* sort */}
           <div className="w-full flex flex-col">
             <div className="px-6">
-              <span className="font-semibold">{t("Trả lời")}</span>
+              <span className="font-semibold text-ascent-1">
+                {t("Trả lời")}
+              </span>
             </div>
             <div className="w-full flex gap-2 px-1 items-center">
-              <div className="flex-1 border-t"></div>
+              <div className="flex-1 border-t border-borderNewFeed"></div>
               <div className="flex-shrink-0">
                 <span className="text-sm text-ascent-2">{t("Sắp xếp")}: </span>
                 <Dropdown
@@ -118,7 +124,7 @@ const ReplyPage = () => {
                   }}
                 >
                   <Space>
-                    <span className="text-sm text-ascent-1">
+                    <span className="text-sm text-ascent-2">
                       {items[selectedKey].label}
                     </span>
                     <IoIosArrowDown size={18} className="text-ascent-1" />
@@ -135,6 +141,7 @@ const ReplyPage = () => {
                 key={i}
                 comment={comment}
                 postId={post?.id}
+                onSuccess={handleSuccess}
               />
             ))}
           </div>
