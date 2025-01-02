@@ -19,6 +19,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -167,11 +171,10 @@ public class GroupService {
     }
 
     @Transactional
-    public ApiResponse<List<GroupResponse>> getAllGroup() {
-        List<Group> groups = groupRepository.findAll();
-
-        // chưa tạo mapper
-        List<GroupResponse> groupResponses = groups.stream()
+    public ApiResponse<Page<GroupResponse>> getAllGroup(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Group> groupPage = groupRepository.findAll(pageable);
+        List<GroupResponse> groupResponses = groupPage.getContent().stream()
                 .map(group -> GroupResponse.builder()
                         .id(group.getId())
                         .name(group.getName())
@@ -180,11 +183,12 @@ public class GroupService {
                         .visibility(group.getVisibility().name())
                         .build())
                 .toList();
+        Page<GroupResponse> responsePage = new PageImpl<>(groupResponses, pageable, groupPage.getTotalElements());
 
-        return ApiResponse.<List<GroupResponse>>builder()
+        return ApiResponse.<Page<GroupResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách nhóm thành công")
-                .result(groupResponses)
+                .result(responsePage)
                 .build();
     }
 

@@ -9,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +52,7 @@ public class GroupController {
     }
 
     @GetMapping("/all")
-    public ApiResponse<List<GroupResponse>> getAllGroup() {
-        return groupService.getAllGroup();
+    public ApiResponse<Page<GroupResponse>> getAllGroup(@RequestParam int page, @RequestParam int size) {
+        return groupService.getAllGroup(page, size);
     }
 }

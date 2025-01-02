@@ -23,6 +23,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -222,9 +226,14 @@ public class UserService {
         userRepository.delete(user);
     }
 
-    public List<UserResponse> getUsers() {
+    public Page<UserResponse> getUsers(int page, int size) {
         log.info("In method get Users");
-        return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User> userPage = userRepository.findAll(pageable);
+        List<UserResponse> userResponses = userPage.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .toList();
+        return new PageImpl<>(userResponses, pageable, userPage.getTotalElements());
     }
 
     public UserResponse getUser(String id) {

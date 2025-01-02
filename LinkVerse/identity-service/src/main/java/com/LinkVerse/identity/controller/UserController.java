@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -53,9 +54,9 @@ public class UserController {
     }
 
     @GetMapping
-    ApiResponse<List<UserResponse>> getUsers() {
-        return ApiResponse.<List<UserResponse>>builder()
-                .result(userService.getUsers())
+    ApiResponse<Page<UserResponse>> getUsers(@RequestParam int page, @RequestParam int size) {
+        return ApiResponse.<Page<UserResponse>>builder()
+                .result(userService.getUsers(page, size))
                 .build();
     }
 
