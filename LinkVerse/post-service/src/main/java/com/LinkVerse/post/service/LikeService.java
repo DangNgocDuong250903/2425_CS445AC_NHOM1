@@ -120,7 +120,8 @@ public class LikeService {
                     .build();
         }
 
-        // Update the unlike count
+        // Update the like and unlike counts
+        post.setLike(post.getLike() - 1);
         post.setUnlike(post.getUnlike() + 1);
 
         // Remove user ID from the list of users who liked the post
@@ -225,8 +226,8 @@ public class LikeService {
                     .build();
         }
 
-        // Update the unlike count
-        comment.setUnlike(comment.getUnlike() + 1);
+        // Update the like count
+        comment.setLike(comment.getLike() - 1);
 
         // Remove user ID from the list of users who liked the comment
         comment.getLikedUserIds().remove(userId);
