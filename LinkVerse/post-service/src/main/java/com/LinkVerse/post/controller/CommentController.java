@@ -2,6 +2,7 @@ package com.LinkVerse.post.controller;
 
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
+import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -42,22 +43,23 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
+
     @PutMapping("/{postId}/comments/{commentId}")
-    public ResponseEntity<ApiResponse<PostResponse>> updateComment(
+    public ResponseEntity<ApiResponse<CommentResponse>> editComment(
             @PathVariable String postId,
             @PathVariable String commentId,
             @RequestParam("request") String requestJson,
-            @RequestParam("files") List<MultipartFile> files) throws IOException {
+            @RequestParam(value = "files", required = false) List<MultipartFile> files) throws IOException {
 
         // Convert JSON string to CommentRequest object
         ObjectMapper objectMapper = new ObjectMapper();
-        CommentRequest request = objectMapper.readValue(requestJson, CommentRequest.class);
+        CommentRequest commentRequest = objectMapper.readValue(requestJson, CommentRequest.class);
 
-        // Invoke the service to update a comment with files
-        ApiResponse<PostResponse> response = commentService.updateComment(postId, commentId, request, files);
+        // Invoke the service to edit a comment with files
+        ApiResponse<CommentResponse> response = commentService.editComment(postId, commentId, commentRequest, files);
 
         // Return the response
-        return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
     @DeleteMapping("/{postId}/comments/{commentId}")
