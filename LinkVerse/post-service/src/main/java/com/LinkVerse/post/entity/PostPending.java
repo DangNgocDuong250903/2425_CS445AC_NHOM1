@@ -16,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Document(value = "post_group")
+@Document(value = "post_pending")
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PostPending {
     @MongoId

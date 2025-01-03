@@ -47,7 +47,7 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             "/users/random",
             "/identity/users/random",
             "/profile/users/random",
-            "/post/all", "/all", "/ws", "/ws/**",
+            "/post/all", "/all",
             "/groups/all", "/identity/groups/all",
 
             "/users/registration", "/auth/token", "/auth/introspect", "/auth/logout", "/auth/refresh",

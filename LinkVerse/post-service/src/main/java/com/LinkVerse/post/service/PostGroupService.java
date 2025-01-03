@@ -56,6 +56,7 @@ public class PostGroupService {
     IdentityServiceClient identityServiceClient;
     PostPendingRepository postPendingRepository;
 
+    @Transactional
     public ApiResponse<PostGroupResponse> createPostGroup(PostGroupRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
@@ -128,12 +129,10 @@ public class PostGroupService {
                         .language(post.getLanguage())
                         .keywords(post.getKeywords())
                         .build();
-                postPending = postPendingRepository.save(postPending);
+                postPendingRepository.save(postPending);
             }
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
-
-            post = postGroupRepository.save(post);
 
             PostGroupResponse postResponse = postMapper.toPostGroupResponse(post);
 
@@ -203,11 +202,7 @@ public class PostGroupService {
                     .build();
         }
 
-        var pageData = postGroupRepository.findAll(pageable);
-
-        List<PostGroup> posts = pageData.getContent().stream()
-                .filter(post -> groupId.equals(post.getGroupId())) // Use equals method to compare strings
-                .toList();
+        Page<PostGroup> pageData = postGroupRepository.findByGroupId(groupId, pageable);
 
         return ApiResponse.<PageResponse<PostGroupResponse>>builder()
                 .code(HttpStatus.OK.value())
@@ -217,7 +212,7 @@ public class PostGroupService {
                         .pageSize(size)
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(posts.stream()
+                        .data(pageData.getContent().stream()
                                 .map(postMapper::toPostGroupResponse)
                                 .collect(Collectors.toList()))
                         .build())
@@ -226,11 +221,7 @@ public class PostGroupService {
 
     public ApiResponse<PageResponse<PostPendingResponse>> getAllPendingPosts(int page, int size, String groupId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.asc("createdDate")));
-        Page<PostPending> pageData = postPendingRepository.findAll(pageable);
-
-        List<PostPending> pendingPosts = pageData.getContent().stream()
-                .filter(post -> groupId.equals(post.getGroupId()))
-                .toList();
+        Page<PostPending> pageData = postPendingRepository.findByGroupId(groupId, pageable);
 
         return ApiResponse.<PageResponse<PostPendingResponse>>builder()
                 .code(HttpStatus.OK.value())
@@ -240,7 +231,7 @@ public class PostGroupService {
                         .pageSize(size)
                         .totalPage(pageData.getTotalPages())
                         .totalElement(pageData.getTotalElements())
-                        .data(pendingPosts.stream()
+                        .data(pageData.getContent().stream()
                                 .map(postMapper::toPostPendingResponse)
                                 .collect(Collectors.toList()))
                         .build())

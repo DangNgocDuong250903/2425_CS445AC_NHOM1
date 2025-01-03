@@ -13,6 +13,7 @@ import java.util.List;
 @EnableMongoRepositories
 public interface PostGroupRepository extends MongoRepository<PostGroup, String> {
 
+    Page<PostGroup> findByGroupId(String groupId, Pageable pageable);
 
     Page<PostGroup> findAllByUserId(String userId, Pageable pageable);
 
