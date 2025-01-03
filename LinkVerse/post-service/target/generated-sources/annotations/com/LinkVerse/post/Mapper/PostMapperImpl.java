@@ -2,10 +2,12 @@ package com.LinkVerse.post.Mapper;
 
 import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostGroupResponse;
+import com.LinkVerse.post.dto.response.PostPendingResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostGroup;
+import com.LinkVerse.post.entity.PostPending;
 import com.LinkVerse.post.entity.SharedPost;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,6 +76,35 @@ public class PostMapperImpl implements PostMapper {
         postGroupResponse.primarySentiment( post.getPrimarySentiment() );
 
         return postGroupResponse.build();
+    }
+
+    @Override
+    public PostPendingResponse toPostPendingResponse(PostPending post) {
+        if ( post == null ) {
+            return null;
+        }
+
+        PostPendingResponse.PostPendingResponseBuilder postPendingResponse = PostPendingResponse.builder();
+
+        postPendingResponse.groupId( post.getGroupId() );
+        postPendingResponse.id( post.getId() );
+        postPendingResponse.content( post.getContent() );
+        List<String> list = post.getImageUrl();
+        if ( list != null ) {
+            postPendingResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        postPendingResponse.userId( post.getUserId() );
+        postPendingResponse.createdDate( post.getCreatedDate() );
+        postPendingResponse.modifiedDate( post.getModifiedDate() );
+        postPendingResponse.like( post.getLike() );
+        postPendingResponse.unlike( post.getUnlike() );
+        postPendingResponse.commentCount( post.getCommentCount() );
+        postPendingResponse.comments( commentListToCommentResponseList( post.getComments() ) );
+        postPendingResponse.sharedPost( sharedPostListToPostPendingResponseList( post.getSharedPost() ) );
+        postPendingResponse.language( post.getLanguage() );
+        postPendingResponse.primarySentiment( post.getPrimarySentiment() );
+
+        return postPendingResponse.build();
     }
 
     protected CommentResponse commentToCommentResponse(Comment comment) {
@@ -145,6 +176,45 @@ public class PostMapperImpl implements PostMapper {
         List<PostGroupResponse> list1 = new ArrayList<PostGroupResponse>( list.size() );
         for ( SharedPost sharedPost : list ) {
             list1.add( sharedPostToPostGroupResponse( sharedPost ) );
+        }
+
+        return list1;
+    }
+
+    protected PostPendingResponse sharedPostToPostPendingResponse(SharedPost sharedPost) {
+        if ( sharedPost == null ) {
+            return null;
+        }
+
+        PostPendingResponse.PostPendingResponseBuilder postPendingResponse = PostPendingResponse.builder();
+
+        postPendingResponse.id( sharedPost.getId() );
+        postPendingResponse.content( sharedPost.getContent() );
+        List<String> list = sharedPost.getImageUrl();
+        if ( list != null ) {
+            postPendingResponse.imageUrl( new ArrayList<String>( list ) );
+        }
+        postPendingResponse.userId( sharedPost.getUserId() );
+        postPendingResponse.createdDate( sharedPost.getCreatedDate() );
+        postPendingResponse.modifiedDate( sharedPost.getModifiedDate() );
+        postPendingResponse.like( sharedPost.getLike() );
+        postPendingResponse.unlike( sharedPost.getUnlike() );
+        postPendingResponse.commentCount( sharedPost.getCommentCount() );
+        postPendingResponse.comments( commentListToCommentResponseList( sharedPost.getComments() ) );
+        postPendingResponse.language( sharedPost.getLanguage() );
+        postPendingResponse.primarySentiment( sharedPost.getPrimarySentiment() );
+
+        return postPendingResponse.build();
+    }
+
+    protected List<PostPendingResponse> sharedPostListToPostPendingResponseList(List<SharedPost> list) {
+        if ( list == null ) {
+            return null;
+        }
+
+        List<PostPendingResponse> list1 = new ArrayList<PostPendingResponse>( list.size() );
+        for ( SharedPost sharedPost : list ) {
+            list1.add( sharedPostToPostPendingResponse( sharedPost ) );
         }
 
         return list1;

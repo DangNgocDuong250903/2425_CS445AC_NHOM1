@@ -8,12 +8,10 @@ import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.request.PostGroupRequest;
 import com.LinkVerse.post.dto.response.PostGroupResponse;
+import com.LinkVerse.post.dto.response.PostPendingResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.*;
-import com.LinkVerse.post.repository.HashtagRepository;
-import com.LinkVerse.post.repository.PostGroupRepository;
-import com.LinkVerse.post.repository.PostHistoryRepository;
-import com.LinkVerse.post.repository.PostRepository;
+import com.LinkVerse.post.repository.*;
 import com.LinkVerse.post.repository.client.IdentityServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
@@ -30,6 +28,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.net.URLDecoder;
@@ -55,6 +54,7 @@ public class PostGroupService {
     RekognitionService rekognitionService;
     SentimentAnalysisService sentimentAnalysisService;
     IdentityServiceClient identityServiceClient;
+    PostPendingRepository postPendingRepository;
 
     public ApiResponse<PostGroupResponse> createPostGroup(PostGroupRequest request, List<MultipartFile> files) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -79,7 +79,6 @@ public class PostGroupService {
             List<String> fileUrls = (files != null && files.stream().anyMatch(file -> !file.isEmpty()))
                     ? s3Service.uploadFiles(files.stream().filter(file -> !file.isEmpty()).collect(Collectors.toList()))
                     : List.of();
-            //1 mang luu tru cac file anh an toan, neu co file anh khong an toan thi xoa file do
             List<String> safeFileUrls = new ArrayList<>();
             for (String fileUrl : fileUrls) {
                 String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
@@ -112,7 +111,25 @@ public class PostGroupService {
             List<String> keywordIds = extractedKeywords.stream().map(Keyword::getId).collect(Collectors.toList());
             post.setKeywords(keywordIds);
 
-            post = postGroupRepository.save(post);
+            boolean isPublic = identityServiceClient.isPublic(request.getGroupId());
+            if (isPublic) {
+                post = postGroupRepository.save(post);
+            } else {
+                PostPending postPending = PostPending.builder()
+                        .content(post.getContent())
+                        .userId(post.getUserId())
+                        .imageUrl(post.getImageUrl())
+                        .createdDate(post.getCreatedDate())
+                        .modifiedDate(post.getModifiedDate())
+                        .groupId(post.getGroupId())
+                        .like(post.getLike())
+                        .unlike(post.getUnlike())
+                        .comments(post.getComments())
+                        .language(post.getLanguage())
+                        .keywords(post.getKeywords())
+                        .build();
+                postPending = postPendingRepository.save(postPending);
+            }
 
             sentimentAnalysisService.analyzeAndSaveSentiment(post);
 
@@ -206,6 +223,73 @@ public class PostGroupService {
                         .build())
                 .build();
     }
+
+    public ApiResponse<PageResponse<PostPendingResponse>> getAllPendingPosts(int page, int size, String groupId) {
+        Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.asc("createdDate")));
+        Page<PostPending> pageData = postPendingRepository.findAll(pageable);
+
+        List<PostPending> pendingPosts = pageData.getContent().stream()
+                .filter(post -> groupId.equals(post.getGroupId()))
+                .toList();
+
+        return ApiResponse.<PageResponse<PostPendingResponse>>builder()
+                .code(HttpStatus.OK.value())
+                .message("Pending posts retrieved successfully")
+                .result(PageResponse.<PostPendingResponse>builder()
+                        .currentPage(page)
+                        .pageSize(size)
+                        .totalPage(pageData.getTotalPages())
+                        .totalElement(pageData.getTotalElements())
+                        .data(pendingPosts.stream()
+                                .map(postMapper::toPostPendingResponse)
+                                .collect(Collectors.toList()))
+                        .build())
+                .build();
+    }
+
+    @Transactional
+    public ApiResponse<PostGroupResponse> approvePendingPost(String postId, String groupId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        boolean isOwnerOrLeader = identityServiceClient.isOwnerOrLeader(groupId);
+        if (!isOwnerOrLeader) {
+            return ApiResponse.<PostGroupResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("User is not authorized to approve posts.")
+                    .build();
+        }
+
+        PostPending pendingPost = postPendingRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Pending post not found"));
+
+        // chuyển từ PostPending sang PostGroup
+        PostGroup postGroup = PostGroup.builder()
+                .content(pendingPost.getContent())
+                .userId(pendingPost.getUserId())
+                .imageUrl(pendingPost.getImageUrl())
+                .createdDate(pendingPost.getCreatedDate())
+                .modifiedDate(pendingPost.getModifiedDate())
+                .groupId(pendingPost.getGroupId())
+                .like(pendingPost.getLike())
+                .unlike(pendingPost.getUnlike())
+                .comments(pendingPost.getComments())
+                .language(pendingPost.getLanguage())
+                .keywords(pendingPost.getKeywords())
+                .build();
+
+        postGroup = postGroupRepository.save(postGroup);
+        postPendingRepository.delete(pendingPost);
+
+        PostGroupResponse postResponse = postMapper.toPostGroupResponse(postGroup);
+
+        return ApiResponse.<PostGroupResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post approved successfully")
+                .result(postResponse)
+                .build();
+    }
+
 
     public ApiResponse<PageResponse<PostGroupResponse>> getUserPost(int page, int size, String userId, String groupId) {
         Pageable pageable = PageRequest.of(page - 1, size, Sort.by(Sort.Order.asc("createdDate")));

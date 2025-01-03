@@ -24,7 +24,7 @@ public class WebClientConfiguration {
     @Bean
     CorsWebFilter corsWebFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
-        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173")); // Allow requests from localhost:5173
+        corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173","http://localhost:5174")); // Allow requests from localhost:5173
         corsConfiguration.setAllowedHeaders(List.of("*")); // Allow all headers
         corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Allow specific HTTP methods
         corsConfiguration.setAllowCredentials(true); // Enable credentials (if cookies or Authorization headers are required)
