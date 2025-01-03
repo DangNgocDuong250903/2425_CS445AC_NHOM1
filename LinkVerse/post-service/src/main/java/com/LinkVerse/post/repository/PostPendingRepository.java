@@ -11,5 +11,6 @@ import java.util.List;
 
 @EnableMongoRepositories
 public interface PostPendingRepository extends MongoRepository<PostPending, String> {
+    Page<PostPending> findByGroupId(String groupId, Pageable pageable);
 
 }
