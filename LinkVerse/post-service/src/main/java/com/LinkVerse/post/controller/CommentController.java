@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping("/comments")
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -43,11 +42,21 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{commentId}")
+    @PutMapping("/{postId}/comments/{commentId}")
     public ResponseEntity<ApiResponse<PostResponse>> updateComment(
+            @PathVariable String postId,
             @PathVariable String commentId,
-            @RequestBody CommentRequest commentRequest) {
-        ApiResponse<PostResponse> response = commentService.updateComment(commentId, commentRequest);
+            @RequestParam("request") String requestJson,
+            @RequestParam("files") List<MultipartFile> files) throws IOException {
+
+        // Convert JSON string to CommentRequest object
+        ObjectMapper objectMapper = new ObjectMapper();
+        CommentRequest request = objectMapper.readValue(requestJson, CommentRequest.class);
+
+        // Invoke the service to update a comment with files
+        ApiResponse<PostResponse> response = commentService.updateComment(postId, commentId, request, files);
+
+        // Return the response
         return new ResponseEntity<>(response, HttpStatus.valueOf(response.getCode()));
     }
 

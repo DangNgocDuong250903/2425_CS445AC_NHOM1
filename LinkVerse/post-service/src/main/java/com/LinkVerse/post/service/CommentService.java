@@ -125,7 +125,7 @@ public class CommentService {
                 .build();
     }
 
-    public ApiResponse<PostResponse> updateComment(String commentId, CommentRequest commentRequest) {
+    public ApiResponse<PostResponse> updateComment(String postId, String commentId, CommentRequest commentRequest, List<MultipartFile> imageFiles) {
         // Validate the comment content
         if (commentRequest == null || commentRequest.getContent() == null || commentRequest.getContent().trim().isEmpty()) {
             return ApiResponse.<PostResponse>builder()
@@ -134,12 +134,24 @@ public class CommentService {
                     .build();
         }
 
+        // Find the post by its ID
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
         // Find the comment by its ID
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new RuntimeException("Comment not found"));
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
+
+        // Check if the post is private and the user is not the owner
+        if (post.getVisibility() == PostVisibility.PRIVATE && !post.getUserId().equals(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("You are not authorized to update comments on this post")
+                    .build();
+        }
 
         // Check if the user is the owner of the comment
         if (!comment.getUserId().equals(currentUserId)) {
@@ -149,13 +161,40 @@ public class CommentService {
                     .build();
         }
 
-        // Update the comment content
-        comment.setContent(commentRequest.getContent());
-        commentRepository.save(comment);
+        List<String> safeFileUrls = new ArrayList<>();
 
-        // Find the post by its ID
-        Post post = postRepository.findById(comment.getPostId())
-                .orElseThrow(() -> new RuntimeException("Post not found"));
+        // Upload files if provided and validate their content
+        if (imageFiles != null && !imageFiles.isEmpty()) {
+            for (MultipartFile file : imageFiles) {
+                if (file != null && !file.isEmpty()) {
+                    try {
+                        // Step 1: Upload file to S3
+                        String fileUrl = s3Service.uploadFile(file);
+
+                        // Step 2: Validate the uploaded image for safety
+                        String fileName = extractFileNameFromUrl(decodeUrl(fileUrl));
+                        S3Object s3Object = s3Service.getObject(fileName);
+
+                        if (rekognitionService.isImageSafe(s3Object)) {
+                            // Step 3: Add only safe image URLs
+                            safeFileUrls.add(fileUrl);
+                            log.info("Safe image added to comment: {}", fileUrl);
+                        } else {
+                            // Step 4: Remove unsafe images from storage
+                            log.warn("Unsafe content detected in file: {}", fileName);
+                            s3Service.deleteFile(fileName);
+                        }
+                    } catch (Exception e) {
+                        log.error("Error during file upload or validation: {}", e.getMessage(), e);
+                    }
+                }
+            }
+        }
+
+        // Update the comment content and image URLs
+        comment.setContent(commentRequest.getContent());
+        comment.setImageUrl(safeFileUrls);
+        commentRepository.save(comment);
 
         // Map the updated post to the response
         PostResponse postResponse = postMapper.toPostResponse(post);
