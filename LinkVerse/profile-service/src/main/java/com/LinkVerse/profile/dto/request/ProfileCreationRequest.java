@@ -29,6 +29,7 @@ public class ProfileCreationRequest {
 
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
+    String imageUrl;
 
     String firstName;
     String lastName;

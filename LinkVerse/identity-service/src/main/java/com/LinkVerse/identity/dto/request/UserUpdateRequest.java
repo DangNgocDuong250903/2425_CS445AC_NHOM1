@@ -33,4 +33,5 @@ public class UserUpdateRequest {
     Date dateOfBirth;
     @Setter
     String city;
+    String bio;
 }

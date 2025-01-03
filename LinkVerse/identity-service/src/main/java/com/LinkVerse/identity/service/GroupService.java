@@ -6,6 +6,7 @@ import com.LinkVerse.identity.dto.response.GroupResponse;
 import com.LinkVerse.identity.dto.response.UserResponse;
 import com.LinkVerse.identity.entity.Group;
 import com.LinkVerse.identity.entity.GroupMember;
+import com.LinkVerse.identity.entity.GroupVisibility;
 import com.LinkVerse.identity.entity.User;
 import com.LinkVerse.identity.exception.AppException;
 import com.LinkVerse.identity.exception.ErrorCode;
@@ -19,11 +20,17 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.Instant;
 import java.util.List;
 
 @Service
@@ -88,6 +95,38 @@ public class GroupService {
                 .build();
     }
 
+    public ApiResponse<GroupResponse> changeGroupVisibility(String groupId, GroupVisibility newVisibility) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new RuntimeException("Group not found"));
+
+        GroupMember groupMember = groupMemberRepository.findByGroupAndUser(group, userRepository.findById(currentUserId)
+                        .orElseThrow(() -> new RuntimeException("User not found")))
+                .orElseThrow(() -> new RuntimeException("You are not a member of this group"));
+
+        if (groupMember.getRole() != GroupMember.MemberRole.OWNER && groupMember.getRole() != GroupMember.MemberRole.LEADER) {
+            throw new RuntimeException("You are not authorized to change the visibility of this group");
+        }
+
+        group.setVisibility(newVisibility);
+        group = groupRepository.save(group);
+
+        GroupResponse groupResponse = GroupResponse.builder()
+                .id(group.getId())
+                .name(group.getName())
+                .description(group.getDescription())
+                .memberCount(group.getMemberCount())
+                .visibility(group.getVisibility().name())
+                .build();
+
+        return ApiResponse.<GroupResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Group visibility updated successfully")
+                .result(groupResponse)
+                .build();
+    }
 
     @Transactional
     public ApiResponse<GroupResponse> addMemberToGroup(String groupId, String memberId) {
@@ -167,11 +206,10 @@ public class GroupService {
     }
 
     @Transactional
-    public ApiResponse<List<GroupResponse>> getAllGroup() {
-        List<Group> groups = groupRepository.findAll();
-
-        // chưa tạo mapper
-        List<GroupResponse> groupResponses = groups.stream()
+    public ApiResponse<Page<GroupResponse>> getAllGroup(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Group> groupPage = groupRepository.findAll(pageable);
+        List<GroupResponse> groupResponses = groupPage.getContent().stream()
                 .map(group -> GroupResponse.builder()
                         .id(group.getId())
                         .name(group.getName())
@@ -180,11 +218,12 @@ public class GroupService {
                         .visibility(group.getVisibility().name())
                         .build())
                 .toList();
+        Page<GroupResponse> responsePage = new PageImpl<>(groupResponses, pageable, groupPage.getTotalElements());
 
-        return ApiResponse.<List<GroupResponse>>builder()
+        return ApiResponse.<Page<GroupResponse>>builder()
                 .code(200)
                 .message("Lấy danh sách nhóm thành công")
-                .result(groupResponses)
+                .result(responsePage)
                 .build();
     }
 
@@ -199,6 +238,28 @@ public class GroupService {
 
         return groupMemberRepository.findByGroupAndUser(group, userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED))).isPresent();
+    }
+
+    @Transactional
+    public boolean isGroupPublic(String groupId) {
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+        return group.getVisibility() == GroupVisibility.PUBLIC;
+    }
+
+    @Transactional
+    public boolean isUserOwnerOrLeader(String groupId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String userId = authentication.getName();
+        Group group = groupRepository.findById(groupId)
+                .orElseThrow(() -> new AppException(ErrorCode.GROUP_NOT_EXIST));
+
+        GroupMember groupMember = groupMemberRepository.findByGroupAndUser(group, userRepository.findById(userId)
+                        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)))
+                .orElseThrow(() -> new AppException(ErrorCode.PERMISSION_DENIED));
+
+        return groupMember.getRole() == GroupMember.MemberRole.OWNER || groupMember.getRole() == GroupMember.MemberRole.LEADER;
     }
 
 }

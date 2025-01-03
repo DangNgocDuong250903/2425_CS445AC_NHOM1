@@ -25,6 +25,7 @@ public class UserResponse {
     Date dateOfBirth;
     String profileId;
     boolean emailVerified;
+    String bio;
     Set<RoleResponse> roles;
     LocalDateTime createdAt;
     String imageUrl;

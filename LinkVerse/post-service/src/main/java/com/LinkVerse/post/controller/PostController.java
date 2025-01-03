@@ -178,6 +178,11 @@ public class PostController {
         return postService.savePost(postId);
     }
 
+    @PostMapping("/{postId}/unsave")
+    public ApiResponse<PostResponse> unSavePost(@PathVariable String postId) {
+        return postService.unSavePost(postId);
+    }
+
     @GetMapping("/saved-posts")
     public ApiResponse<PageResponse<PostResponse>> getSavedPosts(
             @RequestParam(defaultValue = "1") int page,

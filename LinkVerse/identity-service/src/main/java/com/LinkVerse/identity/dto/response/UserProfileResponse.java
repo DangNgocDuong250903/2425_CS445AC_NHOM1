@@ -19,6 +19,7 @@ public class UserProfileResponse {
     String firstName;
     String lastName;
     String phoneNumber;
+    String imageUrl;
     Date dateOfBirth;
     String city;
     Gender gender;

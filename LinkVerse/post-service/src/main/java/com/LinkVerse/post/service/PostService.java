@@ -16,6 +16,7 @@ import com.LinkVerse.post.repository.PostHistoryRepository;
 import com.LinkVerse.post.repository.PostRepository;
 import com.LinkVerse.post.repository.SharedPostRepository;
 import com.LinkVerse.post.repository.client.IdentityServiceClient;
+import com.LinkVerse.post.repository.client.ProfileServiceClient;
 import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.model.S3Object;
 import feign.FeignException;
@@ -39,10 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -66,6 +64,7 @@ public class PostService {
     IdentityServiceClient identityServiceClient;
     TagProcessor tagProcessor;
     HashtagRepository hashtagRepository;
+    ProfileServiceClient profileServiceClient;
 
     public List<Post> getPostsByHashtag(String hashtagName) {
         Hashtag hashtag = hashtagRepository.findByName(hashtagName);
@@ -156,6 +155,8 @@ public class PostService {
 
             try {
                 identityServiceClient.updateImage(currentUserId, post.getImgAvatarUrl());
+                profileServiceClient.updateImage(currentUserId, post.getImgAvatarUrl());
+
             } catch (FeignException e) {
                 log.error("Error updating avatar in profile-service: {}", e.getMessage(), e);
                 return ApiResponse.<PostResponse>builder()
@@ -412,8 +413,8 @@ public class PostService {
                         (post.getVisibility() == PostVisibility.FRIENDS && isFriend(userID, post.getUserId())) ||
                         post.getVisibility() == PostVisibility.PRIVATE)
                 .filter(post -> includeDeleted || !post.isDeleted())
-                .filter(post -> post.getGroupId() == null) // Exclude posts with groupId
-                .collect(Collectors.toList());
+                .filter(post -> post.getGroupId() == null)
+                .toList();
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)
@@ -504,17 +505,32 @@ public class PostService {
     }
 
     public ApiResponse<PageResponse<PostResponse>> getUserPost(int page, int size, String userId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
         Pageable pageable = PageRequest.of(page - 1, size);
-        Page<Post> pageData = postRepository.findPostByUserId(userId, pageable);
+        Page<Post> originalPostsPage = postRepository.findPostByUserId(userId, pageable);
+        Page<SharedPost> sharedPostsPage = sharedPostRepository.findSharedPostByUserId(userId, pageable);
 
-        List<Post> posts = pageData.getContent().stream()
+        boolean isFriend = profileServiceClient.areFriends(currentUserId, userId);
+
+        List<Post> originalPosts = originalPostsPage.getContent().stream()
                 .filter(post -> post.getVisibility() == PostVisibility.PUBLIC ||
-                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(SecurityContextHolder.getContext().getAuthentication().getName())))
+                        (post.getVisibility() == PostVisibility.FRIENDS && isFriend) ||
+                        (post.getVisibility() == PostVisibility.PRIVATE && post.getUserId().equals(currentUserId)))
                 .filter(post -> post.getGroupId() == null)
                 .toList();
 
-        List<Post> modifiablePosts = new ArrayList<>(posts);
-        Collections.shuffle(modifiablePosts);
+        List<Post> sharedPosts = sharedPostsPage.getContent().stream()
+                .filter(sharedPost -> sharedPost.getVisibility() == PostVisibility.PUBLIC ||
+                        (sharedPost.getVisibility() == PostVisibility.FRIENDS && isFriend) ||
+                        (sharedPost.getVisibility() == PostVisibility.PRIVATE && sharedPost.getUserId().equals(currentUserId)))
+                .map(Post.class::cast)
+                .toList();
+
+        List<Post> combinedPosts = new ArrayList<>(originalPosts);
+        combinedPosts.addAll(sharedPosts);
+
+        combinedPosts.sort(Comparator.comparing(Post::getCreatedDate).reversed());
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(HttpStatus.OK.value())
@@ -522,9 +538,9 @@ public class PostService {
                 .result(PageResponse.<PostResponse>builder()
                         .currentPage(page)
                         .pageSize(size)
-                        .totalPage(pageData.getTotalPages())
-                        .totalElement(pageData.getTotalElements())
-                        .data(modifiablePosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
+                        .totalPage(Math.max(originalPostsPage.getTotalPages(), sharedPostsPage.getTotalPages()))
+                        .totalElement(originalPostsPage.getTotalElements() + sharedPostsPage.getTotalElements())
+                        .data(combinedPosts.stream().map(postMapper::toPostResponse).collect(Collectors.toList()))
                         .build())
                 .build();
     }
@@ -578,6 +594,40 @@ public class PostService {
                 .build();
     }
 
+    public ApiResponse<PostResponse> unSavePost(String postId) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        if (post.getVisibility() == PostVisibility.PRIVATE &&
+                !post.getUserId().equals(currentUserId)) {
+            throw new RuntimeException("You are not authorized to unsave this post.");
+        }
+
+        if (!post.getSavedBy().contains(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Post not saved by the user")
+                    .build();
+        }
+
+        post.getSavedBy().remove(currentUserId);
+        post = postRepository.save(post);
+
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Post unsaved successfully")
+                .result(postResponse)
+                .build();
+    }
+
+
+
+
     public ApiResponse<PageResponse<PostResponse>> getAllPostsave(int page, int size) {
         if (page < 1 || size < 1) {
             return ApiResponse.<PageResponse<PostResponse>>builder()
@@ -629,9 +679,8 @@ public class PostService {
         }
     }
 
-    boolean isFriend(String currentUserId, String postUserId) {
-        // TODO nối qua friend-service để check relationship
-        return true;
+    public boolean isFriend(String currentUserId, String postUserId) {
+        return profileServiceClient.areFriends(currentUserId, postUserId);
     }
 
     private String extractFileNameFromUrl(String fileUrl) {

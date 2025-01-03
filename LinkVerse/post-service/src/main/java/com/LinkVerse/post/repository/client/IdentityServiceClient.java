@@ -15,10 +15,15 @@ public interface IdentityServiceClient {
     @PutMapping("/users/{userId}")
     void updateImage(@PathVariable("userId") String userId, @RequestParam("imageFile") String imageFile);
 
+    @GetMapping("/groups/{groupId}/isPublic")
+    boolean isPublic(@PathVariable String groupId);
 
     @GetMapping("/identity/users/{userId}")
     void getUser(@PathVariable("userId") String userId);
 
     @GetMapping("/groups/{groupId}/isUserInGroup")
     boolean isUserInGroup(@PathVariable String groupId);
+
+    @GetMapping("/groups/{groupId}/isOwnerOrLeader")
+    boolean isOwnerOrLeader(@PathVariable String groupId);
 }

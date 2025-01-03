@@ -8,6 +8,7 @@ import com.LinkVerse.post.dto.request.PostGroupRequest;
 import com.LinkVerse.post.dto.request.PostRequest;
 import com.LinkVerse.post.dto.request.SharePostRequest;
 import com.LinkVerse.post.dto.response.PostGroupResponse;
+import com.LinkVerse.post.dto.response.PostPendingResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
 import com.LinkVerse.post.entity.PostVisibility;
@@ -79,6 +80,23 @@ public class PostGroupController {
             @RequestParam String userId,
             @RequestParam String groupId) {
         return postGroupService.getUserPost(page, size, userId, groupId);
+    }
+
+    @GetMapping("/pending")
+    public ResponseEntity<ApiResponse<PageResponse<PostPendingResponse>>> getAllPendingPosts(
+            @RequestParam int page,
+            @RequestParam int size,
+            @RequestParam String groupId) {
+        ApiResponse<PageResponse<PostPendingResponse>> response = postGroupService.getAllPendingPosts(page, size, groupId);
+        return ResponseEntity.status(response.getCode()).body(response);
+    }
+
+    @PostMapping("/approve/{postId}")
+    public ResponseEntity<ApiResponse<PostGroupResponse>> approvePendingPost(
+            @PathVariable String postId,
+            @RequestParam String groupId) {
+        ApiResponse<PostGroupResponse> response = postGroupService.approvePendingPost(postId, groupId);
+        return ResponseEntity.status(response.getCode()).body(response);
     }
 
 }

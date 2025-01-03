@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -69,6 +70,8 @@ public class FriendService {
                 .build();
     }
 
+
+
     public FriendshipResponse acceptFriendRequest(String senderUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String recipientUserId = authentication.getName();
@@ -100,6 +103,8 @@ public class FriendService {
                 .build();
     }
 
+
+
     public FriendshipResponse rejectFriendRequest(String senderUserId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String recipientUserId = authentication.getName();
@@ -126,6 +131,7 @@ public class FriendService {
                 .status(FriendshipStatus.REJECTED)
                 .build();
     }
+
 
     public FriendshipResponse unfriend(String friendId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -159,12 +165,9 @@ public class FriendService {
         UserProfile user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
-        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
-        Set<UserProfile> allFriends = new HashSet<>(friendsAsSender);
-        allFriends.addAll(friendsAsRecipient);
+        Set<UserProfile> friends = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
 
-        return allFriends.stream()
+        return friends.stream()
                 .filter(friend -> !friend.getId().equals(user.getId())) // lọc user hiện tại ra
                 .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
@@ -177,16 +180,14 @@ public class FriendService {
         UserProfile user = userRepository.findByUserId(currentUserId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        Set<UserProfile> friendsAsSender = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
-        Set<UserProfile> friendsAsRecipient = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
-        Set<UserProfile> allFriends = new HashSet<>(friendsAsSender);
-        allFriends.addAll(friendsAsRecipient);
+        Set<UserProfile> friends = friendshipRepository.findFriendsByUserAndStatusAccepted(user);
 
-        return allFriends.stream()
+        return friends.stream()
                 .filter(friend -> !friend.getId().equals(user.getId()))
                 .map(userProfileMapper::toUserProfileReponse)
                 .collect(Collectors.toSet());
     }
+
 
     public Set<UserProfileResponse> getAllFriendsRequest() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

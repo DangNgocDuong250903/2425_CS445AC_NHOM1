@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 22.0.2 (Oracle Corporation)"
+    comments = "version: 1.5.5.Final, compiler: javac, environment: Java 21.0.4 (Oracle Corporation)"
 )
 @Component
 public class StoryMapperImpl implements StoryMapper {
@@ -38,6 +38,7 @@ public class StoryMapperImpl implements StoryMapper {
         StoryResponse storyResponse = new StoryResponse();
 
         storyResponse.setId( story.getId() );
+        storyResponse.setUserId( story.getUserId() );
         storyResponse.setContent( story.getContent() );
         List<String> list = story.getImageUrl();
         if ( list != null ) {
