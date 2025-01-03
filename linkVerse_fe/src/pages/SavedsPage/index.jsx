@@ -52,7 +52,7 @@ const SavedsPage = () => {
                 );
               })
             ) : (
-              <div className="flex flex-1 justify-center items-center w-full h-full">
+              <div className="flex text-ascent-1 flex-1 justify-center items-center w-full h-full">
                 {t("Chưa bài viết nào được lưu")}
               </div>
             )}

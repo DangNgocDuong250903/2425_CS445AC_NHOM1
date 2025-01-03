@@ -1,12 +1,13 @@
 import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route } from "react-router-dom";
-import { route } from "./routes";
+import { route, routeAdmin } from "./routes";
 import { useEffect } from "react";
 import { jwtDecode } from "jwt-decode";
 import * as UserService from "~/services/UserService";
 import { updateUser } from "./redux/Slices/userSlice";
 import { ProtectedRoute } from "./components";
 import {
+  Admin,
   ForgotPasswordpage,
   HomePage,
   LoginPage,
@@ -91,6 +92,12 @@ function App() {
               />
             );
           })}
+          <Route element={<Admin />}>
+            {routeAdmin.map((route, i) => {
+              const Page = route.element;
+              return <Route key={i} element={<Page />} path={route.path} />;
+            })}
+          </Route>
         </Routes>
       </div>
     </div>
