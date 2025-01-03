@@ -132,6 +132,7 @@ public class FriendService {
                 .build();
     }
 
+
     public FriendshipResponse unfriend(String friendId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String userId = authentication.getName();
@@ -223,12 +224,5 @@ public class FriendService {
         UserProfile user2 = userRepository.findByUserId(userId2).orElseThrow(() -> new RuntimeException("User not found"));
         Optional<Friendship> friendship = friendshipRepository.findByUserProfiles(user1, user2);
         return friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.BLOCKED;
-    }
-
-    public boolean areFriend(String userId1, String userId2) {
-        UserProfile user1 = userRepository.findByUserId(userId1).orElseThrow(() -> new RuntimeException("User not found"));
-        UserProfile user2 = userRepository.findByUserId(userId2).orElseThrow(() -> new RuntimeException("User not found"));
-        Optional<Friendship> friendship = friendshipRepository.findByUserProfiles(user1, user2);
-        return friendship.isPresent() && friendship.get().getStatus() == FriendshipStatus.ACCEPTED;
     }
 }

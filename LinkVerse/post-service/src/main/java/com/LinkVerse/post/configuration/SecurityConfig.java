@@ -17,7 +17,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
-            "/internal/users", "/internal/users/**", "/all", "/post/all",
+            "/internal/users", "/internal/users/**", "/all", "/post/all", "/ws/**", "/ws"
     };
 
     private final CustomJwtDecoder customJwtDecoder;

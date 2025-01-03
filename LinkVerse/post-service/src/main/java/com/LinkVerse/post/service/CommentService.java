@@ -125,6 +125,86 @@ public class CommentService {
                 .build();
     }
 
+    public ApiResponse<PostResponse> updateComment(String commentId, CommentRequest commentRequest) {
+        // Validate the comment content
+        if (commentRequest == null || commentRequest.getContent() == null || commentRequest.getContent().trim().isEmpty()) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.BAD_REQUEST.value())
+                    .message("Comment content cannot be empty.")
+                    .build();
+        }
+
+        // Find the comment by its ID
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        // Check if the user is the owner of the comment
+        if (!comment.getUserId().equals(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("You are not authorized to update this comment")
+                    .build();
+        }
+
+        // Update the comment content
+        comment.setContent(commentRequest.getContent());
+        commentRepository.save(comment);
+
+        // Find the post by its ID
+        Post post = postRepository.findById(comment.getPostId())
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Map the updated post to the response
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Comment updated successfully.")
+                .result(postResponse)
+                .build();
+    }
+
+    public ApiResponse<PostResponse> deleteComment(String postId, String commentId) {
+        // Find the post by its ID
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new RuntimeException("Post not found"));
+
+        // Find the comment by its ID
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String currentUserId = authentication.getName();
+
+        // Check if the user is the owner of the comment or the owner of the post
+        if (!comment.getUserId().equals(currentUserId) && !post.getUserId().equals(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("You are not authorized to delete this comment")
+                    .build();
+        }
+
+        // Remove the comment from the post
+        post.getComments().remove(comment);
+        post.setCommentCount(post.getComments().size());
+        postRepository.save(post);
+
+        // Delete the comment from the CommentRepository
+        commentRepository.delete(comment);
+
+        // Map the updated post to the response
+        PostResponse postResponse = postMapper.toPostResponse(post);
+
+        return ApiResponse.<PostResponse>builder()
+                .code(HttpStatus.OK.value())
+                .message("Comment deleted successfully.")
+                .result(postResponse)
+                .build();
+    }
+
     private String extractFileNameFromUrl(String fileUrl) {
         // Ví dụ URL: https://image-0.s3.ap-southeast-2.amazonaws.com/1731100957786_2553d883.jpg
         String fileName = fileUrl.substring(fileUrl.lastIndexOf("/") + 1);

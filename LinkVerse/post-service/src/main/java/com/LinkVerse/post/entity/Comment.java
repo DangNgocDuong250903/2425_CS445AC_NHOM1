@@ -15,6 +15,7 @@ import java.util.UUID;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
     String id;
+    String postId;
     String userId;
     String content;
     Instant createdDate;
