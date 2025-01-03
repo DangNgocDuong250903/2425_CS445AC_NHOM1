@@ -4,6 +4,7 @@ import com.LinkVerse.post.Mapper.CommentMapper;
 import com.LinkVerse.post.Mapper.PostMapper;
 import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.request.CommentRequest;
+import com.LinkVerse.post.dto.response.CommentResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Comment;
 import com.LinkVerse.post.entity.Post;
@@ -36,9 +37,9 @@ public class CommentService {
     PostRepository postRepository;
     CommentRepository commentRepository;
     PostMapper postMapper;
-    CommentMapper commentMapper;
     S3Service s3Service;
     RekognitionService rekognitionService;
+    CommentMapper commentMapper;
 
     public ApiResponse<PostResponse> addComment(String postId, CommentRequest commentRequest, List<MultipartFile> imageFiles) {
         // Validate the comment content
@@ -125,39 +126,28 @@ public class CommentService {
                 .build();
     }
 
-    public ApiResponse<PostResponse> updateComment(String postId, String commentId, CommentRequest commentRequest, List<MultipartFile> imageFiles) {
-        // Validate the comment content
-        if (commentRequest == null || commentRequest.getContent() == null || commentRequest.getContent().trim().isEmpty()) {
-            return ApiResponse.<PostResponse>builder()
-                    .code(HttpStatus.BAD_REQUEST.value())
-                    .message("Comment content cannot be empty.")
-                    .build();
-        }
 
-        // Find the post by its ID
+    public ApiResponse<CommentResponse> editComment(String postId, String commentId, CommentRequest commentRequest, List<MultipartFile> imageFiles) {
+        String userId = getCurrentUserId();
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new RuntimeException("Post not found"));
 
-        // Find the comment by its ID
-        Comment comment = commentRepository.findById(commentId)
-                .orElseThrow(() -> new RuntimeException("Comment not found"));
-
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String currentUserId = authentication.getName();
-
         // Check if the post is private and the user is not the owner
-        if (post.getVisibility() == PostVisibility.PRIVATE && !post.getUserId().equals(currentUserId)) {
-            return ApiResponse.<PostResponse>builder()
+        if (post.getVisibility() == PostVisibility.PRIVATE && !post.getUserId().equals(userId)) {
+            return ApiResponse.<CommentResponse>builder()
                     .code(HttpStatus.FORBIDDEN.value())
-                    .message("You are not authorized to update comments on this post")
+                    .message("You are not authorized to edit this comment")
                     .build();
         }
 
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new RuntimeException("Comment not found"));
+
         // Check if the user is the owner of the comment
-        if (!comment.getUserId().equals(currentUserId)) {
-            return ApiResponse.<PostResponse>builder()
+        if (!comment.getUserId().equals(userId)) {
+            return ApiResponse.<CommentResponse>builder()
                     .code(HttpStatus.FORBIDDEN.value())
-                    .message("You are not authorized to update this comment")
+                    .message("You are not authorized to edit this comment")
                     .build();
         }
 
@@ -193,18 +183,21 @@ public class CommentService {
 
         // Update the comment content and image URLs
         comment.setContent(commentRequest.getContent());
-        comment.setImageUrl(safeFileUrls);
-        commentRepository.save(comment);
+        comment.setImageUrl(safeFileUrls.isEmpty() ? commentRequest.getImageUrl() : safeFileUrls);
+        comment = commentRepository.save(comment);
 
-        // Map the updated post to the response
-        PostResponse postResponse = postMapper.toPostResponse(post);
-
-        return ApiResponse.<PostResponse>builder()
+        return ApiResponse.<CommentResponse>builder()
                 .code(HttpStatus.OK.value())
-                .message("Comment updated successfully.")
-                .result(postResponse)
+                .message("Comment edited successfully")
+                .result(commentMapper.toCommentResponse(comment))
                 .build();
     }
+
+    private String getCurrentUserId() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        return authentication.getName();
+    }
+
 
     public ApiResponse<PostResponse> deleteComment(String postId, String commentId) {
         // Find the post by its ID
@@ -217,6 +210,14 @@ public class CommentService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String currentUserId = authentication.getName();
+
+        // Check if the post is private and the user is not the owner
+        if (post.getVisibility() == PostVisibility.PRIVATE && !post.getUserId().equals(currentUserId)) {
+            return ApiResponse.<PostResponse>builder()
+                    .code(HttpStatus.FORBIDDEN.value())
+                    .message("You are not authorized to delete comments on this post")
+                    .build();
+        }
 
         // Check if the user is the owner of the comment or the owner of the post
         if (!comment.getUserId().equals(currentUserId) && !post.getUserId().equals(currentUserId)) {

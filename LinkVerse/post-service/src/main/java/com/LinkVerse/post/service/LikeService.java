@@ -24,7 +24,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -146,6 +145,7 @@ public class LikeService {
                 .build();
     }
 
+
     // Like a comment
     public ApiResponse<CommentResponse> likeComment(String postId, String commentId, String emojiSymbol) {
         String userId = getCurrentUserId();
@@ -160,14 +160,8 @@ public class LikeService {
                     .build();
         }
 
-        Optional<Comment> commentOptional = post.getComments().stream()
-                .filter(comment -> comment.getCommentId().equals(commentId))
-                .findFirst();
-
-        if (!commentOptional.isPresent()) {
-            throw new CommentNotFoundException("Comment not found");
-        }
-        Comment comment = commentOptional.get();
+        Comment comment = commentRespository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException("Comment not found"));
 
         // Check if the user has already liked the comment
         if (comment.getLikedUserIds() != null && comment.getLikedUserIds().contains(userId)) {

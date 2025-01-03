@@ -5,6 +5,7 @@ import com.LinkVerse.post.dto.ApiResponse;
 import com.LinkVerse.post.dto.PageResponse;
 import com.LinkVerse.post.dto.response.PostResponse;
 import com.LinkVerse.post.entity.Post;
+import com.LinkVerse.post.entity.PostVisibility;
 import com.LinkVerse.post.repository.PostRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,7 +35,12 @@ public class SearchService {
         Sort sort = Sort.by(Sort.Order.desc("createdDate"));
         Pageable pageable = PageRequest.of(page - 1, size, sort);
 
-        var pageData = postRepository.findAllByContent(content, pageable);
+        Page<Post> pageData;
+        if (content != null && !content.trim().isEmpty()) {
+            pageData = postRepository.findAllByContentContainingAndVisibility(content, PostVisibility.PUBLIC, pageable);
+        } else {
+            pageData = postRepository.findAllByVisibility(PostVisibility.PUBLIC, pageable);
+        }
 
         return ApiResponse.<PageResponse<PostResponse>>builder()
                 .code(200)

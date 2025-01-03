@@ -49,5 +49,11 @@ public class LikeController {
     }
 
     //unlikecmt
-
+    @PostMapping("/{postId}/comments/{commentId}/unlike")
+    public ResponseEntity<ApiResponse<CommentResponse>> unlikeComment(
+            @PathVariable String postId,
+            @PathVariable String commentId) {
+        ApiResponse<CommentResponse> commentResponse = likeService.unlikeComment(postId, commentId);
+        return ResponseEntity.ok(commentResponse);
+    }
 }
